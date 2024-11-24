@@ -7,6 +7,6 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Service extends Entity {
-    private int duration;
+public class ServiceProductCategory extends Entity {
+    private String name;
 }

@@ -9,8 +9,9 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserReport extends Entity {
-    private User reporter;
-    private User reported;
-    private Date dateApproved;
+public class Notification extends Entity {
+    private String message;
+    private Date dateSent;
+    private boolean seen;
+    private User user;
 }

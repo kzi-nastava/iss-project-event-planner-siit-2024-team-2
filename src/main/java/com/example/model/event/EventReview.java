@@ -1,4 +1,4 @@
-package com.example.model.serviceproduct;
+package com.example.model.event;
 
 import com.example.model.Entity;
 import com.example.model.user.User;
@@ -8,9 +8,9 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ServiceProductReview extends Entity {
+public class EventReview extends Entity {
     private int grade;
     private String comment;
-    private ServiceProduct serviceProduct;
     private User user;
+    private Event event;
 }
