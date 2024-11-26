@@ -1,7 +1,7 @@
-package com.example.model.serviceproduct;
+package com.example.eventplanner.model.serviceproduct;
 
-import com.example.model.Entity;
-import com.example.model.user.ServiceProductProvider;
+import com.example.eventplanner.model.Entity;
+import com.example.eventplanner.model.user.ServiceProductProvider;
 import lombok.*;
 
 @Getter
