@@ -1,7 +1,7 @@
-package com.example.model.user;
+package com.example.eventplanner.model.user;
 
-import com.example.model.Entity;
-import com.example.model.utils.UserRole;
+import com.example.eventplanner.model.Entity;
+import com.example.eventplanner.model.utils.UserRole;
 import lombok.*;
 
 import java.util.List;

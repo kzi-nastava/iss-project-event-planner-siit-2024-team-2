@@ -1,7 +1,7 @@
-package com.example.model.event;
+package com.example.eventplanner.model.event;
 
-import com.example.model.Entity;
-import com.example.model.serviceproduct.ServiceProduct;
+import com.example.eventplanner.model.Entity;
+import com.example.eventplanner.model.serviceproduct.ServiceProduct;
 import lombok.*;
 
 import java.util.List;
