@@ -1,6 +1,6 @@
-package com.example.model.user;
+package com.example.eventplanner.model.user;
 
-import com.example.model.serviceproduct.ServiceProduct;
+import com.example.eventplanner.model.serviceproduct.ServiceProduct;
 import lombok.*;
 
 import java.util.List;

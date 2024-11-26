@@ -1,6 +1,5 @@
-package com.example.model.user;
+package com.example.eventplanner.model.user;
 
-import com.example.model.user.User;
 import lombok.*;
 
 @Getter
