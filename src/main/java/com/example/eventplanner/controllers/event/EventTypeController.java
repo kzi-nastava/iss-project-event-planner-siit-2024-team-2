@@ -1,4 +1,4 @@
-package com.example.eventplanner.controllers;
+package com.example.eventplanner.controllers.event;
 
 import com.example.eventplanner.model.event.EventType;
 import org.springframework.http.ResponseEntity;
