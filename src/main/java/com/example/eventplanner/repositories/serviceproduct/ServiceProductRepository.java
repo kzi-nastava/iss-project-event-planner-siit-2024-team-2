@@ -1,4 +1,4 @@
-package com.example.repositories.serviceproduct;
+package com.example.eventplanner.repositories.serviceproduct;
 
 import com.example.model.event.Event;
 import com.example.model.serviceproduct.ServiceProduct;
