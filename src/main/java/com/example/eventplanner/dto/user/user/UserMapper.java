@@ -40,6 +40,30 @@ public class UserMapper {
         dto.setCompanyDescription(entity.getCompanyDescription());
         return dto;
     }
+
+    public static UpdateEventOrganizerDto toUpdateDto(EventOrganizer entity) {
+        if (entity == null) {
+            return null;
+        }
+        UpdateEventOrganizerDto dto = new UpdateEventOrganizerDto();
+        dto.setFirstName(entity.getFirstName());
+        dto.setLastName(entity.getLastName());
+        dto.setAddress(entity.getAddress());
+        dto.setPhoneNumber(entity.getPhoneNumber());
+        return dto;
+    }
+    public static UpdateServiceProductProviderDto toUpdateDto(ServiceProductProvider entity) {
+        if (entity == null) {
+            return null;
+        }
+        UpdateServiceProductProviderDto dto = new UpdateServiceProductProviderDto();
+        dto.setFirstName(entity.getFirstName());
+        dto.setLastName(entity.getLastName());
+        dto.setAddress(entity.getAddress());
+        dto.setPhoneNumber(entity.getPhoneNumber());
+        dto.setCompanyDescription(entity.getCompanyDescription());
+        return dto;
+    }
     public static RegisterEventOrganizerDto toDto(EventOrganizer entity) {
         if (entity == null) {
             return null;

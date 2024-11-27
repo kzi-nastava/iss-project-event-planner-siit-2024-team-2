@@ -1,6 +1,7 @@
 
 package com.example.eventplanner.controllers.user;
 
+import com.example.eventplanner.dto.user.user.*;
 import com.example.eventplanner.dto.user.user.RegisterEventOrganizerDto;
 import com.example.eventplanner.dto.user.user.RegisterServiceProductProviderDto;
 import com.example.eventplanner.dto.user.user.RegisterUserDto;
@@ -56,6 +57,29 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
+    @PutMapping("/event-organizers/{id}")
+    public ResponseEntity<UpdateEventOrganizerDto> updateEventOrganizer(@PathVariable long id, @RequestBody UpdateEventOrganizerDto eventOrganizerDto) {
+        UpdateEventOrganizerDto user = userService.updateEventOrganizer(id, eventOrganizerDto);
+        if (user == null)
+            return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(eventOrganizerDto);
+    }
+
+    @PutMapping("/service-product-providers/{id}")
+    public ResponseEntity<UpdateServiceProductProviderDto> updateServiceProductProvider(@PathVariable long id, @RequestBody UpdateServiceProductProviderDto serviceProductProviderDto) {
+        UpdateServiceProductProviderDto user = userService.updateServiceProductProvider(id, serviceProductProviderDto);
+        if (user == null)
+            return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(serviceProductProviderDto);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable long id) {
+        boolean success = userService.delete(id);
+        return success
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.notFound().build();
+    }
     @GetMapping("/{id}/reports")
     public ResponseEntity<Collection<UserReportDto>> getUserReports(@PathVariable long id,
                                                                     @RequestParam(required = false) Boolean approved) {
