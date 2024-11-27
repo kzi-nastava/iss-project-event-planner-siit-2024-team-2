@@ -1,9 +1,12 @@
 package com.example.eventplanner.services.event;
 
+import com.example.eventplanner.dto.event.activity.ActivityDto;
+import com.example.eventplanner.dto.event.activity.ActivityMapper;
 import com.example.eventplanner.dto.event.event.EventDto;
 import com.example.eventplanner.dto.event.event.EventMapper;
 import com.example.eventplanner.dto.event.event.EventNoIdDto;
 import com.example.eventplanner.model.Entity;
+import com.example.eventplanner.model.event.Activity;
 import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.event.EventType;
 import lombok.Getter;
@@ -132,5 +135,14 @@ public class EventService {
                 * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return R * c; // returns the distance in kilometers
+    }
+
+    public boolean createAgenda(long id, List<ActivityDto> activityDtos) {
+        if (!events.containsKey(id) || !events.get(id).isActive())
+            return false;
+        Event event = events.get(id);
+        List<Activity> activities = activityDtos.stream().map(ActivityMapper::toEntity).toList();
+        event.setActivities(activities);
+        return true;
     }
 }
