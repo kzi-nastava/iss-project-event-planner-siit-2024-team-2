@@ -1,22 +1,22 @@
-package com.example.eventplanner.model.user;
+package com.example.eventplanner.dto.user.user;
 
-import com.example.eventplanner.model.Entity;
 import com.example.eventplanner.model.utils.UserRole;
-import lombok.*;
-
-import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class User extends Entity {
+public class RegisterUserDto {
+    private long id;
     private String email;
     private String password;
-    private UserRole userRole;
     private String firstName;
     private String lastName;
     private String address;
     private String phoneNumber;
-    private List<User> blockedUsers;
+    private UserRole userRole;
 }
