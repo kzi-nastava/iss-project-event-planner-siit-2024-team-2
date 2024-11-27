@@ -1,5 +1,6 @@
 package com.example.eventplanner.services.user;
 
+import com.example.eventplanner.dto.auth.LoginDto;
 import com.example.eventplanner.dto.user.user.RegisterUserDto;
 import com.example.eventplanner.dto.user.user.UserMapper;
 import com.example.eventplanner.dto.user.user.RegisterEventOrganizerDto;
@@ -124,5 +125,12 @@ public class UserService {
             return null;
         }
         return UserMapper.toDto((ServiceProductProvider) user);
+    }
+
+    public RegisterUserDto login(LoginDto loginDto) {
+        return UserMapper.toDto(users.values().stream()
+                .filter(u -> u.getEmail().equals(loginDto.getEmail()) && u.getPassword().equals(loginDto.getPassword()))
+                .findFirst()
+                .orElse(null));
     }
 }
