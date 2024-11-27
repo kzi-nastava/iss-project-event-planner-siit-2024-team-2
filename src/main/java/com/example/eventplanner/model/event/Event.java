@@ -11,9 +11,14 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Event extends Entity {
-    private boolean isOpen;
-    private double plannedSpending;
+    private String name;
+    private String description;
+    private EventType type;
+    private int maxAttendances;
+    private boolean open;
+    private double longitude;
+    private double latitude;
+    private Date date;
     private List<Activity> activities;
     private List<Budget> budgets;
-    private Date date;
 }
