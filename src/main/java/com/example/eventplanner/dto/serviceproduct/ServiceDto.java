@@ -14,7 +14,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ServiceDto {
-	private long id;
+	private Long id;
+    private boolean isActive = true;
     private double price;
     private double discount;
     private String name;
@@ -22,7 +23,8 @@ public class ServiceDto {
     private String coverImage;
     private List<EventType> availableEventTypes;
 
-    public ServiceDto(CreateServiceDto ServiceDto) {
+    public ServiceDto(Long id, CreateServiceDto ServiceDto) {
+        this.id = id;
         this.price = ServiceDto.getPrice();
         this.discount = ServiceDto.getDiscount();
         this.name = ServiceDto.getName();
