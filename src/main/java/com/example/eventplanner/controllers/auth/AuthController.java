@@ -1,6 +1,7 @@
 package com.example.eventplanner.controllers.auth;
 
 import com.example.eventplanner.dto.auth.LoginDto;
+import com.example.eventplanner.dto.auth.ResetPasswordDto;
 import com.example.eventplanner.dto.user.user.RegisterUserDto;
 import com.example.eventplanner.services.user.UserService;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,13 @@ public class AuthController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
         return ResponseEntity.ok(user);
-        //abc1@gmail.com
-        // abcdasda
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<Void> resetPassword(@RequestBody ResetPasswordDto resetPasswordDto) {
+        boolean success = userService.resetPassword(resetPasswordDto);
+        return success
+                ? ResponseEntity.ok().build()
+                : ResponseEntity.badRequest().build();
     }
 }

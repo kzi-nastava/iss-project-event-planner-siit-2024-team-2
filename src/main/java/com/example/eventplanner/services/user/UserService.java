@@ -1,5 +1,7 @@
 package com.example.eventplanner.services.user;
 
+import com.example.eventplanner.dto.auth.ResetPasswordDto;
+import com.example.eventplanner.dto.user.user.*;
 import com.example.eventplanner.dto.auth.LoginDto;
 import com.example.eventplanner.dto.user.user.RegisterUserDto;
 import com.example.eventplanner.dto.user.user.UserMapper;
@@ -127,10 +129,52 @@ public class UserService {
         return UserMapper.toDto((ServiceProductProvider) user);
     }
 
+    public UpdateEventOrganizerDto updateEventOrganizer(long id, UpdateEventOrganizerDto eventOrganizerDto) {
+        EventOrganizer user = (EventOrganizer) users.get(id);
+        if (user == null || !user.isActive() || user.getUserRole() != UserRole.EVENT_ORGANIZER) {
+            return null;
+        }
+        user.setFirstName(eventOrganizerDto.getFirstName());
+        user.setLastName(eventOrganizerDto.getLastName());
+        user.setAddress(eventOrganizerDto.getAddress());
+        user.setPhoneNumber(eventOrganizerDto.getPhoneNumber());
+        return UserMapper.toUpdateDto(user);
+    }
+
+    public UpdateServiceProductProviderDto updateServiceProductProvider(long id, UpdateServiceProductProviderDto serviceProductProviderDto) {
+        ServiceProductProvider user = (ServiceProductProvider) users.get(id);
+        if (user == null || !user.isActive() || user.getUserRole() != UserRole.SERVICE_PRODUCT_PROVIDER) {
+            return null;
+        }
+        user.setFirstName(serviceProductProviderDto.getFirstName());
+        user.setLastName(serviceProductProviderDto.getLastName());
+        user.setAddress(serviceProductProviderDto.getAddress());
+        user.setPhoneNumber(serviceProductProviderDto.getPhoneNumber());
+        user.setCompanyDescription(serviceProductProviderDto.getCompanyDescription());
+        return UserMapper.toUpdateDto(user);
+    }
+
+    public boolean delete(long id) {
+        User user = users.get(id);
+        if (user == null || !user.isActive()) {
+            return false;
+        }
+        user.setActive(false);
+        return true;
+    }
     public RegisterUserDto login(LoginDto loginDto) {
         return UserMapper.toDto(users.values().stream()
                 .filter(u -> u.getEmail().equals(loginDto.getEmail()) && u.getPassword().equals(loginDto.getPassword()))
                 .findFirst()
                 .orElse(null));
     }
+    public boolean resetPassword(ResetPasswordDto resetPasswordDto) {
+        User user = users.get(resetPasswordDto.getUserId());
+        if (user == null || !user.isActive() || !user.getPassword().equals(resetPasswordDto.getOldPassword())) {
+            return false;
+        }
+        user.setPassword(resetPasswordDto.getNewPassword());
+        return true;
+    }
 }
+
