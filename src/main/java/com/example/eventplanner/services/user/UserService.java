@@ -1,9 +1,6 @@
 package com.example.eventplanner.services.user;
 
-import com.example.eventplanner.dto.user.user.RegisterUserDto;
-import com.example.eventplanner.dto.user.user.UserMapper;
-import com.example.eventplanner.dto.user.user.RegisterEventOrganizerDto;
-import com.example.eventplanner.dto.user.user.RegisterServiceProductProviderDto;
+import com.example.eventplanner.dto.user.user.*;
 import com.example.eventplanner.model.Entity;
 import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.user.Admin;
@@ -124,5 +121,39 @@ public class UserService {
             return null;
         }
         return UserMapper.toDto((ServiceProductProvider) user);
+    }
+
+    public UpdateEventOrganizerDto updateEventOrganizer(long id, UpdateEventOrganizerDto eventOrganizerDto) {
+        EventOrganizer user = (EventOrganizer) users.get(id);
+        if (user == null || !user.isActive() || user.getUserRole() != UserRole.EVENT_ORGANIZER) {
+            return null;
+        }
+        user.setFirstName(eventOrganizerDto.getFirstName());
+        user.setLastName(eventOrganizerDto.getLastName());
+        user.setAddress(eventOrganizerDto.getAddress());
+        user.setPhoneNumber(eventOrganizerDto.getPhoneNumber());
+        return UserMapper.toUpdateDto(user);
+    }
+
+    public UpdateServiceProductProviderDto updateServiceProductProvider(long id, UpdateServiceProductProviderDto serviceProductProviderDto) {
+        ServiceProductProvider user = (ServiceProductProvider) users.get(id);
+        if (user == null || !user.isActive() || user.getUserRole() != UserRole.SERVICE_PRODUCT_PROVIDER) {
+            return null;
+        }
+        user.setFirstName(serviceProductProviderDto.getFirstName());
+        user.setLastName(serviceProductProviderDto.getLastName());
+        user.setAddress(serviceProductProviderDto.getAddress());
+        user.setPhoneNumber(serviceProductProviderDto.getPhoneNumber());
+        user.setCompanyDescription(serviceProductProviderDto.getCompanyDescription());
+        return UserMapper.toUpdateDto(user);
+    }
+
+    public boolean delete(long id) {
+        User user = users.get(id);
+        if (user == null || !user.isActive()) {
+            return false;
+        }
+        user.setActive(false);
+        return true;
     }
 }
