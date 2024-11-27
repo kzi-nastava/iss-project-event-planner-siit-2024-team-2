@@ -10,7 +10,8 @@ public class UserReportMapper {
                 userReport.getId(),
                 userReport.getReporter().getId(),
                 userReport.getReported().getId(),
-                userReport.getDateApproved()
+                userReport.getDateApproved(),
+                userReport.getReason()
         );
     }
 
@@ -21,6 +22,7 @@ public class UserReportMapper {
                 userReport.getReporter().getId(),
                 userReport.getReported().getId(),
                 userReport.getDateApproved()
+                userReport.getReason()
         );
     }
 
@@ -30,7 +32,8 @@ public class UserReportMapper {
         UserReport userReport = new UserReport(
                 null,
                 null,
-                dto.getDateApproved());
+                dto.getDateApproved(),
+                dto.getReason());
         userReport.setId(dto.getId());
         userReport.setActive(true);
         return userReport;
@@ -42,7 +45,8 @@ public class UserReportMapper {
         UserReport userReport = new UserReport(
                 null,
                 null,
-                dto.getDateApproved());
+                dto.getDateApproved(),
+                dto.getReason());
         userReport.setActive(true);
         return userReport;
     }

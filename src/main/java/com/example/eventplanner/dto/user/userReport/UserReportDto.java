@@ -16,4 +16,5 @@ public class UserReportDto {
     private long reporterId;
     private long reportedId;
     private Date dateApproved;
+    private String reason;
 }
