@@ -1,7 +1,9 @@
 package com.example.eventplanner.controllers.event;
 
+import com.example.eventplanner.dto.event.activity.ActivityDto;
 import com.example.eventplanner.dto.event.event.EventDto;
 import com.example.eventplanner.dto.event.event.EventNoIdDto;
+import com.example.eventplanner.model.event.Activity;
 import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.serviceproduct.Service;
 import com.example.eventplanner.services.event.EventService;
@@ -77,5 +79,13 @@ public class EventController {
     public ResponseEntity<List<Event>> getTop5() {
         List<Event> top5 = eventService.getTop5();
         return new ResponseEntity<>(top5, HttpStatus.OK);
+    }
+
+    @PostMapping("/{id}/create-agenda")
+    public ResponseEntity<List<ActivityDto>> createAgenda(@PathVariable long id, @RequestBody List<ActivityDto> activities) {
+        boolean success = eventService.createAgenda(id, activities);
+        return success
+                ? ResponseEntity.ok(activities)
+                : ResponseEntity.badRequest().build();
     }
 }
