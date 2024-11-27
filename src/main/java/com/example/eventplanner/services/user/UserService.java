@@ -4,6 +4,7 @@ import com.example.eventplanner.dto.user.user.RegisterUserDto;
 import com.example.eventplanner.dto.user.user.UserMapper;
 import com.example.eventplanner.dto.user.user.RegisterEventOrganizerDto;
 import com.example.eventplanner.dto.user.user.RegisterServiceProductProviderDto;
+import com.example.eventplanner.dto.user.userReport.UserReportDto;
 import com.example.eventplanner.model.Entity;
 import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.user.Admin;
@@ -11,8 +12,10 @@ import com.example.eventplanner.model.user.EventOrganizer;
 import com.example.eventplanner.model.user.ServiceProductProvider;
 import com.example.eventplanner.model.user.User;
 import com.example.eventplanner.model.utils.UserRole;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +24,10 @@ import java.util.Map;
 public class UserService {
     private final Map<Long, User> users = new HashMap<>();
     private long idCounter = 0;
-    public UserService() {
+    private final UserReportService userReportService;
+    @Autowired
+    public UserService(UserReportService userReportService) {
+        this.userReportService = userReportService;
         //Admin
         Admin admin = new Admin();
         admin.setId(++idCounter);
@@ -124,5 +130,12 @@ public class UserService {
             return null;
         }
         return UserMapper.toDto((ServiceProductProvider) user);
+    }
+
+    public Collection<UserReportDto> getUserReports(long id) {
+        return userReportService.getAll()
+                .stream()
+                .filter(userReportDto -> userReportDto.getReportedId() == id)
+                .toList();
     }
 }
