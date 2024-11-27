@@ -1,4 +1,4 @@
-package com.example.eventplanner.dto.event;
+package com.example.eventplanner.dto.event.eventtype;
 
 
 import com.example.eventplanner.model.event.EventType;

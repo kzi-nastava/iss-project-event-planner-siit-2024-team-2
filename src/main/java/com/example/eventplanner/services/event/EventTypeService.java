@@ -1,7 +1,7 @@
 package com.example.eventplanner.services.event;
 
-import com.example.eventplanner.dto.event.EventTypeDto;
-import com.example.eventplanner.dto.event.EventTypeMapper;
+import com.example.eventplanner.dto.event.eventtype.EventTypeDto;
+import com.example.eventplanner.dto.event.eventtype.EventTypeMapper;
 import com.example.eventplanner.model.event.EventType;
 import org.springframework.stereotype.Service;
 
@@ -16,14 +16,9 @@ public class EventTypeService {
     private long idCounter = 0;
     public EventTypeService() {}
     public List<EventTypeDto> getAll() {
-        List<EventTypeDto> eventTypeDtos = new ArrayList<>();
-        for (EventType eventType : eventTypes.values()) {
-            if (eventType.isActive())
-                eventTypeDtos.add(EventTypeMapper.toDto(eventType));
-        }
-        return eventTypeDtos;
+        return eventTypes.values().stream().map(EventTypeMapper::toDto).toList();
     }
-    public EventTypeDto get(long id) {
+    public EventTypeDto getById(long id) {
         if (!eventTypes.containsKey(id) || !eventTypes.get(id).isActive())
             return null;
         return EventTypeMapper.toDto(eventTypes.get(id));
@@ -35,6 +30,7 @@ public class EventTypeService {
         return eventTypeDto;
     }
     public EventTypeDto update(EventTypeDto eventTypeDto, long id) {
+        eventTypeDto.setId(id);
         EventType eventType = EventTypeMapper.toEntity(eventTypeDto);
         eventTypes.put(id, eventType);
         return eventTypeDto;
