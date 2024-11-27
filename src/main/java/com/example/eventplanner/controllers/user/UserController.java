@@ -57,8 +57,9 @@ public class UserController {
     }
 
     @GetMapping("/{id}/reports")
-    public ResponseEntity<Collection<UserReportDto>> getUserReports(@PathVariable long id) {
-        Collection<UserReportDto> result = userService.getUserReports(id);
+    public ResponseEntity<Collection<UserReportDto>> getUserReports(@PathVariable long id,
+                                                                    @RequestParam(required = false) Boolean approved) {
+        Collection<UserReportDto> result = userService.getUserReports(id, approved);
         return result != null ?
                 new ResponseEntity<>(result, HttpStatus.OK) :
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);

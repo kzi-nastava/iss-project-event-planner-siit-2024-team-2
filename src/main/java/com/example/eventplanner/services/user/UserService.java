@@ -132,10 +132,11 @@ public class UserService {
         return UserMapper.toDto((ServiceProductProvider) user);
     }
 
-    public Collection<UserReportDto> getUserReports(long id) {
+    public Collection<UserReportDto> getUserReports(long id, Boolean approved) {
         return userReportService.getAll()
                 .stream()
-                .filter(userReportDto -> userReportDto.getReportedId() == id)
+                .filter(report -> report.getReportedId() == id)
+                .filter(report -> approved == null || approved == (report.getDateApproved() != null))
                 .toList();
     }
 }
