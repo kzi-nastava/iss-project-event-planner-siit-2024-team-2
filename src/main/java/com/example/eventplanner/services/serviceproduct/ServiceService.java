@@ -18,7 +18,7 @@ public class ServiceService {
 	private HashMap<Long, ServiceDto> services = new HashMap<Long, ServiceDto>();
 
 	public Collection<ServiceDto> getAll() {
-		return services.values().stream().toList();
+		return services.values().stream().filter(ServiceDto::isActive).toList();
 	}
 	
 	public ServiceDto getById(Long id) {
