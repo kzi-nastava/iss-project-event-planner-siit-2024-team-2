@@ -2,8 +2,11 @@ package com.example.eventplanner.services.event;
 
 import com.example.eventplanner.dto.event.eventreview.*;
 import com.example.eventplanner.model.Entity;
+import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.event.EventReview;
+import com.example.eventplanner.model.user.User;
 import com.example.eventplanner.model.utils.ReviewStatus;
+import com.example.eventplanner.model.utils.UserRole;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -39,8 +42,16 @@ public class EventReviewService {
         EventReview eventReview = EventReviewMapper.toEntity(dto);
         eventReview.setId(idCounter++);
         eventReview.setActive(true);
+
         // link user
+        User testUser = new User();
+        testUser.setId(dto.getUserId());
+        eventReview.setUser(testUser);
         // link event
+        Event testEvent = new Event();
+        testEvent.setId(dto.getEventId());
+        eventReview.setEvent(testEvent);
+
         eventReviews.put(eventReview.getId(), eventReview);
         return EventReviewMapper.toDto(eventReview);
     }
@@ -49,8 +60,16 @@ public class EventReviewService {
         if (this.getById(id) == null)
             return null;
         EventReview eventReview = EventReviewMapper.toEntity(dto);
+
         // link user
+        User testUser = new User();
+        testUser.setId(dto.getUserId());
+        eventReview.setUser(testUser);
         // link event
+        Event testEvent = new Event();
+        testEvent.setId(dto.getEventId());
+        eventReview.setEvent(testEvent);
+
         eventReviews.put(id, EventReviewMapper.toEntity(dto));
         return EventReviewMapper.toDto(eventReview);
     }
