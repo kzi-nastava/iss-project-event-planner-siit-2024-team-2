@@ -2,14 +2,17 @@ package com.example.eventplanner.controllers.serviceproduct;
 
 import com.example.eventplanner.dto.serviceproduct.CreateServiceDto;
 import com.example.eventplanner.dto.serviceproduct.ServiceDto;
+import com.example.eventplanner.model.event.EventType;
+import com.example.eventplanner.model.serviceproduct.ServiceProductCategory;
 import com.example.eventplanner.services.serviceproduct.ServiceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/services")
@@ -52,5 +55,25 @@ public class ServiceController {
         return success
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<Collection<ServiceDto>> searchServicesByName(@RequestParam("name") String name) {
+        Collection<ServiceDto> serviceDtos = serviceService.searchByName(name);
+        if (serviceDtos.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Collections.emptyList());
+        }
+        return ResponseEntity.ok(serviceDtos);
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<Collection<ServiceDto>> filterServices(@RequestParam(value = "categories", required = false) List<ServiceProductCategory> categories,
+                                                                       @RequestParam(value = "eventTypes", required = false) List<String> eventTypes,
+                                                                       @RequestParam(value = "minPrice", required = false) Float minPrice,
+                                                                       @RequestParam(value = "maxPrice", required = false) Float maxPrice,
+                                                                       @RequestParam(value = "available", required = false) Boolean available){
+
+        return ResponseEntity.ok(serviceService.filter(categories, eventTypes, minPrice, maxPrice, available));
     }
 }

@@ -1,6 +1,7 @@
 package com.example.eventplanner.dto.serviceproduct;
 
 import com.example.eventplanner.model.event.EventType;
+import com.example.eventplanner.model.serviceproduct.ServiceProductCategory;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,4 +20,6 @@ public class CreateServiceDto {
     private String description;
     private String coverImage;
     private List<EventType> availableEventTypes;
+    private ServiceProductCategory category;
+    private boolean available;
 }

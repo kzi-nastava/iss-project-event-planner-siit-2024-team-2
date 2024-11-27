@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.example.eventplanner.model.event.EventType;
 
+import com.example.eventplanner.model.serviceproduct.ServiceProductCategory;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,6 +23,8 @@ public class ServiceDto {
     private String description;
     private String coverImage;
     private List<EventType> availableEventTypes;
+    private ServiceProductCategory category;
+    private boolean available;
 
     public ServiceDto(Long id, CreateServiceDto ServiceDto) {
         this.id = id;
@@ -31,5 +34,7 @@ public class ServiceDto {
         this.description = ServiceDto.getDescription();
         this.coverImage = ServiceDto.getCoverImage();
         this.availableEventTypes = ServiceDto.getAvailableEventTypes();
+        this.category = ServiceDto.getCategory();
+        this.available = ServiceDto.isAvailable();
     }
 }
