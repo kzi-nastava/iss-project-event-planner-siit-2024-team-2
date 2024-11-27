@@ -21,7 +21,7 @@ public class EventTypeController {
 
     @GetMapping("/{id}")
     public ResponseEntity<EventTypeDto> getEventTypeById(@PathVariable long id){
-        EventTypeDto eventTypeDto = eventTypeService.get(id);
+        EventTypeDto eventTypeDto = eventTypeService.getById(id);
         if(eventTypeDto == null) {
             return ResponseEntity.notFound().build();
         }
