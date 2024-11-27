@@ -18,7 +18,7 @@ public class EventTypeService {
     public List<EventTypeDto> getAll() {
         return eventTypes.values().stream().map(EventTypeMapper::toDto).toList();
     }
-    public EventTypeDto getById(long id) {
+    public EventTypeDto get(long id) {
         if (!eventTypes.containsKey(id) || !eventTypes.get(id).isActive())
             return null;
         return EventTypeMapper.toDto(eventTypes.get(id));

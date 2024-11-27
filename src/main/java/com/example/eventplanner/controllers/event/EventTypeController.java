@@ -17,13 +17,13 @@ public class EventTypeController {
         this.eventTypeService = eventTypeService;
     }
     @GetMapping()
-    public ResponseEntity<List<EventTypeDto>> getAll(){
+    public ResponseEntity<List<EventTypeDto>> getAllEventTypes(){
         return ResponseEntity.ok(eventTypeService.getAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EventTypeDto> getById(@PathVariable long id){
-        EventTypeDto eventTypeDto = eventTypeService.getById(id);
+    public ResponseEntity<EventTypeDto> getEventTypeById(@PathVariable long id){
+        EventTypeDto eventTypeDto = eventTypeService.get(id);
         if(eventTypeDto == null) {
             return ResponseEntity.notFound().build();
         }
@@ -31,11 +31,11 @@ public class EventTypeController {
     }
 
     @PostMapping()
-    public ResponseEntity<EventTypeDto> create(@RequestBody EventTypeDto eventTypeDto){
+    public ResponseEntity<EventTypeDto> createEventType(@RequestBody EventTypeDto eventTypeDto){
         return ResponseEntity.ok(eventTypeService.create(eventTypeDto));
     }
     @PutMapping("/{id}")
-    public ResponseEntity<EventTypeDto> update(@PathVariable long id, @RequestBody EventTypeDto eventTypeDto){
+    public ResponseEntity<EventTypeDto> updateEventType(@PathVariable long id, @RequestBody EventTypeDto eventTypeDto){
         EventTypeDto eventTypeDto1 = eventTypeService.update(eventTypeDto, id);
         if (eventTypeDto1 != null) {
             return ResponseEntity.ok(eventTypeDto1);
@@ -43,7 +43,7 @@ public class EventTypeController {
         return ResponseEntity.notFound().build();
     }
     @DeleteMapping("/{id}")
-    public ResponseEntity<EventTypeDto> delete(@PathVariable long id){
+    public ResponseEntity<EventTypeDto> deleteEventType(@PathVariable long id){
         boolean success = eventTypeService.delete(id);
         return success
                 ? ResponseEntity.noContent().build()
