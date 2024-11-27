@@ -8,7 +8,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class EventServiceProduct extends Entity {
+public class SPOrder extends Entity {
     private double price;
     private Event event;
     private ServiceProduct serviceProduct;
