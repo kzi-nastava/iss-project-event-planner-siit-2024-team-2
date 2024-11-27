@@ -3,6 +3,7 @@ package com.example.eventplanner.model.event;
 import com.example.eventplanner.model.Entity;
 import lombok.*;
 
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -14,4 +15,5 @@ public class Event extends Entity {
     private double plannedSpending;
     private List<Activity> activities;
     private List<Budget> budgets;
+    private Date date;
 }
