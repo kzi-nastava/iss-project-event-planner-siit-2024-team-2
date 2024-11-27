@@ -2,20 +2,18 @@ package com.example.eventplanner.controllers.event;
 
 import com.example.eventplanner.dto.event.eventtype.EventTypeDto;
 import com.example.eventplanner.services.event.EventTypeService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/event-types")
 public class EventTypeController {
 
     private final EventTypeService eventTypeService;
-    @Autowired
-    public EventTypeController(EventTypeService eventTypeService) {
-        this.eventTypeService = eventTypeService;
-    }
     @GetMapping()
     public ResponseEntity<List<EventTypeDto>> getAllEventTypes(){
         return ResponseEntity.ok(eventTypeService.getAll());
