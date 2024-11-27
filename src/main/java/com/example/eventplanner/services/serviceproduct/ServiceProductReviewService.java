@@ -4,7 +4,9 @@ import com.example.eventplanner.dto.event.eventreview.EventReviewCommentDto;
 import com.example.eventplanner.dto.event.eventreview.EventReviewStatusDto;
 import com.example.eventplanner.dto.serviceproduct.serviceproductreview.*;
 import com.example.eventplanner.model.Entity;
+import com.example.eventplanner.model.serviceproduct.ServiceProduct;
 import com.example.eventplanner.model.serviceproduct.ServiceProductReview;
+import com.example.eventplanner.model.user.User;
 import com.example.eventplanner.model.utils.ReviewStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -41,8 +43,16 @@ public class ServiceProductReviewService {
         ServiceProductReview serviceProductReview = ServiceProductReviewMapper.toEntity(dto);
         serviceProductReview.setId(idCounter++);
         serviceProductReview.setActive(true);
+
         // link user
+        User testUser = new User();
+        testUser.setId(dto.getUserId());
+        serviceProductReview.setUser(testUser);
         // link serviceProduct
+        ServiceProduct testServiceProduct = new ServiceProduct();
+        testServiceProduct.setId(dto.getServiceProductId());
+        serviceProductReview.setServiceProduct(testServiceProduct);
+
         serviceProductReviews.put(serviceProductReview.getId(), serviceProductReview);
         return ServiceProductReviewMapper.toDto(serviceProductReview);
     }
@@ -51,8 +61,16 @@ public class ServiceProductReviewService {
         if (this.getById(id) == null)
             return null;
         ServiceProductReview serviceProductReview = ServiceProductReviewMapper.toEntity(dto);
+
         // link user
+        User testUser = new User();
+        testUser.setId(dto.getUserId());
+        serviceProductReview.setUser(testUser);
         // link serviceProduct
+        ServiceProduct testServiceProduct = new ServiceProduct();
+        testServiceProduct.setId(dto.getServiceProductId());
+        serviceProductReview.setServiceProduct(testServiceProduct);
+
         serviceProductReviews.put(id, ServiceProductReviewMapper.toEntity(dto));
         return ServiceProductReviewMapper.toDto(serviceProductReview);
     }
