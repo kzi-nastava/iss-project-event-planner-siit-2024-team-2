@@ -25,7 +25,7 @@ public class ServiceController {
         return ResponseEntity.ok(serviceService.getAll());
     }
 
-    @GetMapping(value = "{id}")
+    @GetMapping(value = "/{id}")
     public ResponseEntity<ServiceDto> getServiceById(@PathVariable("id") Long id) {
         ServiceDto serviceDto = serviceService.getById(id);
 

@@ -14,8 +14,8 @@ import com.example.eventplanner.model.serviceproduct.ServiceProductCategory;
 
 @org.springframework.stereotype.Service
 public class ServiceService {
-	private static AtomicLong counter = new AtomicLong();
-	private HashMap<Long, Service> services = new HashMap<>();
+	private final static AtomicLong counter = new AtomicLong();
+	private final HashMap<Long, Service> services = new HashMap<>();
 
 	public Collection<ServiceDto> getAll() {
 		return services.values().stream().filter(Entity::isActive).map(ServiceMapper::toDto).toList();
@@ -71,7 +71,6 @@ public class ServiceService {
 				.filter(service -> eventTypes == null || service.getAvailableEventTypes().stream().map(EventType::getName).anyMatch(eventTypes::contains))
 				.filter(service -> available == null || available == service.isAvailable())
 				.filter(service -> (minPrice == null || minPrice <= service.getPrice()) && (maxPrice == null || maxPrice >= service.getPrice()))
-
 				.map(ServiceMapper::toDto).toList();
 	}
 }
