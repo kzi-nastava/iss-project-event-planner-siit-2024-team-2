@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/favouriteEvents")
+@RequestMapping("/api/favourite-events")
 @RequiredArgsConstructor()
 public class FavouriteEventsController {
     private final FavouriteEventsService favouriteEventsService;
