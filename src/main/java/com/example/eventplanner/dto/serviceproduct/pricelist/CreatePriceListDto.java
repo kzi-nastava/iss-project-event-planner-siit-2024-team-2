@@ -1,4 +1,4 @@
-package com.example.eventplanner.dto.serviceproduct;
+package com.example.eventplanner.dto.serviceproduct.pricelist;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
