@@ -21,5 +21,5 @@ public class Event extends Entity {
     private Date date;
     private List<Activity> activities;
     private List<Budget> budgets;
-    private Date date;
+    //private Date date;
 }
