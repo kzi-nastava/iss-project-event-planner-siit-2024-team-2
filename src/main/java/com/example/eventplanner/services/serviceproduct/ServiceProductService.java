@@ -19,6 +19,8 @@ import java.util.concurrent.atomic.AtomicLong;
 public class ServiceProductService {
     private final static AtomicLong counter = new AtomicLong();
     private final HashMap<Long, ServiceProduct> serviceProducts = new HashMap<>();
+
+
     public ServiceProductService() {}
 
     public List<ServiceProduct> getTop5() {

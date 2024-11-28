@@ -13,4 +13,5 @@ public class UserReport extends Entity {
     private User reporter;
     private User reported;
     private Date dateApproved;
+    private String reason;
 }
