@@ -4,6 +4,7 @@ import com.example.eventplanner.dto.event.event.EventDto;
 import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductDto;
 import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductNoIdDto;
 import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductSummaryDto;
+import com.example.eventplanner.model.serviceproduct.ServiceProduct;
 import com.example.eventplanner.services.serviceproduct.ServiceProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

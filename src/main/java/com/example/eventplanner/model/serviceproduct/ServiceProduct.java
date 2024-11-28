@@ -7,6 +7,8 @@ import com.example.eventplanner.model.event.EventType;
 import com.example.eventplanner.model.user.ServiceProductProvider;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
