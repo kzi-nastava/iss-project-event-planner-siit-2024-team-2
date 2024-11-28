@@ -21,7 +21,7 @@ public class UserReportMapper {
         return new UserReportNoIdDto(
                 userReport.getReporter().getId(),
                 userReport.getReported().getId(),
-                userReport.getDateApproved()
+                userReport.getDateApproved(),
                 userReport.getReason()
         );
     }
