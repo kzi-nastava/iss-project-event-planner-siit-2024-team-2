@@ -1,27 +1,13 @@
 package com.example.eventplanner.controllers.serviceproduct;
 
-import com.example.eventplanner.dto.serviceproduct.CreateServiceDto;
-import com.example.eventplanner.dto.serviceproduct.ServiceDto;
-import com.example.eventplanner.model.event.Event;
-import com.example.eventplanner.model.serviceproduct.Service;
 import com.example.eventplanner.model.serviceproduct.ServiceProduct;
 import com.example.eventplanner.services.serviceproduct.ServiceProductService;
-import com.example.eventplanner.services.serviceproduct.ServiceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
-import com.example.eventplanner.model.event.Event;
-import com.example.eventplanner.model.serviceproduct.ServiceProduct;
-import com.example.eventplanner.services.serviceproduct.ServiceProductService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 

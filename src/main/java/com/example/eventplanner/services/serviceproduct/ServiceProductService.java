@@ -1,15 +1,13 @@
 package com.example.eventplanner.services.serviceproduct;
 
-import com.example.eventplanner.dto.serviceproduct.CreateServiceDto;
-import com.example.eventplanner.dto.serviceproduct.ServiceDto;
-import com.example.eventplanner.dto.serviceproduct.ServiceMapper;
-import com.example.eventplanner.model.Entity;
-import com.example.eventplanner.model.event.Event;
+
+import com.example.eventplanner.dto.serviceproduct.product.ProductDto;
+import com.example.eventplanner.dto.serviceproduct.product.ProductMapper;
+import com.example.eventplanner.model.serviceproduct.Product;
 import com.example.eventplanner.model.serviceproduct.ServiceProduct;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
-
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -17,9 +15,9 @@ import java.util.concurrent.atomic.AtomicLong;
 @Getter
 @Setter
 public class ServiceProductService {
+
     private final static AtomicLong counter = new AtomicLong();
     private final HashMap<Long, ServiceProduct> serviceProducts = new HashMap<>();
-
 
     public ServiceProductService() {}
 
@@ -29,6 +27,7 @@ public class ServiceProductService {
                 .limit(5)
                 .toList();
     }
+
 
     // it could be used DTO, but getAll isn't necessary now
     // you should set isActive attribute
