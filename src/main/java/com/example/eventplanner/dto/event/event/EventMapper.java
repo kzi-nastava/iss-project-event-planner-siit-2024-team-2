@@ -40,6 +40,22 @@ public class EventMapper {
         );
     }
 
+    public static EventSummaryDto toSummaryDto(Event event) {
+        if (event == null)
+            return null;
+        return new EventSummaryDto(
+                event.getId(),
+                event.getName(),
+                event.getDescription(),
+                event.getType().getId(),
+                event.getMaxAttendances(),
+                event.isOpen(),
+                event.getLongitude(),
+                event.getLatitude(),
+                event.getDate()
+        );
+    }
+
     public static Event toEntity(EventDto dto) {
         if (dto == null)
             return null;
@@ -76,4 +92,5 @@ public class EventMapper {
         event.setActive(true);
         return event;
     }
+
 }

@@ -1,7 +1,11 @@
 package com.example.eventplanner.services.event;
 
+import com.example.eventplanner.dto.event.event.EventSummaryDto;
 import com.example.eventplanner.model.event.Event;
-import com.example.eventplanner.model.event.EventReview;
+import com.example.eventplanner.model.order.Booking;
+import com.example.eventplanner.model.order.Purchase;
+import com.example.eventplanner.services.order.BookingService;
+import com.example.eventplanner.services.order.PurchaseService;
 import lombok.Getter;
 import com.example.eventplanner.dto.event.activity.ActivityDto;
 import com.example.eventplanner.dto.event.activity.ActivityMapper;
@@ -10,10 +14,8 @@ import com.example.eventplanner.dto.event.event.EventMapper;
 import com.example.eventplanner.dto.event.event.EventNoIdDto;
 import com.example.eventplanner.model.Entity;
 import com.example.eventplanner.model.event.Activity;
-import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.event.EventType;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
 
@@ -23,10 +25,12 @@ import java.util.stream.Stream;
 @Service
 @Getter
 @Setter
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class EventService {
     Map<Long, Event> events = new HashMap<>();
     private long idCounter = 0;
+    private final PurchaseService purchaseService;
+    private final BookingService bookingService;
 
     public List<EventDto> getAll() {
         return events.values()
@@ -84,11 +88,13 @@ public class EventService {
         return true;
     }
 
-    public List<Event> getTop5() {
+    public Collection<EventSummaryDto> getTop5() {
         return events.values()
                 .stream()
+                .filter(Entity::isActive)
                 .sorted(Comparator.comparing(Event::getDate))
                 .limit(5)
+                .map(EventMapper::toSummaryDto)
                 .toList();
     }
 
@@ -98,18 +104,19 @@ public class EventService {
             List<Double> longitudes, List<Double> latitudes, Double maxDistance,
             Date startDate, Date endDate) {
         Stream<Event> filtered = events.values().stream()
+                .filter(Entity::isActive)
                 .filter(event -> name == null || name.isEmpty() || event.getName().toLowerCase().contains(name.toLowerCase()))
                 .filter(event -> description == null || description.isEmpty()
                         || event.getDescription().toLowerCase().contains(description.toLowerCase()))
                 .filter(event -> type == null || type.isEmpty() || event.getType().getName().equals(type))
-                .filter(event -> minMaxAttendances == null || event.getMaxAttendances() > maxMaxAttendances)
-                .filter(event -> maxMaxAttendances == null || event.getMaxAttendances() < maxMaxAttendances)
+                .filter(event -> minMaxAttendances == null || event.getMaxAttendances() >= maxMaxAttendances)
+                .filter(event -> maxMaxAttendances == null || event.getMaxAttendances() <= maxMaxAttendances)
                 .filter(event -> open == null || event.isOpen() == open)
                 .filter(event -> latitudes == null || longitudes == null || latitudes.size() != longitudes.size()
                         || isEventNearAnyCity(event, longitudes, latitudes, maxDistance))
                 .filter(event -> startDate == null || event.getDate().after(startDate))
                 .filter(event -> endDate == null || event.getDate().before(endDate));
-        if (size != null)
+        if (size != null && size > 0)
             filtered = filtered.skip((long) page * size).limit(size);
         return filtered.map(EventMapper::toDto).toList();
     }
@@ -147,5 +154,19 @@ public class EventService {
         List<Activity> activities = activityDtos.stream().map(ActivityMapper::toEntity).toList();
         event.setActivities(activities);
         return true;
+    }
+
+    public List<Purchase> getPurchases(long id) {
+        return purchaseService.getPurchases().values()
+                .stream()
+                .filter(purchase -> purchase.getEvent().getId() == id)
+                .toList();
+    }
+
+    public List<Booking> getBookings(long id) {
+        return bookingService.getBookings().values()
+                .stream()
+                .filter(booking -> booking.getEvent().getId() == id)
+                .toList();
     }
 }
