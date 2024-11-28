@@ -1,5 +1,12 @@
 package com.example.eventplanner.services.user;
 
+import com.example.eventplanner.model.user.UserReport;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 import com.example.eventplanner.dto.user.userReport.UserReportDto;
 import com.example.eventplanner.dto.user.userReport.UserReportMapper;
 import com.example.eventplanner.dto.user.userReport.UserReportNoIdDto;
@@ -18,6 +25,7 @@ import java.util.Map;
 @Service
 @Getter
 @Setter
+
 @NoArgsConstructor
 public class UserReportService {
     Map<Long, UserReport> userReports = new HashMap<>();

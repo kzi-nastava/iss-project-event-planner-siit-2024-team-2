@@ -1,5 +1,8 @@
 package com.example.eventplanner.services.event;
 
+import com.example.eventplanner.model.event.Event;
+import com.example.eventplanner.model.event.EventReview;
+import lombok.Getter;
 import com.example.eventplanner.dto.event.activity.ActivityDto;
 import com.example.eventplanner.dto.event.activity.ActivityMapper;
 import com.example.eventplanner.dto.event.event.EventDto;

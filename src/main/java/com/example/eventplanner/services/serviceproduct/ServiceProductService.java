@@ -1,22 +1,24 @@
 package com.example.eventplanner.services.serviceproduct;
 
+
 import com.example.eventplanner.dto.serviceproduct.product.ProductDto;
 import com.example.eventplanner.dto.serviceproduct.product.ProductMapper;
-import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.serviceproduct.Product;
 import com.example.eventplanner.model.serviceproduct.ServiceProduct;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
-
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 @Getter
 @Setter
 public class ServiceProductService {
-    Map<Long, ServiceProduct> serviceProducts = new HashMap<>();
-    private long idCounter = 0;
+
+    private final static AtomicLong counter = new AtomicLong();
+    private final HashMap<Long, ServiceProduct> serviceProducts = new HashMap<>();
+
     public ServiceProductService() {}
 
     public List<ServiceProduct> getTop5() {
@@ -26,20 +28,24 @@ public class ServiceProductService {
                 .toList();
     }
 
-    public ProductDto createProduct(ProductDto productDto) {
-        Product product = ProductMapper.toEntity(productDto);
-        serviceProducts.put(++idCounter, product);
-        return ProductMapper.toDto(product);
-    }
-    public ProductDto updateProduct(long id, ProductDto productDto) {
-        Product product = (Product) serviceProducts.get(id);
-        if (product == null || !product.isActive())
-            return null;
-        product.setName(product.getName());
-        product.setAvailable(product.isAvailable());
-        product.setDescription(product.getDescription());
-        product.setPrice(product.getPrice());
 
-        return ProductMapper.toDto(product);
+    // it could be used DTO, but getAll isn't necessary now
+    // you should set isActive attribute
+    public Collection<ServiceProduct> getAll() {
+        return serviceProducts.values().stream().toList();
+    }
+
+    public ServiceProduct getDetailsById(Long id) {
+        ServiceProduct serviceProduct = serviceProducts.get(id);
+        if (serviceProduct != null)
+            return serviceProduct;
+        return null;
+    }
+
+    public ServiceProduct create(ServiceProduct serviceProduct) {
+        long id = counter.incrementAndGet();
+        serviceProduct.setId(id);
+        serviceProducts.put(id, serviceProduct);
+        return serviceProduct;
     }
 }

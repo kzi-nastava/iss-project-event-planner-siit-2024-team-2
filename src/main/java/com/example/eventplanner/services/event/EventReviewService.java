@@ -2,6 +2,8 @@ package com.example.eventplanner.services.event;
 
 import com.example.eventplanner.dto.event.eventreview.*;
 import com.example.eventplanner.model.Entity;
+import com.example.eventplanner.model.event.EventReview;
+import com.example.eventplanner.model.utils.ReviewStatus;
 import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.event.EventReview;
 import com.example.eventplanner.model.user.User;
