@@ -1,9 +1,6 @@
 package com.example.eventplanner.dto.order.purchase;
 
-import com.example.eventplanner.dto.user.purchase.PurchaseDto;
-import com.example.eventplanner.dto.user.purchase.PurchaseNoIdDto;
 import com.example.eventplanner.model.order.Purchase;
-import com.example.eventplanner.model.user.Purchase;
 
 public class PurchaseMapper {
     public static PurchaseDto toDto(Purchase purchase) {
