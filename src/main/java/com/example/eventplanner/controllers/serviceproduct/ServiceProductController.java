@@ -1,30 +1,18 @@
 package com.example.eventplanner.controllers.serviceproduct;
 
-import com.example.eventplanner.dto.serviceproduct.CreateServiceDto;
-import com.example.eventplanner.dto.serviceproduct.ServiceDto;
+import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductDto;
+import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductNoIdDto;
 import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductSummaryDto;
-import com.example.eventplanner.model.event.Event;
-import com.example.eventplanner.model.serviceproduct.Service;
-import com.example.eventplanner.model.serviceproduct.ServiceProduct;
 import com.example.eventplanner.services.serviceproduct.ServiceProductService;
-import com.example.eventplanner.services.serviceproduct.ServiceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
-import com.example.eventplanner.model.event.Event;
-import com.example.eventplanner.model.serviceproduct.ServiceProduct;
-import com.example.eventplanner.services.serviceproduct.ServiceProductService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/service-products")
@@ -40,24 +28,31 @@ public class ServiceProductController {
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @PostMapping()
-    public ResponseEntity<ServiceProduct> createServiceProduct(@RequestBody ServiceProduct serviceProduct) {
-        return ResponseEntity.ok(serviceProductService.create(serviceProduct));
-    }
-
-    @GetMapping()
-    public ResponseEntity<Collection<ServiceProduct>> getAllServiceProduct() {
-        return ResponseEntity.ok(serviceProductService.getAll());
+    @GetMapping
+    public ResponseEntity<Collection<ServiceProductDto>> getServiceProducts() {
+        Collection<ServiceProductDto> result = serviceProductService.getAll();
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<ServiceProduct> getServiceProductDetailsById(@PathVariable("id") Long id) {
-        ServiceProduct serviceProduct = serviceProductService.getDetailsById(id);
+    public ResponseEntity<ServiceProductDto> getServiceProductById(@PathVariable("id") Long id) {
+        ServiceProductDto result = serviceProductService.getById(id);
+        return result != null ?
+                new ResponseEntity<>(result, HttpStatus.OK) :
+                new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
 
-        if (serviceProduct == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+    @PostMapping
+    public ResponseEntity<ServiceProductDto> createServiceProduct(@RequestBody ServiceProductNoIdDto dto) {
+        ServiceProductDto result = serviceProductService.create(dto);
+        return new ResponseEntity<>(result, HttpStatus.CREATED);
+    }
 
-        return ResponseEntity.ok(serviceProduct);
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<ServiceProductDto> deleteServiceProduct(@PathVariable("id") Long id) {
+        boolean success = serviceProductService.delete(id);
+        return success ?
+                new ResponseEntity<>(HttpStatus.NO_CONTENT) :
+                new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }
