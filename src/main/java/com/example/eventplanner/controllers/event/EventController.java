@@ -6,6 +6,8 @@ import com.example.eventplanner.dto.event.event.EventNoIdDto;
 import com.example.eventplanner.dto.event.event.EventSummaryDto;
 import com.example.eventplanner.model.event.Activity;
 import com.example.eventplanner.model.event.Event;
+import com.example.eventplanner.model.order.Booking;
+import com.example.eventplanner.model.order.Purchase;
 import com.example.eventplanner.model.serviceproduct.Service;
 import com.example.eventplanner.services.event.EventService;
 import lombok.RequiredArgsConstructor;
@@ -91,4 +93,22 @@ public class EventController {
                 ? ResponseEntity.ok(activities)
                 : ResponseEntity.badRequest().build();
     }
+
+    @GetMapping(value = "/{id}/purchases")
+    public ResponseEntity<List<Purchase>> getPurchases(@PathVariable("id") Long id) {
+        List<Purchase> result = eventService.getPurchases(id);
+        return result != null ?
+            new ResponseEntity<>(result, HttpStatus.OK) :
+            new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @GetMapping(value = "/{id}/bookings")
+    public ResponseEntity<List<Booking>> getBookings(@PathVariable("id") Long id) {
+        List<Booking> result = eventService.getBookings(id);
+        return result != null ?
+                new ResponseEntity<>(result, HttpStatus.OK) :
+                new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+
 }

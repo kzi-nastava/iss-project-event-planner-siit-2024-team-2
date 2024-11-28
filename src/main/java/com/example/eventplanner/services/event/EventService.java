@@ -2,6 +2,10 @@ package com.example.eventplanner.services.event;
 
 import com.example.eventplanner.dto.event.event.EventSummaryDto;
 import com.example.eventplanner.model.event.Event;
+import com.example.eventplanner.model.order.Booking;
+import com.example.eventplanner.model.order.Purchase;
+import com.example.eventplanner.services.order.BookingService;
+import com.example.eventplanner.services.order.PurchaseService;
 import lombok.Getter;
 import com.example.eventplanner.dto.event.activity.ActivityDto;
 import com.example.eventplanner.dto.event.activity.ActivityMapper;
@@ -11,7 +15,7 @@ import com.example.eventplanner.dto.event.event.EventNoIdDto;
 import com.example.eventplanner.model.Entity;
 import com.example.eventplanner.model.event.Activity;
 import com.example.eventplanner.model.event.EventType;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
 
@@ -21,10 +25,12 @@ import java.util.stream.Stream;
 @Service
 @Getter
 @Setter
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class EventService {
     Map<Long, Event> events = new HashMap<>();
     private long idCounter = 0;
+    private final PurchaseService purchaseService;
+    private final BookingService bookingService;
 
     public List<EventDto> getAll() {
         return events.values()
@@ -146,5 +152,19 @@ public class EventService {
         List<Activity> activities = activityDtos.stream().map(ActivityMapper::toEntity).toList();
         event.setActivities(activities);
         return true;
+    }
+
+    public List<Purchase> getPurchases(long id) {
+        return purchaseService.getPurchases().values()
+                .stream()
+                .filter(purchase -> purchase.getEvent().getId() == id)
+                .toList();
+    }
+
+    public List<Booking> getBookings(long id) {
+        return bookingService.getBookings().values()
+                .stream()
+                .filter(booking -> booking.getEvent().getId() == id)
+                .toList();
     }
 }
