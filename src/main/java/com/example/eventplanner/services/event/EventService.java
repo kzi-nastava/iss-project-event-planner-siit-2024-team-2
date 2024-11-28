@@ -91,6 +91,7 @@ public class EventService {
     public Collection<EventSummaryDto> getTop5() {
         return events.values()
                 .stream()
+                .filter(Entity::isActive)
                 .sorted(Comparator.comparing(Event::getDate))
                 .limit(5)
                 .map(EventMapper::toSummaryDto)
@@ -103,18 +104,19 @@ public class EventService {
             List<Double> longitudes, List<Double> latitudes, Double maxDistance,
             Date startDate, Date endDate) {
         Stream<Event> filtered = events.values().stream()
+                .filter(Entity::isActive)
                 .filter(event -> name == null || name.isEmpty() || event.getName().toLowerCase().contains(name.toLowerCase()))
                 .filter(event -> description == null || description.isEmpty()
                         || event.getDescription().toLowerCase().contains(description.toLowerCase()))
                 .filter(event -> type == null || type.isEmpty() || event.getType().getName().equals(type))
-                .filter(event -> minMaxAttendances == null || event.getMaxAttendances() > maxMaxAttendances)
-                .filter(event -> maxMaxAttendances == null || event.getMaxAttendances() < maxMaxAttendances)
+                .filter(event -> minMaxAttendances == null || event.getMaxAttendances() >= maxMaxAttendances)
+                .filter(event -> maxMaxAttendances == null || event.getMaxAttendances() <= maxMaxAttendances)
                 .filter(event -> open == null || event.isOpen() == open)
                 .filter(event -> latitudes == null || longitudes == null || latitudes.size() != longitudes.size()
                         || isEventNearAnyCity(event, longitudes, latitudes, maxDistance))
                 .filter(event -> startDate == null || event.getDate().after(startDate))
                 .filter(event -> endDate == null || event.getDate().before(endDate));
-        if (size != null)
+        if (size != null && size > 0)
             filtered = filtered.skip((long) page * size).limit(size);
         return filtered.map(EventMapper::toDto).toList();
     }

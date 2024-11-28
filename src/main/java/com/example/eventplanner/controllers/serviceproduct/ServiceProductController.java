@@ -1,5 +1,6 @@
 package com.example.eventplanner.controllers.serviceproduct;
 
+import com.example.eventplanner.dto.event.event.EventDto;
 import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductDto;
 import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductNoIdDto;
 import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductSummaryDto;
@@ -10,6 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,8 +33,21 @@ public class ServiceProductController {
     }
 
     @GetMapping
-    public ResponseEntity<Collection<ServiceProductDto>> getServiceProducts() {
-        Collection<ServiceProductDto> result = serviceProductService.getAll();
+    public ResponseEntity<Collection<ServiceProductDto>> getServiceProducts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) Integer size,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String description,
+            @RequestParam(required = false) List<Long> categoryIds,
+            @RequestParam(required = false) Boolean available,
+            @RequestParam(required = false) Boolean visible,
+            @RequestParam(required = false) Integer minPrice,
+            @RequestParam(required = false) Integer maxPrice,
+            @RequestParam(required = false) List<Long> availableEventTypeIds,
+            @RequestParam(required = false) Long serviceProductProviderId) {
+        Collection<ServiceProductDto> result = serviceProductService.getAllFilteredPaginated(
+                page, size, name, description, categoryIds, available, visible,
+                minPrice, maxPrice, availableEventTypeIds, serviceProductProviderId);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
