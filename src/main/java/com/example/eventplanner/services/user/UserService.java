@@ -7,6 +7,7 @@ import com.example.eventplanner.dto.user.user.RegisterUserDto;
 import com.example.eventplanner.dto.user.user.UserMapper;
 import com.example.eventplanner.dto.user.user.RegisterEventOrganizerDto;
 import com.example.eventplanner.dto.user.user.RegisterServiceProductProviderDto;
+import com.example.eventplanner.dto.user.userReport.UserReportDto;
 import com.example.eventplanner.model.Entity;
 import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.user.Admin;
@@ -14,8 +15,10 @@ import com.example.eventplanner.model.user.EventOrganizer;
 import com.example.eventplanner.model.user.ServiceProductProvider;
 import com.example.eventplanner.model.user.User;
 import com.example.eventplanner.model.utils.UserRole;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +27,10 @@ import java.util.Map;
 public class UserService {
     private final Map<Long, User> users = new HashMap<>();
     private long idCounter = 0;
-    public UserService() {
+    private final UserReportService userReportService;
+    @Autowired
+    public UserService(UserReportService userReportService) {
+        this.userReportService = userReportService;
         //Admin
         Admin admin = new Admin();
         admin.setId(++idCounter);
@@ -162,12 +168,14 @@ public class UserService {
         user.setActive(false);
         return true;
     }
+
     public RegisterUserDto login(LoginDto loginDto) {
         return UserMapper.toDto(users.values().stream()
                 .filter(u -> u.getEmail().equals(loginDto.getEmail()) && u.getPassword().equals(loginDto.getPassword()))
                 .findFirst()
                 .orElse(null));
     }
+
     public boolean resetPassword(ResetPasswordDto resetPasswordDto) {
         User user = users.get(resetPasswordDto.getUserId());
         if (user == null || !user.isActive() || !user.getPassword().equals(resetPasswordDto.getOldPassword())) {
@@ -175,6 +183,14 @@ public class UserService {
         }
         user.setPassword(resetPasswordDto.getNewPassword());
         return true;
+    }
+
+    public Collection<UserReportDto> getUserReports(long id, Boolean approved) {
+        return userReportService.getAll()
+                .stream()
+                .filter(report -> report.getReportedId() == id)
+                .filter(report -> approved == null || approved == (report.getDateApproved() != null))
+                .toList();
     }
 }
 

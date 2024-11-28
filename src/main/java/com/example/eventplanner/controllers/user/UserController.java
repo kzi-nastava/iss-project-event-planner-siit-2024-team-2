@@ -2,12 +2,19 @@
 package com.example.eventplanner.controllers.user;
 
 import com.example.eventplanner.dto.user.user.*;
+import com.example.eventplanner.dto.user.user.RegisterEventOrganizerDto;
+import com.example.eventplanner.dto.user.user.RegisterServiceProductProviderDto;
+import com.example.eventplanner.dto.user.user.RegisterUserDto;
+import com.example.eventplanner.dto.user.userReport.UserReportDto;
 import com.example.eventplanner.model.user.EventOrganizer;
 import com.example.eventplanner.model.user.User;
 import com.example.eventplanner.services.user.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Collection;
 import java.util.List;
 
 @RestController
@@ -72,5 +79,13 @@ public class UserController {
         return success
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.notFound().build();
+    }
+    @GetMapping("/{id}/reports")
+    public ResponseEntity<Collection<UserReportDto>> getUserReports(@PathVariable long id,
+                                                                    @RequestParam(required = false) Boolean approved) {
+        Collection<UserReportDto> result = userService.getUserReports(id, approved);
+        return result != null ?
+                new ResponseEntity<>(result, HttpStatus.OK) :
+                new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }
