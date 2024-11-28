@@ -1,7 +1,7 @@
 package com.example.eventplanner.services.event;
 
+import com.example.eventplanner.dto.event.event.EventSummaryDto;
 import com.example.eventplanner.model.event.Event;
-import com.example.eventplanner.model.event.EventReview;
 import lombok.Getter;
 import com.example.eventplanner.dto.event.activity.ActivityDto;
 import com.example.eventplanner.dto.event.activity.ActivityMapper;
@@ -10,14 +10,13 @@ import com.example.eventplanner.dto.event.event.EventMapper;
 import com.example.eventplanner.dto.event.event.EventNoIdDto;
 import com.example.eventplanner.model.Entity;
 import com.example.eventplanner.model.event.Activity;
-import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.event.EventType;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 @Service
 @Getter
@@ -83,11 +82,12 @@ public class EventService {
         return true;
     }
 
-    public List<Event> getTop5() {
+    public Collection<EventSummaryDto> getTop5() {
         return events.values()
                 .stream()
                 .sorted(Comparator.comparing(Event::getDate))
                 .limit(5)
+                .map(EventMapper::toSummaryDto)
                 .toList();
     }
 

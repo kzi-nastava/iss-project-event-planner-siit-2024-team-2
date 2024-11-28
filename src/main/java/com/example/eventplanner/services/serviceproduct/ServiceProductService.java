@@ -1,10 +1,7 @@
 package com.example.eventplanner.services.serviceproduct;
 
-import com.example.eventplanner.dto.serviceproduct.CreateServiceDto;
-import com.example.eventplanner.dto.serviceproduct.ServiceDto;
-import com.example.eventplanner.dto.serviceproduct.ServiceMapper;
-import com.example.eventplanner.model.Entity;
-import com.example.eventplanner.model.event.Event;
+import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductMapper;
+import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductSummaryDto;
 import com.example.eventplanner.model.serviceproduct.ServiceProduct;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,10 +20,11 @@ public class ServiceProductService {
 
     public ServiceProductService() {}
 
-    public List<ServiceProduct> getTop5() {
+    public Collection<ServiceProductSummaryDto> getTop5() {
         return serviceProducts.values()
                 .stream()
                 .limit(5)
+                .map(ServiceProductMapper::toSummaryDto)
                 .toList();
     }
 

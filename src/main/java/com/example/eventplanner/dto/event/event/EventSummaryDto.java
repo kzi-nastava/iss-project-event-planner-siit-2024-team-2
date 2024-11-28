@@ -1,7 +1,9 @@
-package com.example.eventplanner.model.event;
+package com.example.eventplanner.dto.event.event;
 
-import com.example.eventplanner.model.Entity;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.Date;
 import java.util.List;
@@ -10,15 +12,14 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Event extends Entity {
+public class EventSummaryDto {
+    private long id;
     private String name;
     private String description;
-    private EventType type;
+    private long typeId;
     private int maxAttendances;
-    private boolean open;
+    private boolean isOpen;
     private double longitude;
     private double latitude;
     private Date date;
-    private List<Activity> activities;
-    private List<Budget> budgets;
 }

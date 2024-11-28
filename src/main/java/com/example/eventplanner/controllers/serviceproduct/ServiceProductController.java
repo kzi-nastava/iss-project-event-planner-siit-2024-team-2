@@ -2,6 +2,7 @@ package com.example.eventplanner.controllers.serviceproduct;
 
 import com.example.eventplanner.dto.serviceproduct.CreateServiceDto;
 import com.example.eventplanner.dto.serviceproduct.ServiceDto;
+import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductSummaryDto;
 import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.serviceproduct.Service;
 import com.example.eventplanner.model.serviceproduct.ServiceProduct;
@@ -32,9 +33,11 @@ public class ServiceProductController {
     private final ServiceProductService serviceProductService;
 
     @GetMapping(value = "/top5")
-    public ResponseEntity<List<ServiceProduct>> getTop5() {
-        List<ServiceProduct> top5 = serviceProductService.getTop5();
-        return new ResponseEntity<>(top5, HttpStatus.OK);
+    public ResponseEntity<Collection<ServiceProductSummaryDto>> getTop5() {
+        Collection<ServiceProductSummaryDto> result = serviceProductService.getTop5();
+        return result != null ?
+                new ResponseEntity<>(result, HttpStatus.OK) :
+                new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @PostMapping()
