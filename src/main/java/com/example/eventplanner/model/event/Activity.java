@@ -9,6 +9,7 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@jakarta.persistence.Entity
 public class Activity extends Entity {
     private String name;
     private Date activityStart;
