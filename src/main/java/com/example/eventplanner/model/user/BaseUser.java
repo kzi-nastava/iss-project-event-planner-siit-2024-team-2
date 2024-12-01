@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @jakarta.persistence.Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public class User extends Entity {
+public class BaseUser extends Entity {
     private String email;
     private String password;
     private UserRole userRole;
@@ -22,5 +22,5 @@ public class User extends Entity {
     private String address;
     private String phoneNumber;
     @ManyToMany
-    private List<User> blockedUsers;
+    private List<BaseUser> blockedUsers;
 }

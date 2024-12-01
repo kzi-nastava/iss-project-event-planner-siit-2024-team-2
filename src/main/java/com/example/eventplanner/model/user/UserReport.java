@@ -2,7 +2,6 @@ package com.example.eventplanner.model.user;
 
 import com.example.eventplanner.model.Entity;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import lombok.*;
 
 import java.util.Date;
@@ -14,9 +13,9 @@ import java.util.Date;
 @jakarta.persistence.Entity
 public class UserReport extends Entity {
     @ManyToOne
-    private User reporter;
+    private BaseUser reporter;
     @ManyToOne
-    private User reported;
+    private BaseUser reported;
     private Date dateApproved;
     private String reason;
 }

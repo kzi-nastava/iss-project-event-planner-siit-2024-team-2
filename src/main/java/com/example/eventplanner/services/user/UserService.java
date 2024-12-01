@@ -9,11 +9,10 @@ import com.example.eventplanner.dto.user.user.RegisterEventOrganizerDto;
 import com.example.eventplanner.dto.user.user.RegisterServiceProductProviderDto;
 import com.example.eventplanner.dto.user.userReport.UserReportDto;
 import com.example.eventplanner.model.Entity;
-import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.user.Admin;
 import com.example.eventplanner.model.user.EventOrganizer;
 import com.example.eventplanner.model.user.ServiceProductProvider;
-import com.example.eventplanner.model.user.User;
+import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.utils.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,7 +24,7 @@ import java.util.Map;
 
 @Service
 public class UserService {
-    private final Map<Long, User> users = new HashMap<>();
+    private final Map<Long, BaseUser> users = new HashMap<>();
     private long idCounter = 0;
     private final UserReportService userReportService;
     @Autowired
@@ -120,7 +119,7 @@ public class UserService {
     }
 
     public RegisterEventOrganizerDto getEventOrganizerById(long id) {
-        User user = users.get(id);
+        BaseUser user = users.get(id);
         if (user == null || !user.isActive() || user.getUserRole() != UserRole.EVENT_ORGANIZER) {
             return null;
         }
@@ -128,7 +127,7 @@ public class UserService {
     }
 
     public RegisterServiceProductProviderDto getServiceProductProviderById(long id) {
-        User user = users.get(id);
+        BaseUser user = users.get(id);
         if (user == null || !user.isActive() || user.getUserRole() != UserRole.SERVICE_PRODUCT_PROVIDER) {
             return null;
         }
@@ -161,7 +160,7 @@ public class UserService {
     }
 
     public boolean delete(long id) {
-        User user = users.get(id);
+        BaseUser user = users.get(id);
         if (user == null || !user.isActive()) {
             return false;
         }
@@ -177,7 +176,7 @@ public class UserService {
     }
 
     public boolean resetPassword(ResetPasswordDto resetPasswordDto) {
-        User user = users.get(resetPasswordDto.getUserId());
+        BaseUser user = users.get(resetPasswordDto.getUserId());
         if (user == null || !user.isActive() || !user.getPassword().equals(resetPasswordDto.getOldPassword())) {
             return false;
         }

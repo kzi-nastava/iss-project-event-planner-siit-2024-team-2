@@ -1,7 +1,7 @@
 package com.example.eventplanner.model.serviceproduct;
 
 import com.example.eventplanner.model.Entity;
-import com.example.eventplanner.model.user.User;
+import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.utils.ReviewStatus;
 import jakarta.persistence.ManyToOne;
 import lombok.*;
@@ -17,6 +17,6 @@ public class ServiceProductReview extends Entity {
     @ManyToOne
     private ServiceProduct serviceProduct;
     @ManyToOne
-    private User user;
+    private BaseUser user;
     private ReviewStatus reviewStatus;
 }

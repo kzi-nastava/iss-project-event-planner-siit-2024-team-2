@@ -1,6 +1,5 @@
 package com.example.eventplanner.model.user;
 
-import com.example.eventplanner.model.event.EventType;
 import com.example.eventplanner.model.serviceproduct.ServiceProductCategory;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToMany;
@@ -14,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class ServiceProductProvider extends User {
+public class ServiceProductProvider extends BaseUser {
     private String companyName;
     private String companyDescription;
     @ManyToMany

@@ -1,7 +1,7 @@
 package com.example.eventplanner.model.event;
 
 import com.example.eventplanner.model.Entity;
-import com.example.eventplanner.model.user.User;
+import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.utils.ReviewStatus;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.ManyToOne;
@@ -16,7 +16,7 @@ public class EventReview extends Entity {
     private int grade;
     private String comment;
     @ManyToOne(cascade = {CascadeType.ALL})
-    private User user;
+    private BaseUser user;
     @ManyToOne(cascade = {CascadeType.ALL})
     private Event event;
     private ReviewStatus reviewStatus;

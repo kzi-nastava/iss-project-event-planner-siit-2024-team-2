@@ -2,13 +2,12 @@ package com.example.eventplanner.dto.user.user;
 
 import com.example.eventplanner.model.user.EventOrganizer;
 import com.example.eventplanner.model.user.ServiceProductProvider;
-import com.example.eventplanner.model.user.User;
+import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.utils.UserRole;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public class UserMapper {
     //private static final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-    public static RegisterUserDto toDto(User entity) {
+    public static RegisterUserDto toDto(BaseUser entity) {
         if (entity == null) {
             return null;
         }

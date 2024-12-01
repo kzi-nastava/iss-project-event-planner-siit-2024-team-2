@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class EventOrganizer extends User {
+public class EventOrganizer extends BaseUser {
     @ManyToMany
     private List<ServiceProduct> favoriteServiceProducts;
 }

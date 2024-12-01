@@ -16,5 +16,5 @@ public class Notification extends Entity {
     private Date dateSent;
     private boolean seen;
     @ManyToOne
-    private User user;
+    private BaseUser user;
 }
