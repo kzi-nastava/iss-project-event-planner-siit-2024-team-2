@@ -6,7 +6,7 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Java CI with Maven
+name: Build Spring with Maven
 
 on:
   push:
@@ -29,7 +29,5 @@ jobs:
           cache: maven
       - name: Build with Maven
         run: mvn -B package --file pom.xml
-      - uses: actions/upload-artifact@v3
-        with:
-          name: event_planner
-          path: event_planner
+      - name: Move jar file
+        run: pwd
