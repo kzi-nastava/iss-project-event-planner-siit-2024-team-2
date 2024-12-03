@@ -10,7 +10,7 @@ name: Java CI with Maven
 
 on:
   push:
-    branches: [ "develop" ]
+    branches: [ "develop", "feat/9.6-github-workflow" ]
   pull_request:
     branches: [ "develop" ]
 
