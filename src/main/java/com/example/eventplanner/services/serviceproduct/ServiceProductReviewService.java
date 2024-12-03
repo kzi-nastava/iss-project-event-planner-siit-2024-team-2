@@ -1,12 +1,10 @@
 package com.example.eventplanner.services.serviceproduct;
 
-import com.example.eventplanner.dto.event.eventreview.EventReviewCommentDto;
-import com.example.eventplanner.dto.event.eventreview.EventReviewStatusDto;
 import com.example.eventplanner.dto.serviceproduct.serviceproductreview.*;
 import com.example.eventplanner.model.Entity;
 import com.example.eventplanner.model.serviceproduct.ServiceProduct;
 import com.example.eventplanner.model.serviceproduct.ServiceProductReview;
-import com.example.eventplanner.model.user.User;
+import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.utils.ReviewStatus;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -45,7 +43,7 @@ public class ServiceProductReviewService {
         serviceProductReview.setActive(true);
 
         // link user
-        User testUser = new User();
+        BaseUser testUser = new BaseUser();
         testUser.setId(dto.getUserId());
         serviceProductReview.setUser(testUser);
         // link serviceProduct
@@ -63,7 +61,7 @@ public class ServiceProductReviewService {
         ServiceProductReview serviceProductReview = ServiceProductReviewMapper.toEntity(dto);
 
         // link user
-        User testUser = new User();
+        BaseUser testUser = new BaseUser();
         testUser.setId(dto.getUserId());
         serviceProductReview.setUser(testUser);
         // link serviceProduct

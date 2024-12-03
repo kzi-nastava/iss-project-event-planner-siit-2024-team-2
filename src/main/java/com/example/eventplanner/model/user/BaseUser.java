@@ -2,6 +2,7 @@ package com.example.eventplanner.model.user;
 
 import com.example.eventplanner.model.Entity;
 import com.example.eventplanner.model.utils.UserRole;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
@@ -10,7 +11,9 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class User extends Entity {
+@jakarta.persistence.Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+public class BaseUser extends Entity {
     private String email;
     private String password;
     private UserRole userRole;
@@ -18,5 +21,6 @@ public class User extends Entity {
     private String lastName;
     private String address;
     private String phoneNumber;
-    private List<User> blockedUsers;
+    @ManyToMany
+    private List<BaseUser> blockedUsers;
 }

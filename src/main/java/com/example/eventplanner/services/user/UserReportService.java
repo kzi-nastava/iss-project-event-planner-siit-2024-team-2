@@ -5,21 +5,15 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import com.example.eventplanner.dto.user.userReport.UserReportDto;
 import com.example.eventplanner.dto.user.userReport.UserReportMapper;
 import com.example.eventplanner.dto.user.userReport.UserReportNoIdDto;
 import com.example.eventplanner.model.Entity;
-import com.example.eventplanner.model.user.User;
-import com.example.eventplanner.model.user.UserReport;
-import lombok.Getter;
+import com.example.eventplanner.model.user.BaseUser;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Service
@@ -51,11 +45,11 @@ public class UserReportService {
         userReport.setActive(true);
 
         // link reporter
-        User testReporter = new User();
+        BaseUser testReporter = new BaseUser();
         testReporter.setId(dto.getReporterId());
         userReport.setReporter(testReporter);
         // link reported
-        User testReported = new User();
+        BaseUser testReported = new BaseUser();
         testReported.setId(dto.getReportedId());
         userReport.setReported(testReported);
 
@@ -69,11 +63,11 @@ public class UserReportService {
         UserReport userReport = UserReportMapper.toEntity(dto);
 
         // link reporter
-        User testReporter = new User();
+        BaseUser testReporter = new BaseUser();
         testReporter.setId(dto.getReporterId());
         userReport.setReporter(testReporter);
         // link reported
-        User testReported = new User();
+        BaseUser testReported = new BaseUser();
         testReported.setId(dto.getReportedId());
         userReport.setReported(testReported);
 

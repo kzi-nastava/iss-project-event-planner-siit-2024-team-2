@@ -1,6 +1,7 @@
 package com.example.eventplanner.model.user;
 
 import com.example.eventplanner.model.Entity;
+import jakarta.persistence.ManyToOne;
 import lombok.*;
 
 import java.util.Date;
@@ -9,9 +10,12 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@jakarta.persistence.Entity
 public class UserReport extends Entity {
-    private User reporter;
-    private User reported;
+    @ManyToOne
+    private BaseUser reporter;
+    @ManyToOne
+    private BaseUser reported;
     private Date dateApproved;
     private String reason;
 }

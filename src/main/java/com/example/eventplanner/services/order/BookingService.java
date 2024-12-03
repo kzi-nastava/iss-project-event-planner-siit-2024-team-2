@@ -7,11 +7,9 @@ import com.example.eventplanner.model.Entity;
 import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.order.Booking;
 import com.example.eventplanner.model.serviceproduct.Service;
-import com.example.eventplanner.model.user.User;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

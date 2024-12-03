@@ -5,10 +5,7 @@ import com.example.eventplanner.model.Entity;
 import com.example.eventplanner.model.event.EventReview;
 import com.example.eventplanner.model.utils.ReviewStatus;
 import com.example.eventplanner.model.event.Event;
-import com.example.eventplanner.model.event.EventReview;
-import com.example.eventplanner.model.user.User;
-import com.example.eventplanner.model.utils.ReviewStatus;
-import com.example.eventplanner.model.utils.UserRole;
+import com.example.eventplanner.model.user.BaseUser;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -46,7 +43,7 @@ public class EventReviewService {
         eventReview.setActive(true);
 
         // link user
-        User testUser = new User();
+        BaseUser testUser = new BaseUser();
         testUser.setId(dto.getUserId());
         eventReview.setUser(testUser);
         // link event
@@ -64,7 +61,7 @@ public class EventReviewService {
         EventReview eventReview = EventReviewMapper.toEntity(dto);
 
         // link user
-        User testUser = new User();
+        BaseUser testUser = new BaseUser();
         testUser.setId(dto.getUserId());
         eventReview.setUser(testUser);
         // link event

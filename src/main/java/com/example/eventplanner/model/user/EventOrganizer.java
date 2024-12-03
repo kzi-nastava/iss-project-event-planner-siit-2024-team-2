@@ -1,6 +1,8 @@
 package com.example.eventplanner.model.user;
 
 import com.example.eventplanner.model.serviceproduct.ServiceProduct;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToMany;
 import lombok.*;
 
 import java.util.List;
@@ -9,6 +11,8 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class EventOrganizer extends User {
+@Entity
+public class EventOrganizer extends BaseUser {
+    @ManyToMany
     private List<ServiceProduct> favoriteServiceProducts;
 }

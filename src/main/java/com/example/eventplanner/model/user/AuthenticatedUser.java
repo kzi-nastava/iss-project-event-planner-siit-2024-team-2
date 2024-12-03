@@ -1,4 +1,4 @@
 package com.example.eventplanner.model.user;
 
-public class AuthenticatedUser extends User {
+public class AuthenticatedUser extends BaseUser {
 }
