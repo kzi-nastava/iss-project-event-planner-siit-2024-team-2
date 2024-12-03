@@ -61,10 +61,16 @@ public class EventService {
                     Event event = EventMapper.toEntity(dto);
                     event.setId(id);
                     event.setActive(true);
+                    event.setDate(dto.getDate());
+                    event.setDescription(dto.getDescription());
+                    event.setName(dto.getName());
+                    event.setOpen(dto.isOpen());
+                    event.setLatitude(dto.getLatitude());
+                    event.setLongitude(dto.getLongitude());
+                    event.setMaxAttendances(dto.getMaxAttendances());
                     eventTypeRepository.findById(dto.getTypeId()).ifPresent(event::setType);
                     event.setActivities(new ArrayList<>());
                     event.setBudgets(new ArrayList<>());
-
                     Event updatedEvent = eventRepository.save(event);
                     return EventMapper.toDto(updatedEvent);
                 })
@@ -93,11 +99,11 @@ public class EventService {
             Integer minMaxAttendances, Integer maxMaxAttendances, Boolean open,
             List<Double> longitudes, List<Double> latitudes, Double maxDistance,
             Date startDate, Date endDate) {
-        // Custom filtering logic would be implemented in the repository for efficiency.
         PageRequest pageRequest = PageRequest.of(page, size != null ? size : 10);
         return eventRepository.findAllFiltered(
                 name, description, type, minMaxAttendances, maxMaxAttendances, open,
-                longitudes, latitudes, maxDistance, startDate, endDate, pageRequest
+                //longitudes, latitudes, maxDistance,
+                startDate, endDate, pageRequest
         ).stream().map(EventMapper::toDto).toList();
     }
 
