@@ -10,9 +10,9 @@ name: Build Spring with Maven
 
 on:
   push:
-    branches: [ "develop", "feat/9.6-github-workflow" ]
+    branches: [ "develop", "main" ]
   pull_request:
-    branches: [ "develop" ]
+    branches: [ "develop", "main" ]
 
 jobs:
   build:
