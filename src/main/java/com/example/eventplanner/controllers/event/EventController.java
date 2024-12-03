@@ -22,7 +22,7 @@ import java.util.Date;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/events")
+@RequestMapping("/api/events2")
 @RequiredArgsConstructor()
 public class EventController {
     private final EventService eventService;
