@@ -1,4 +1,4 @@
-package com.example.eventplanner.dto.serviceproduct;
+package com.example.eventplanner.dto.serviceproduct.service;
 
 import com.example.eventplanner.model.serviceproduct.Service;
 

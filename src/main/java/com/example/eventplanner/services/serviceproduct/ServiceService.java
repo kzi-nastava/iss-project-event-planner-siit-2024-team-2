@@ -3,12 +3,12 @@ package com.example.eventplanner.services.serviceproduct;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.example.eventplanner.dto.serviceproduct.CreateServiceDto;
-import com.example.eventplanner.dto.serviceproduct.ServiceMapper;
+import com.example.eventplanner.dto.serviceproduct.service.CreateServiceDto;
+import com.example.eventplanner.dto.serviceproduct.service.ServiceMapper;
 import com.example.eventplanner.model.Entity;
 import com.example.eventplanner.model.event.EventType;
 import com.example.eventplanner.model.serviceproduct.Service;
-import com.example.eventplanner.dto.serviceproduct.ServiceDto;
+import com.example.eventplanner.dto.serviceproduct.service.ServiceDto;
 import com.example.eventplanner.model.serviceproduct.ServiceProductCategory;
 
 
