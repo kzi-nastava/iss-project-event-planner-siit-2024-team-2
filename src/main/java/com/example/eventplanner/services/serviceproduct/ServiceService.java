@@ -12,6 +12,7 @@ import com.example.eventplanner.dto.serviceproduct.service.ServiceDto;
 import com.example.eventplanner.model.serviceproduct.ServiceProductCategory;
 import com.example.eventplanner.repositories.serviceproduct.ServiceRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 
 
 @org.springframework.stereotype.Service
@@ -57,8 +58,9 @@ public class ServiceService {
 				.orElse(false);
 	}
 
-	public Collection<ServiceDto> searchByName(String name) {
-		return serviceRepository.searchByName(name)
+	public Collection<ServiceDto> searchByName(int page, Integer size, String name) {
+		PageRequest pageRequest = PageRequest.of(page, size != null ? size : 10);
+ 		return serviceRepository.searchByName(name, pageRequest)
 				.stream().map(ServiceMapper::toDto)
 				.toList();
 	}

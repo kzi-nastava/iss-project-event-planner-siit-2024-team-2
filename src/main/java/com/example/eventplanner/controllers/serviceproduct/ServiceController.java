@@ -57,8 +57,10 @@ public class ServiceController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Collection<ServiceDto>> searchServicesByName(@RequestParam("name") String name) {
-        Collection<ServiceDto> serviceDtos = serviceService.searchByName(name);
+    public ResponseEntity<Collection<ServiceDto>> searchServicesByName(@RequestParam(defaultValue = "0") int page,
+                                                                       @RequestParam(required = false) Integer size,
+                                                                       @RequestParam(required = false) String name) {
+        Collection<ServiceDto> serviceDtos = serviceService.searchByName(page, size, name);
         if (serviceDtos.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(Collections.emptyList());

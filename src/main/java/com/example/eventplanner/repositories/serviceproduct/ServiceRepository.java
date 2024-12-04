@@ -1,6 +1,9 @@
 package com.example.eventplanner.repositories.serviceproduct;
 
 import com.example.eventplanner.model.serviceproduct.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,6 +19,6 @@ public interface ServiceRepository extends JpaRepository<Service, Long> {
 
     @Query("SELECT s FROM Service s " +
             "WHERE s.isActive = true " +
-            "AND (s.name IS NULL OR s.name LIKE %:name%)")
-    List<Service> searchByName(@Param("name") String name);
+            "AND (s.name LIKE %:name%)")
+    Page<Service> searchByName(@Param("name") String name, Pageable pageable);
 }
