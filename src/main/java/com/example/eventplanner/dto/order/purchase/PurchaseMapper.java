@@ -1,5 +1,7 @@
 package com.example.eventplanner.dto.order.purchase;
 
+import com.example.eventplanner.dto.event.event.EventMapper;
+import com.example.eventplanner.dto.serviceproduct.product.ProductMapper;
 import com.example.eventplanner.model.order.Purchase;
 
 public class PurchaseMapper {
@@ -8,8 +10,8 @@ public class PurchaseMapper {
             return null;
         return new PurchaseDto(
                 purchase.getId(),
-                purchase.getEvent().getId(),
-                purchase.getProduct().getId(),
+                EventMapper.toDto(purchase.getEvent()),
+                ProductMapper.toDto(purchase.getProduct()),
                 purchase.getPrice()
         );
     }
@@ -18,32 +20,27 @@ public class PurchaseMapper {
         if (purchase == null)
             return null;
         return new PurchaseNoIdDto(
-                purchase.getEvent().getId(),
-                purchase.getProduct().getId(),
+                EventMapper.toDto(purchase.getEvent()),
+                ProductMapper.toDto(purchase.getProduct()),
                 purchase.getPrice()
         );
     }
 
-    public static Purchase toEntity(PurchaseDto dto) {
-        if (dto == null)
+    public static Purchase toEntity(PurchaseDto dto, int depth) {
+        if (dto == null || depth > 1)
             return null;
-        Purchase purchase = new Purchase(
-                null,
-                null,
-                dto.getPrice());
-        purchase.setId(dto.getId());
-        purchase.setActive(true);
-        return purchase;
+        return (Purchase) new Purchase(
+                EventMapper.toEntity(dto.getEvent(), depth + 1),
+                ProductMapper.toEntity(dto.getProduct(), depth + 1),
+                dto.getPrice()).withId(dto.getId());
     }
 
-    public static Purchase toEntity(PurchaseNoIdDto dto) {
-        if (dto == null)
+    public static Purchase toEntity(PurchaseNoIdDto dto, int depth) {
+        if (dto == null || depth > 1)
             return null;
-        Purchase purchase = new Purchase(
-                null,
-                null,
+        return new Purchase(
+                EventMapper.toEntity(dto.getEvent(), depth + 1),
+                ProductMapper.toEntity(dto.getProduct(), depth + 1),
                 dto.getPrice());
-        purchase.setActive(true);
-        return purchase;
     }
 }

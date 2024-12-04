@@ -1,5 +1,7 @@
 package com.example.eventplanner.dto.order.booking;
 
+import com.example.eventplanner.dto.event.event.EventDto;
+import com.example.eventplanner.dto.serviceproduct.ServiceDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,8 +14,8 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookingNoIdDto {
-    private long eventId;
-    private long serviceId;
+    private EventDto event;
+    private ServiceDto service;
     private double price;
     private Date date;
     private double duration;
