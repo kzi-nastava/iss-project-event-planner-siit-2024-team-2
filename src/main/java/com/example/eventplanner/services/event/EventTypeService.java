@@ -4,46 +4,52 @@ import com.example.eventplanner.dto.event.eventtype.EventTypeDto;
 import com.example.eventplanner.dto.event.eventtype.EventTypeMapper;
 import com.example.eventplanner.model.Entity;
 import com.example.eventplanner.model.event.EventType;
+import com.example.eventplanner.repositories.event.EventTypeRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+@RequiredArgsConstructor
 @Service
 public class EventTypeService {
-    private final Map<Long, EventType> eventTypes = new HashMap<>();
-    private long idCounter = 0;
-    public EventTypeService() {}
+    private final EventTypeRepository eventTypeRepository;
     public List<EventTypeDto> getAll() {
-        return eventTypes.values().stream().filter(Entity::isActive).map(EventTypeMapper::toDto).toList();
+        return eventTypeRepository.findAll().stream().map(EventTypeMapper::toDto).toList();
     }
     public EventTypeDto getById(long id) {
-        if (!eventTypes.containsKey(id) || !eventTypes.get(id).isActive())
-            return null;
-        return EventTypeMapper.toDto(eventTypes.get(id));
+        return eventTypeRepository.findById(id)
+                .filter(EventType::isActive)
+                .map(EventTypeMapper::toDto)
+                .orElse(null);
     }
     public EventTypeDto create(EventTypeDto eventTypeDto) {
-        eventTypeDto.setId(++idCounter);
         EventType eventType = EventTypeMapper.toEntity(eventTypeDto);
-        eventTypes.put(eventType.getId(), eventType);
-        return eventTypeDto;
+        EventType savedEventType = eventTypeRepository.save(eventType);
+        return EventTypeMapper.toDto(savedEventType);
     }
+
     public EventTypeDto update(EventTypeDto eventTypeDto, long id) {
-        eventTypeDto.setId(id);
-        if (this.getById(id) == null) {
-            return null;
-        }
-        EventType eventType = EventTypeMapper.toEntity(eventTypeDto);
-        eventTypes.put(id, eventType);
-        return eventTypeDto;
+        return eventTypeRepository.findById(id)
+                .filter(EventType::isActive)
+                .map(existingEventType -> {
+                    EventType updatedEventType = EventTypeMapper.toEntity(eventTypeDto);
+                    updatedEventType.setId(id);
+                    EventType savedEventType = eventTypeRepository.save(updatedEventType);
+                    return EventTypeMapper.toDto(savedEventType);
+                })
+                .orElse(null);
     }
+
     public boolean delete(long id) {
-        if (this.getById(id) == null) {
-            return false;
-        }
-        eventTypes.get(id).setActive(false);
-        return true;
+        return eventTypeRepository.findById(id)
+                .filter(EventType::isActive)
+                .map(eventType -> {
+                    eventType.setActive(false);
+                    eventTypeRepository.save(eventType);
+                    return true;
+                })
+                .orElse(false);
     }
+
 }
