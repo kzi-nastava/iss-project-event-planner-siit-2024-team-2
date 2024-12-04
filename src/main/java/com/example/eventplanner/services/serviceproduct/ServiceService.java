@@ -10,15 +10,19 @@ import com.example.eventplanner.model.event.EventType;
 import com.example.eventplanner.model.serviceproduct.Service;
 import com.example.eventplanner.dto.serviceproduct.service.ServiceDto;
 import com.example.eventplanner.model.serviceproduct.ServiceProductCategory;
+import com.example.eventplanner.repositories.serviceproduct.ServiceRepository;
+import lombok.RequiredArgsConstructor;
 
 
 @org.springframework.stereotype.Service
+@RequiredArgsConstructor
 public class ServiceService {
 	private final static AtomicLong counter = new AtomicLong();
 	private final HashMap<Long, Service> services = new HashMap<>();
+	private final ServiceRepository serviceRepository;
 
 	public Collection<ServiceDto> getAll() {
-		return services.values().stream().filter(Entity::isActive).map(ServiceMapper::toDto).toList();
+		return serviceRepository.findAll().stream().map(ServiceMapper::toDto).toList();
 	}
 	
 	public ServiceDto getById(Long id) {
@@ -31,7 +35,7 @@ public class ServiceService {
 	public ServiceDto create(CreateServiceDto createServiceDto) {
 		Long id = counter.incrementAndGet();
 		ServiceDto ServiceDto = new ServiceDto(id, createServiceDto);
-		services.put(id, ServiceMapper.toEntity(ServiceDto));
+		serviceRepository.save(ServiceMapper.toEntity(ServiceDto));
 		return ServiceDto;
 	}
 
