@@ -21,7 +21,7 @@ public class ServiceDto {
     private double discount;
     private String name;
     private String description;
-    private String coverImage;
+    //private String coverImage;
     private List<EventType> availableEventTypes;
     private ServiceProductCategory category;
     private boolean available;
@@ -32,7 +32,7 @@ public class ServiceDto {
         this.discount = ServiceDto.getDiscount();
         this.name = ServiceDto.getName();
         this.description = ServiceDto.getDescription();
-        this.coverImage = ServiceDto.getCoverImage();
+        //this.coverImage = ServiceDto.getCoverImage();
         this.availableEventTypes = ServiceDto.getAvailableEventTypes();
         this.category = ServiceDto.getCategory();
         this.available = ServiceDto.isAvailable();

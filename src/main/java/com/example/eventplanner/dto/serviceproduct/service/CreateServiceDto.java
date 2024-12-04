@@ -18,7 +18,7 @@ public class CreateServiceDto {
     private double discount;
     private String name;
     private String description;
-    private String coverImage;
+    //private String coverImage;
     private List<EventType> availableEventTypes;
     private ServiceProductCategory category;
     private boolean available;

@@ -12,7 +12,8 @@ public class ServiceMapper {
         }
         return new ServiceDto(
                 service.getId(), service.isActive(), service.getPrice(), service.getDiscount(), service.getName(),
-                service.getDescription(), service.getImages().get(0), service.getAvailableEventTypes(), service.getCategory(), service.isAvailable());
+                service.getDescription(), service.getAvailableEventTypes(), service.getCategory(), service.isAvailable());
+        // service.getImages().get(0),
     }
 
     public static Service toEntity(ServiceDto serviceDto) {
@@ -27,9 +28,9 @@ public class ServiceMapper {
         service.setName(serviceDto.getName());
         service.setDescription(serviceDto.getDescription());
 
-        List<String> images = new ArrayList<>();
-        images.add(serviceDto.getCoverImage());
-        service.setImages(images);
+//        List<String> images = new ArrayList<>();
+//        images.add(serviceDto.getCoverImage());
+//        service.setImages(images);
         service.setAvailableEventTypes(serviceDto.getAvailableEventTypes());
         service.setCategory(serviceDto.getCategory());
         service.setAvailable(serviceDto.isAvailable());
