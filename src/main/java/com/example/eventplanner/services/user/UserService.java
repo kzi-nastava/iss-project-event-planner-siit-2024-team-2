@@ -42,7 +42,7 @@ public class UserService {
     private boolean validateUser(RegisterUserDto user) {
         if (user == null) return false;
         if (user.getEmail() == null || user.getEmail().isEmpty())  return false;
-        if (userRepository.existsByEmail(user.getEmail())) return false;
+        if (userRepository.existsByEmailAndIsActiveTrue(user.getEmail())) return false;
         if (user.getPassword() == null || user.getPassword().length() < 6) return false;
         if (user.getFirstName() == null || user.getFirstName().isEmpty()) return false;
         if (user.getLastName() == null || user.getLastName().isEmpty()) return false;

@@ -6,7 +6,8 @@ import java.util.Optional;
 
 public interface EventOrganizerRepository extends JpaRepository<EventOrganizer, Long> {
 
-    boolean existsByEmail(String email);
 
     Optional<EventOrganizer> findByIdAndIsActiveTrue(long id);
+
+    boolean existsByEmailAndIsActiveTrue(String email);
 }

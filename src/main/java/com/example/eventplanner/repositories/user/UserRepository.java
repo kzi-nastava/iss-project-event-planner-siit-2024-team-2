@@ -14,5 +14,5 @@ public interface UserRepository extends JpaRepository<BaseUser, Long> {
     Optional<BaseUser> findByIdAndIsActiveTrueAndPassword(long id, String password);
     List<RegisterUserDto> findAllByIsActiveTrue();
     Optional<BaseUser> findByEmailAndPasswordAndIsActiveTrue(String email, String password);
-    boolean existsByEmail(String email);
+    boolean existsByEmailAndIsActiveTrue(String email);
 }

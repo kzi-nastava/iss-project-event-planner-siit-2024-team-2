@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/event-organizers")
+@RequestMapping("/api/users/event-organizers")
 public class EventOrganizerController {
     private final EventOrganizerService eventOrganizerService;
 
@@ -29,7 +29,7 @@ public class EventOrganizerController {
                 : ResponseEntity.badRequest().build();
     }
 
-    @PutMapping("/event-organizers/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<UpdateEventOrganizerDto> updateEventOrganizer(@PathVariable long id, @RequestBody UpdateEventOrganizerDto eventOrganizerDto) {
         UpdateEventOrganizerDto user = eventOrganizerService.updateEventOrganizer(id, eventOrganizerDto);
         if (user == null)

@@ -17,6 +17,18 @@ public class EventOrganizerMapper {
         return dto;
     }
 
+    public static EventOrganizer toUpdateEntity(UpdateEventOrganizerDto dto) {
+        if (dto == null) {
+            return null;
+        }
+        EventOrganizer entity = new EventOrganizer();
+        entity.setFirstName(dto.getFirstName());
+        entity.setLastName(dto.getLastName());
+        entity.setAddress(dto.getAddress());
+        entity.setPhoneNumber(dto.getPhoneNumber());
+        return entity;
+    }
+
     public static EventOrganizer toEntity(RegisterEventOrganizerDto dto) {
         if (dto == null) {
             return null;

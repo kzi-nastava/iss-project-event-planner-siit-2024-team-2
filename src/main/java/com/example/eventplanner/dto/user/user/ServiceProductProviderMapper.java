@@ -1,5 +1,6 @@
 package com.example.eventplanner.dto.user.user;
 
+import com.example.eventplanner.model.user.EventOrganizer;
 import com.example.eventplanner.model.user.ServiceProductProvider;
 import com.example.eventplanner.model.utils.UserRole;
 
@@ -34,6 +35,19 @@ public class ServiceProductProviderMapper {
         dto.setPhoneNumber(entity.getPhoneNumber());
         dto.setCompanyDescription(entity.getCompanyDescription());
         return dto;
+    }
+
+    public static ServiceProductProvider toUpdateEntity(UpdateServiceProductProviderDto dto) {
+        if (dto == null) {
+            return null;
+        }
+        ServiceProductProvider entity = new ServiceProductProvider();
+        entity.setFirstName(dto.getFirstName());
+        entity.setLastName(dto.getLastName());
+        entity.setAddress(dto.getAddress());
+        entity.setPhoneNumber(dto.getPhoneNumber());
+        entity.setCompanyDescription(dto.getCompanyDescription());
+        return entity;
     }
 
     public static RegisterServiceProductProviderDto toDto(ServiceProductProvider entity) {

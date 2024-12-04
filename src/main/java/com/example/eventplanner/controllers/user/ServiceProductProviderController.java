@@ -27,7 +27,7 @@ public class ServiceProductProviderController {
         return ResponseEntity.ok(registerServiceProductProviderDto);
     }
 
-    @PutMapping("/service-product-providers/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<UpdateServiceProductProviderDto> updateServiceProductProvider(@PathVariable long id, @RequestBody UpdateServiceProductProviderDto serviceProductProviderDto) {
         UpdateServiceProductProviderDto user = serviceProductProviderService.updateServiceProductProvider(id, serviceProductProviderDto);
         if (user == null)
