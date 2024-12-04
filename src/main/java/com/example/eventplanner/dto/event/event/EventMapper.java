@@ -56,7 +56,7 @@ public class EventMapper {
         );
     }
 
-    public static Event toEntity(EventDto dto) {
+    public static Event toEntity(EventDto dto, int depth) {
         if (dto == null)
             return null;
         Event event = new Event(
