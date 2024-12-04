@@ -7,7 +7,9 @@ import com.example.eventplanner.model.Entity;
 import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.order.Booking;
 import com.example.eventplanner.model.serviceproduct.Service;
+import com.example.eventplanner.repositories.order.BookingRepository;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.util.HashMap;
@@ -17,64 +19,39 @@ import java.util.Map;
 @org.springframework.stereotype.Service
 @Getter
 @Setter
+@RequiredArgsConstructor
 public class BookingService {
-    Map<Long, Booking> bookings = new HashMap<>();
-    private long idCounter = 0;
+    private final BookingRepository bookingRepository;
 
     public List<BookingDto> getAll() {
-        return bookings.values()
+        return bookingRepository.findAll()
                 .stream()
-                .filter(Entity::isActive)
                 .map(BookingMapper::toDto)
                 .toList();
     }
 
     public BookingDto getById(long id) {
-        if (!bookings.containsKey(id) || !bookings.get(id).isActive())
-            return null;
-        return BookingMapper.toDto(bookings.get(id));
+        return bookingRepository.findById(id)
+                .map(BookingMapper::toDto)
+                .orElse(null);
     }
 
     public BookingDto create(BookingNoIdDto dto) {
-        Booking booking = BookingMapper.toEntity(dto);
-        booking.setId(idCounter++);
-        booking.setActive(true);
-
-        // link event
-        Event testEvent = new Event();
-        testEvent.setId(dto.getEventId());
-        booking.setEvent(testEvent);
-        // link service
-        Service testService = new Service();
-        testService.setId(dto.getServiceId());
-        booking.setService(testService);
-
-        bookings.put(booking.getId(), booking);
-        return BookingMapper.toDto(booking);
+        Booking booking = BookingMapper.toEntity(dto, 0);
+        return BookingMapper.toDto(bookingRepository.save(booking));
     }
 
     public BookingDto update(BookingNoIdDto dto, long id) {
-        if (this.getById(id) == null)
+        if (!bookingRepository.existsById(id))
             return null;
-        Booking booking = BookingMapper.toEntity(dto);
-
-        // link event
-        Event testEvent = new Event();
-        testEvent.setId(dto.getEventId());
-        booking.setEvent(testEvent);
-        // link service
-        Service testService = new Service();
-        testService.setId(dto.getServiceId());
-        booking.setService(testService);
-
-        bookings.put(id, BookingMapper.toEntity(dto));
-        return BookingMapper.toDto(booking);
+        Booking booking = (Booking) BookingMapper.toEntity(dto, 0).withId(id);
+        return BookingMapper.toDto(bookingRepository.save(booking));
     }
 
     public boolean delete(long id) {
-        if (this.getById(id) == null)
+        if (!bookingRepository.existsById(id))
             return false;
-        bookings.get(id).setActive(false);
+        bookingRepository.deleteById(id);
         return true;
     }
 }

@@ -31,7 +31,7 @@ public class ServiceService {
 	public ServiceDto create(CreateServiceDto createServiceDto) {
 		Long id = counter.incrementAndGet();
 		ServiceDto ServiceDto = new ServiceDto(id, createServiceDto);
-		services.put(id, ServiceMapper.toEntity(ServiceDto));
+		services.put(id, ServiceMapper.toEntity(ServiceDto, 0));
 		return ServiceDto;
 	}
 
@@ -40,7 +40,7 @@ public class ServiceService {
 			return null;
 		}
 		ServiceDto updatedServiceDto = new ServiceDto(id, createServiceDto);
-		services.put(id, ServiceMapper.toEntity(updatedServiceDto));
+		services.put(id, ServiceMapper.toEntity(updatedServiceDto, 0));
 		return updatedServiceDto;
 	}
 

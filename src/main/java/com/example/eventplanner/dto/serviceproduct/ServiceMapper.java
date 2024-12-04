@@ -15,7 +15,7 @@ public class ServiceMapper {
                 service.getDescription(), service.getImages().get(0), service.getAvailableEventTypes(), service.getCategory(), service.isAvailable());
     }
 
-    public static Service toEntity(ServiceDto serviceDto) {
+    public static Service toEntity(ServiceDto serviceDto, int depth) {
         if (serviceDto == null) {
             return null;
         }

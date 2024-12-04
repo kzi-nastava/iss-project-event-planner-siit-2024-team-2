@@ -41,7 +41,7 @@ public class ProductService {
         if (this.getById(id) == null) {
             return null;
         }
-        Product product = ProductMapper.toEntity(getById(id));
+        Product product = ProductMapper.toEntity(getById(id), 0);
         product.setName(createProductDto.getName());
         product.setPrice(createProductDto.getPrice());
         product.setAvailable(createProductDto.isAvailable());

@@ -1,9 +1,10 @@
 package com.example.eventplanner.services.event;
 
 import com.example.eventplanner.dto.event.event.EventSummaryDto;
+import com.example.eventplanner.dto.order.booking.BookingDto;
+import com.example.eventplanner.dto.order.purchase.PurchaseDto;
 import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.order.Booking;
-import com.example.eventplanner.model.order.Purchase;
 import com.example.eventplanner.services.order.BookingService;
 import com.example.eventplanner.services.order.PurchaseService;
 import lombok.Getter;
@@ -156,15 +157,15 @@ public class EventService {
         return true;
     }
 
-    public List<Purchase> getPurchases(long id) {
-        return purchaseService.getPurchases().values()
+    public List<PurchaseDto> getPurchases(long id) {
+        return purchaseService.getAll()
                 .stream()
                 .filter(purchase -> purchase.getEvent().getId() == id)
                 .toList();
     }
 
-    public List<Booking> getBookings(long id) {
-        return bookingService.getBookings().values()
+    public List<BookingDto> getBookings(long id) {
+        return bookingService.getAll()
                 .stream()
                 .filter(booking -> booking.getEvent().getId() == id)
                 .toList();
