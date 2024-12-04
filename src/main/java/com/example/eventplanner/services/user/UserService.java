@@ -14,6 +14,10 @@ import com.example.eventplanner.model.user.EventOrganizer;
 import com.example.eventplanner.model.user.ServiceProductProvider;
 import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.utils.UserRole;
+import com.example.eventplanner.repositories.user.EventOrganizerRepository;
+import com.example.eventplanner.repositories.user.ServiceProductProviderRepository;
+import com.example.eventplanner.repositories.user.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,165 +27,65 @@ import java.util.List;
 import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
-    private final Map<Long, BaseUser> users = new HashMap<>();
-    private long idCounter = 0;
     private final UserReportService userReportService;
-    @Autowired
-    public UserService(UserReportService userReportService) {
-        this.userReportService = userReportService;
-        //Admin
-        Admin admin = new Admin();
-        admin.setId(++idCounter);
-        admin.setUserRole(UserRole.ADMIN);
-        admin.setEmail("admin@gmail.com");
-        admin.setPassword("password");
-        admin.setActive(true);
-        users.put(admin.getId(), admin);
-    }
-    public boolean registerEventOrganizer(RegisterEventOrganizerDto registerEventOrganizerDto) {
-        if (!validateEventOrganizer(registerEventOrganizerDto))
+    private final UserRepository userRepository;
+
+    public boolean registerUser(RegisterUserDto registerUserDto) {
+        if (!validateUser(registerUserDto))
             return false;
-        registerEventOrganizerDto.setId(++idCounter);
-        users.put(registerEventOrganizerDto.getId(), UserMapper.toEntity(registerEventOrganizerDto));
+        userRepository.save(UserMapper.toEntity(registerUserDto));
         return true;
     }
 
-    public boolean registerServiceProductProvider(RegisterServiceProductProviderDto registerServiceProductProvider) {
-        if (!validateServiceProductProvider(registerServiceProductProvider))
-            return false;
-        registerServiceProductProvider.setId(++idCounter);
-        users.put(registerServiceProductProvider.getId(), UserMapper.toEntity(registerServiceProductProvider));
-        return true;
-    }
-
-    private boolean validateEventOrganizer(RegisterEventOrganizerDto user) {
+    private boolean validateUser(RegisterUserDto user) {
         if (user == null) return false;
-        if (user.getEmail() == null || user.getEmail().isEmpty()) {
-            return false;
-        }
-        if (users.values().stream().anyMatch(existingUser -> existingUser.getEmail().equals(user.getEmail()))) {
-            return false;
-        }
-
-        if (user.getPassword() == null || user.getPassword().length() < 6) {
-            return false;
-        }
-
-        if (user.getFirstName() == null || user.getFirstName().isEmpty()) {
-            return false;
-        }
-        if (user.getLastName() == null || user.getLastName().isEmpty()) {
-            return false;
-        }
-
-        if (user.getPhoneNumber() == null || !user.getPhoneNumber().matches("\\d{10,15}")) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private boolean validateServiceProductProvider(RegisterServiceProductProviderDto user) {
-        if (user == null) return false;
-        if (user.getEmail() == null || user.getEmail().isEmpty()) {
-            return false;
-        }
-        if (users.values().stream().anyMatch(existingUser -> existingUser.getEmail().equals(user.getEmail()))) {
-            return false;
-        }
-
-        if (user.getPassword() == null || user.getPassword().length() < 6) {
-            return false;
-        }
-
-        if (user.getFirstName() == null || user.getFirstName().isEmpty()) {
-            return false;
-        }
-
-        if (user.getCompanyName() == null || user.getCompanyName().isEmpty()) {
-            return false;
-        }
-
-        if (user.getCompanyDescription() == null || user.getCompanyDescription().isEmpty()) {
-            return false;
-        }
-
-        if (user.getPhoneNumber() == null || !user.getPhoneNumber().matches("\\d{10,15}")) {
-            return false;
-        }
-
+        if (user.getEmail() == null || user.getEmail().isEmpty())  return false;
+        if (userRepository.existsByEmail(user.getEmail())) return false;
+        if (user.getPassword() == null || user.getPassword().length() < 6) return false;
+        if (user.getFirstName() == null || user.getFirstName().isEmpty()) return false;
+        if (user.getLastName() == null || user.getLastName().isEmpty()) return false;
+        if (user.getPhoneNumber() == null || !user.getPhoneNumber().matches("\\d{10,15}")) return false;
         return true;
     }
 
     public List<RegisterUserDto> getAllUsers() {
-        return users.values().stream().filter(Entity::isActive).map(UserMapper::toDto).toList();
+        return userRepository.findAllByIsActiveTrue()
+                .stream()
+                .map(UserMapper::toDto)
+                .toList();
     }
 
-    public RegisterEventOrganizerDto getEventOrganizerById(long id) {
-        BaseUser user = users.get(id);
-        if (user == null || !user.isActive() || user.getUserRole() != UserRole.EVENT_ORGANIZER) {
-            return null;
-        }
-        return UserMapper.toDto((EventOrganizer) user);
-    }
-
-    public RegisterServiceProductProviderDto getServiceProductProviderById(long id) {
-        BaseUser user = users.get(id);
-        if (user == null || !user.isActive() || user.getUserRole() != UserRole.SERVICE_PRODUCT_PROVIDER) {
-            return null;
-        }
-        return UserMapper.toDto((ServiceProductProvider) user);
-    }
-
-    public UpdateEventOrganizerDto updateEventOrganizer(long id, UpdateEventOrganizerDto eventOrganizerDto) {
-        EventOrganizer user = (EventOrganizer) users.get(id);
-        if (user == null || !user.isActive() || user.getUserRole() != UserRole.EVENT_ORGANIZER) {
-            return null;
-        }
-        user.setFirstName(eventOrganizerDto.getFirstName());
-        user.setLastName(eventOrganizerDto.getLastName());
-        user.setAddress(eventOrganizerDto.getAddress());
-        user.setPhoneNumber(eventOrganizerDto.getPhoneNumber());
-        return UserMapper.toUpdateDto(user);
-    }
-
-    public UpdateServiceProductProviderDto updateServiceProductProvider(long id, UpdateServiceProductProviderDto serviceProductProviderDto) {
-        ServiceProductProvider user = (ServiceProductProvider) users.get(id);
-        if (user == null || !user.isActive() || user.getUserRole() != UserRole.SERVICE_PRODUCT_PROVIDER) {
-            return null;
-        }
-        user.setFirstName(serviceProductProviderDto.getFirstName());
-        user.setLastName(serviceProductProviderDto.getLastName());
-        user.setAddress(serviceProductProviderDto.getAddress());
-        user.setPhoneNumber(serviceProductProviderDto.getPhoneNumber());
-        user.setCompanyDescription(serviceProductProviderDto.getCompanyDescription());
-        return UserMapper.toUpdateDto(user);
+    public RegisterUserDto getUserById(long id) {
+        return userRepository.findByIdAndIsActiveTrue(id)
+                .map(UserMapper::toDto)
+                .orElse(null);
     }
 
     public boolean delete(long id) {
-        BaseUser user = users.get(id);
-        if (user == null || !user.isActive()) {
-            return false;
-        }
-        user.setActive(false);
-        return true;
+        return userRepository.findByIdAndIsActiveTrue(id)
+                .map(u -> {
+                    u.setActive(false);
+                    userRepository.save(u);
+                    return true;
+                }).orElse(false);
     }
 
     public RegisterUserDto login(LoginDto loginDto) {
-        return UserMapper.toDto(users.values().stream()
-                .filter(u -> u.getEmail().equals(loginDto.getEmail()) && u.getPassword().equals(loginDto.getPassword()))
-                .findFirst()
+        return UserMapper.toDto(userRepository
+                .findByEmailAndPasswordAndIsActiveTrue(loginDto.getEmail(), loginDto.getPassword())
                 .orElse(null));
     }
 
     public boolean resetPassword(ResetPasswordDto resetPasswordDto) {
-        BaseUser user = users.get(resetPasswordDto.getUserId());
-        if (user == null || !user.isActive() || !user.getPassword().equals(resetPasswordDto.getOldPassword())) {
-            return false;
-        }
-        user.setPassword(resetPasswordDto.getNewPassword());
-        return true;
+        return userRepository
+                .findByIdAndIsActiveTrueAndPassword(resetPasswordDto.getUserId(), resetPasswordDto.getOldPassword())
+                .map(u -> {
+                    u.setPassword(resetPasswordDto.getNewPassword());
+                    userRepository.save(u);
+                    return true;
+                }).orElse(false);
     }
 
     public Collection<UserReportDto> getUserReports(long id, Boolean approved) {
