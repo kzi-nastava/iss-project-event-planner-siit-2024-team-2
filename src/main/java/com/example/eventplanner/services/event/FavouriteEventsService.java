@@ -1,6 +1,6 @@
 package com.example.eventplanner.services.event;
 
-import com.example.eventplanner.dto.event.FavouriteEventsDto;
+import com.example.eventplanner.dto.event.event.FavouriteEventsDto;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

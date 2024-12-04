@@ -1,4 +1,4 @@
-package com.example.eventplanner.controllers.event;
+package com.example.eventplanner.controllers.serviceproduct;
 
 import com.example.eventplanner.dto.serviceproduct.pricelist.CreatePriceListDto;
 import com.example.eventplanner.dto.serviceproduct.pricelist.PriceListDto;

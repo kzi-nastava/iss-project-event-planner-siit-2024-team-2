@@ -1,13 +1,10 @@
 package com.example.eventplanner.controllers.event;
 
-import com.example.eventplanner.dto.event.FavouriteEventsDto;
+import com.example.eventplanner.dto.event.event.FavouriteEventsDto;
 import com.example.eventplanner.services.event.FavouriteEventsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Collection;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/favourite-events")

@@ -1,4 +1,4 @@
-package com.example.eventplanner.dto.event;
+package com.example.eventplanner.dto.event.event;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
