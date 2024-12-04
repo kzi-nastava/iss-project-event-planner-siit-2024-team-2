@@ -36,4 +36,24 @@ public class ServiceMapper {
         service.setAvailable(serviceDto.isAvailable());
         return service;
     }
+
+    public static Service toEntity(CreateServiceDto dto) {
+        if (dto == null) {
+            return null;
+        }
+        Service service = new Service();
+        service.setActive(dto.isActive());
+        service.setPrice(dto.getPrice());
+        service.setDiscount(dto.getDiscount());
+        service.setName(dto.getName());
+        service.setDescription(dto.getDescription());
+
+//        List<String> images = new ArrayList<>();
+//        images.add(dto.getCoverImage());
+//        service.setImages(images);
+        service.setAvailableEventTypes(dto.getAvailableEventTypes());
+        service.setCategory(dto.getCategory());
+        service.setAvailable(dto.isAvailable());
+        return service;
+    }
 }

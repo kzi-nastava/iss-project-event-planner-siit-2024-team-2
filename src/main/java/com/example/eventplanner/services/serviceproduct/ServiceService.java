@@ -17,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 @org.springframework.stereotype.Service
 @RequiredArgsConstructor
 public class ServiceService {
-	private final static AtomicLong counter = new AtomicLong();
 	private final HashMap<Long, Service> services = new HashMap<>();
 	private final ServiceRepository serviceRepository;
 
@@ -35,10 +34,8 @@ public class ServiceService {
 	}
 	
 	public ServiceDto create(CreateServiceDto createServiceDto) {
-		Long id = counter.incrementAndGet();
-		ServiceDto ServiceDto = new ServiceDto(id, createServiceDto);
-		serviceRepository.save(ServiceMapper.toEntity(ServiceDto));
-		return ServiceDto;
+		Service service = serviceRepository.save(ServiceMapper.toEntity(createServiceDto));
+		return ServiceMapper.toDto(service);
 	}
 
 	public ServiceDto update(Long id, CreateServiceDto createServiceDto) {
@@ -61,10 +58,9 @@ public class ServiceService {
 	}
 
 	public Collection<ServiceDto> searchByName(String name) {
-		return this.getAll().stream()
-							.filter(service -> service.getName() != null &&
-									service.getName().toLowerCase().contains(name.toLowerCase()))
-							.toList();
+		return serviceRepository.searchByName(name)
+				.stream().map(ServiceMapper::toDto)
+				.toList();
 	}
 
 	public Collection<ServiceDto> filter(List<ServiceProductCategory> categories, List<String> eventTypes, Float minPrice, Float maxPrice, Boolean available) {
