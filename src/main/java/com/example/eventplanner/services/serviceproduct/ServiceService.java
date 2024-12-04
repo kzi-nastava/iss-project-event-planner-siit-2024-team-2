@@ -22,14 +22,16 @@ public class ServiceService {
 	private final ServiceRepository serviceRepository;
 
 	public Collection<ServiceDto> getAll() {
-		return serviceRepository.findAll().stream().map(ServiceMapper::toDto).toList();
+		return serviceRepository.findAllByIsActiveTrue()
+				.stream()
+				.map(ServiceMapper::toDto)
+				.toList();
 	}
 	
 	public ServiceDto getById(Long id) {
-		Service service = services.get(id);
-		if (service != null && service.isActive())
-			return ServiceMapper.toDto(service);
-		return null;
+		return serviceRepository.findByIdAndIsActiveTrue(id)
+				.map(ServiceMapper::toDto)
+				.orElse(null);
 	}
 	
 	public ServiceDto create(CreateServiceDto createServiceDto) {
@@ -44,16 +46,18 @@ public class ServiceService {
 			return null;
 		}
 		ServiceDto updatedServiceDto = new ServiceDto(id, createServiceDto);
-		services.put(id, ServiceMapper.toEntity(updatedServiceDto));
+		serviceRepository.save(ServiceMapper.toEntity(updatedServiceDto));
 		return updatedServiceDto;
 	}
 
 	public boolean delete(Long id) {
-		if (this.getById(id) == null) {
-			return false;
-		}
-		services.get(id).setActive(false);
-		return true;
+		return serviceRepository.findByIdAndIsActiveTrue(id)
+				.map(service -> {
+					service.setActive(false);
+					serviceRepository.save(service);
+					return true;
+				})
+				.orElse(false);
 	}
 
 	public Collection<ServiceDto> searchByName(String name) {
