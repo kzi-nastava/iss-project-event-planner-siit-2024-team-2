@@ -1,29 +1,35 @@
 package com.example.eventplanner.dto.user.user;
 
 import com.example.eventplanner.model.user.EventOrganizer;
-import com.example.eventplanner.model.user.ServiceProductProvider;
-import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.utils.UserRole;
 
-public class UserMapper {
-    //private static final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-    public static RegisterUserDto toDto(BaseUser entity) {
+public class EventOrganizerMapper {
+
+    public static UpdateEventOrganizerDto toUpdateDto(EventOrganizer entity) {
         if (entity == null) {
             return null;
         }
-        RegisterEventOrganizerDto dto = new RegisterEventOrganizerDto();
-        dto.setId(entity.getId());
-        dto.setPassword(entity.getPassword());
-        dto.setEmail(entity.getEmail());
+        UpdateEventOrganizerDto dto = new UpdateEventOrganizerDto();
         dto.setFirstName(entity.getFirstName());
         dto.setLastName(entity.getLastName());
         dto.setAddress(entity.getAddress());
         dto.setPhoneNumber(entity.getPhoneNumber());
-        dto.setUserRole(entity.getUserRole());
         return dto;
     }
 
-    public static BaseUser toEntity(RegisterUserDto dto) {
+    public static EventOrganizer toUpdateEntity(UpdateEventOrganizerDto dto) {
+        if (dto == null) {
+            return null;
+        }
+        EventOrganizer entity = new EventOrganizer();
+        entity.setFirstName(dto.getFirstName());
+        entity.setLastName(dto.getLastName());
+        entity.setAddress(dto.getAddress());
+        entity.setPhoneNumber(dto.getPhoneNumber());
+        return entity;
+    }
+
+    public static EventOrganizer toEntity(RegisterEventOrganizerDto dto) {
         if (dto == null) {
             return null;
         }
@@ -40,8 +46,7 @@ public class UserMapper {
         return entity;
     }
 
-
-    public static RegisterUserDto toDto(RegisterUserDto entity) {
+    public static RegisterEventOrganizerDto toDto(EventOrganizer entity) {
         if (entity == null) {
             return null;
         }
@@ -53,7 +58,7 @@ public class UserMapper {
         dto.setLastName(entity.getLastName());
         dto.setAddress(entity.getAddress());
         dto.setPhoneNumber(entity.getPhoneNumber());
-        dto.setUserRole(entity.getUserRole());
+        dto.setUserRole(UserRole.EVENT_ORGANIZER);
         return dto;
     }
 }

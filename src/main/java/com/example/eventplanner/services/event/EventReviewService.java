@@ -9,6 +9,7 @@ import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.repositories.event.EventRepository;
 import com.example.eventplanner.repositories.event.EventReviewRepository;
+import com.example.eventplanner.repositories.user.UserRepository;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ import java.util.Optional;
 public class EventReviewService {
     private final EventReviewRepository eventReviewRepository;
     private final EventRepository eventRepository;
+    private final UserRepository userRepository;
 
     public List<EventReviewDto> getAll() {
         return eventReviewRepository.findAllByIsActiveTrue()
@@ -46,9 +48,8 @@ public class EventReviewService {
         eventReview.setActive(true);
 
         // link user
-        BaseUser testUser = new BaseUser();
-        testUser.setId(dto.getUserId());
-        eventReview.setUser(testUser);
+        BaseUser user = userRepository.findByIdAndIsActiveTrue(dto.getUserId()).orElse(null);
+        eventReview.setUser(user);
         // link event
         Event testEvent = eventRepository.findByIdAndIsActiveTrue(dto.getEventId()).orElse(null);
         eventReview.setEvent(testEvent);
@@ -69,7 +70,7 @@ public class EventReviewService {
                     BaseUser baseUser = new BaseUser();
                     baseUser.setId(dto.getUserId());
                     eventReview.setUser(baseUser);
-                    //userRepository.findById(dto.getUserId()).ifPresent(eventReview::setUser);
+                    userRepository.findById(dto.getUserId()).ifPresent(eventReview::setUser);
                     eventRepository.findById(dto.getEventId()).ifPresent(eventReview::setEvent);
                     EventReview updatedEventReview = eventReviewRepository.save(eventReview);
                     return EventReviewMapper.toDto(updatedEventReview);
