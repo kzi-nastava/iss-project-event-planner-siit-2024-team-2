@@ -3,36 +3,39 @@ package com.example.eventplanner.services.serviceproduct;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.example.eventplanner.dto.serviceproduct.CreateServiceDto;
-import com.example.eventplanner.dto.serviceproduct.ServiceMapper;
+import com.example.eventplanner.dto.serviceproduct.service.CreateServiceDto;
+import com.example.eventplanner.dto.serviceproduct.service.ServiceMapper;
 import com.example.eventplanner.model.Entity;
 import com.example.eventplanner.model.event.EventType;
 import com.example.eventplanner.model.serviceproduct.Service;
-import com.example.eventplanner.dto.serviceproduct.ServiceDto;
+import com.example.eventplanner.dto.serviceproduct.service.ServiceDto;
 import com.example.eventplanner.model.serviceproduct.ServiceProductCategory;
+import com.example.eventplanner.repositories.serviceproduct.ServiceRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 
 
 @org.springframework.stereotype.Service
+@RequiredArgsConstructor
 public class ServiceService {
-	private final static AtomicLong counter = new AtomicLong();
-	private final HashMap<Long, Service> services = new HashMap<>();
+	private final ServiceRepository serviceRepository;
 
 	public Collection<ServiceDto> getAll() {
-		return services.values().stream().filter(Entity::isActive).map(ServiceMapper::toDto).toList();
+		return serviceRepository.findAllByIsActiveTrue()
+				.stream()
+				.map(ServiceMapper::toDto)
+				.toList();
 	}
 	
 	public ServiceDto getById(Long id) {
-		Service service = services.get(id);
-		if (service != null && service.isActive())
-			return ServiceMapper.toDto(service);
-		return null;
+		return serviceRepository.findByIdAndIsActiveTrue(id)
+				.map(ServiceMapper::toDto)
+				.orElse(null);
 	}
 	
 	public ServiceDto create(CreateServiceDto createServiceDto) {
-		Long id = counter.incrementAndGet();
-		ServiceDto ServiceDto = new ServiceDto(id, createServiceDto);
-		services.put(id, ServiceMapper.toEntity(ServiceDto));
-		return ServiceDto;
+		Service service = serviceRepository.save(ServiceMapper.toEntity(createServiceDto));
+		return ServiceMapper.toDto(service);
 	}
 
 	public ServiceDto update(Long id, CreateServiceDto createServiceDto) {
@@ -40,37 +43,43 @@ public class ServiceService {
 			return null;
 		}
 		ServiceDto updatedServiceDto = new ServiceDto(id, createServiceDto);
-		services.put(id, ServiceMapper.toEntity(updatedServiceDto));
+		serviceRepository.save(ServiceMapper.toEntity(updatedServiceDto));
 		return updatedServiceDto;
 	}
 
 	public boolean delete(Long id) {
-		if (this.getById(id) == null) {
-			return false;
-		}
-		services.get(id).setActive(false);
-		return true;
+		return serviceRepository.findByIdAndIsActiveTrue(id)
+				.map(service -> {
+					service.setActive(false);
+					serviceRepository.save(service);
+					return true;
+				})
+				.orElse(false);
 	}
 
-	public Collection<ServiceDto> searchByName(String name) {
-		return this.getAll().stream()
-							.filter(service -> service.getName() != null &&
-									service.getName().toLowerCase().contains(name.toLowerCase()))
-							.toList();
+	public Collection<ServiceDto> searchByName(int page, Integer size, String name) {
+		PageRequest pageRequest = PageRequest.of(page, size != null ? size : 10);
+ 		return serviceRepository.searchByName(name, pageRequest)
+				.stream().map(ServiceMapper::toDto)
+				.toList();
 	}
 
-	public Collection<ServiceDto> filter(List<ServiceProductCategory> categories, List<String> eventTypes, Float minPrice, Float maxPrice, Boolean available) {
-		List<String> categoryNames = new ArrayList<>();
-		if (categories != null) {
-			for (ServiceProductCategory category : categories)
-				categoryNames.add(category.getName());
-		}
-
-		return services.values().stream()
-				.filter(service -> categoryNames.isEmpty() || categoryNames.contains(service.getCategory().getName()))
-				.filter(service -> eventTypes == null || service.getAvailableEventTypes().stream().map(EventType::getName).anyMatch(eventTypes::contains))
-				.filter(service -> available == null || available == service.isAvailable())
-				.filter(service -> (minPrice == null || minPrice <= service.getPrice()) && (maxPrice == null || maxPrice >= service.getPrice()))
-				.map(ServiceMapper::toDto).toList();
+	public Collection<ServiceDto> filter(int page, Integer size, List<String> categories, Float minPrice, Float maxPrice, boolean available) {
+		PageRequest pageRequest = PageRequest.of(page, size != null ? size : 10);
+		return serviceRepository.findAllFiltered(minPrice, maxPrice, available, pageRequest)
+				.stream().map(ServiceMapper::toDto)
+				.toList();
+		//		List<String> categoryNames = new ArrayList<>();
+//		if (categories != null) {
+//			for (ServiceProductCategory category : categories)
+//				categoryNames.add(category.getName());
+//		}
+//
+//		return services.values().stream()
+//				.filter(service -> categoryNames.isEmpty() || categoryNames.contains(service.getCategory().getName()))
+//				.filter(service -> eventTypes == null || service.getAvailableEventTypes().stream().map(EventType::getName).anyMatch(eventTypes::contains))
+//				.filter(service -> available == null || available == service.isAvailable())
+//				.filter(service -> (minPrice == null || minPrice <= service.getPrice()) && (maxPrice == null || maxPrice >= service.getPrice()))
+//				.map(ServiceMapper::toDto).toList();
 	}
 }
