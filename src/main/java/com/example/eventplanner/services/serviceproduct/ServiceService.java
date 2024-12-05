@@ -18,7 +18,6 @@ import org.springframework.data.domain.PageRequest;
 @org.springframework.stereotype.Service
 @RequiredArgsConstructor
 public class ServiceService {
-	private final HashMap<Long, Service> services = new HashMap<>();
 	private final ServiceRepository serviceRepository;
 
 	public Collection<ServiceDto> getAll() {
@@ -65,18 +64,22 @@ public class ServiceService {
 				.toList();
 	}
 
-	public Collection<ServiceDto> filter(List<ServiceProductCategory> categories, List<String> eventTypes, Float minPrice, Float maxPrice, Boolean available) {
-		List<String> categoryNames = new ArrayList<>();
-		if (categories != null) {
-			for (ServiceProductCategory category : categories)
-				categoryNames.add(category.getName());
-		}
-
-		return services.values().stream()
-				.filter(service -> categoryNames.isEmpty() || categoryNames.contains(service.getCategory().getName()))
-				.filter(service -> eventTypes == null || service.getAvailableEventTypes().stream().map(EventType::getName).anyMatch(eventTypes::contains))
-				.filter(service -> available == null || available == service.isAvailable())
-				.filter(service -> (minPrice == null || minPrice <= service.getPrice()) && (maxPrice == null || maxPrice >= service.getPrice()))
-				.map(ServiceMapper::toDto).toList();
+	public Collection<ServiceDto> filter(int page, Integer size, List<String> categories, Float minPrice, Float maxPrice, boolean available) {
+		PageRequest pageRequest = PageRequest.of(page, size != null ? size : 10);
+		return serviceRepository.findAllFiltered(minPrice, maxPrice, available, pageRequest)
+				.stream().map(ServiceMapper::toDto)
+				.toList();
+		//		List<String> categoryNames = new ArrayList<>();
+//		if (categories != null) {
+//			for (ServiceProductCategory category : categories)
+//				categoryNames.add(category.getName());
+//		}
+//
+//		return services.values().stream()
+//				.filter(service -> categoryNames.isEmpty() || categoryNames.contains(service.getCategory().getName()))
+//				.filter(service -> eventTypes == null || service.getAvailableEventTypes().stream().map(EventType::getName).anyMatch(eventTypes::contains))
+//				.filter(service -> available == null || available == service.isAvailable())
+//				.filter(service -> (minPrice == null || minPrice <= service.getPrice()) && (maxPrice == null || maxPrice >= service.getPrice()))
+//				.map(ServiceMapper::toDto).toList();
 	}
 }
