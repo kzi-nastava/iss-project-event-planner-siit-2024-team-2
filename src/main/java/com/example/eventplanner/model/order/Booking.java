@@ -9,6 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.Date;
 
@@ -17,6 +19,11 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @jakarta.persistence.Entity
+@SQLDelete(sql
+        = "UPDATE booking "
+        + "SET isactive = false "
+        + "WHERE id = ?")
+@SQLRestriction("isActive = true")
 public class Booking extends Entity {
     @ManyToOne
     private Event event;

@@ -51,6 +51,7 @@ public class BookingService {
     public boolean delete(long id) {
         if (!bookingRepository.existsById(id))
             return false;
+        System.out.println(id);
         bookingRepository.deleteById(id);
         return true;
     }

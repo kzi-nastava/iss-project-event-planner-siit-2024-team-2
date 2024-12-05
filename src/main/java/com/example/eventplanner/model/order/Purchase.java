@@ -7,12 +7,19 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @jakarta.persistence.Entity
+@SQLDelete(sql
+        = "UPDATE purchase "
+        + "SET isactive = false "
+        + "WHERE id = ?")
+@SQLRestriction("isActive = true")
 public class Purchase extends Entity {
     @ManyToOne(cascade = {CascadeType.ALL})
     private Event event;

@@ -14,8 +14,8 @@ import org.hibernate.annotations.SQLRestriction;
 @AllArgsConstructor
 @MappedSuperclass
 @SQLDelete(sql
-        = "UPDATE teacher "
-        + "SET deleted = true "
+        = "UPDATE entity "
+        + "SET isactive = false "
         + "WHERE id = ?")
 @SQLRestriction("isActive = true")
 public class Entity {
