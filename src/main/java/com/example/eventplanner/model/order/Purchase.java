@@ -15,10 +15,6 @@ import org.hibernate.annotations.SQLRestriction;
 @NoArgsConstructor
 @AllArgsConstructor
 @jakarta.persistence.Entity
-@SQLDelete(sql
-        = "UPDATE purchase "
-        + "SET isactive = false "
-        + "WHERE id = ?")
 @SQLRestriction("isActive = true")
 public class Purchase extends Entity {
     @ManyToOne(cascade = {CascadeType.ALL})

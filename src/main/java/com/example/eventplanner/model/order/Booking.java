@@ -11,6 +11,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.annotations.SoftDelete;
+import org.hibernate.annotations.SoftDeleteType;
+import org.hibernate.jdbc.Expectation;
 
 import java.util.Date;
 
@@ -18,12 +21,9 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@jakarta.persistence.Entity
-@SQLDelete(sql
-        = "UPDATE booking "
-        + "SET isactive = false "
-        + "WHERE id = ?")
+@SoftDelete(columnName = "isActive", strategy = SoftDeleteType.ACTIVE)
 @SQLRestriction("isActive = true")
+@jakarta.persistence.Entity
 public class Booking extends Entity {
     @ManyToOne
     private Event event;
