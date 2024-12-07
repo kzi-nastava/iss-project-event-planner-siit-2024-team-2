@@ -16,13 +16,12 @@ import java.util.Optional;
 
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long> {
-    List<Event> findAllByIsActiveTrue();
-    Optional<Event> findByIdAndIsActiveTrue(long id);
-    List<Event> findTop5ByIsActiveTrueOrderByDateAsc();
+    List<Event> findAll();
+    List<Event> findTop5ByOrderByDateAsc();
     //List<Event> findAllFiltered(String name, String description, String type, Integer minMaxAttendances, Integer maxMaxAttendances, Boolean open, List<Double> longitudes, List<Double> latitudes, Double maxDistance, Date startDate, Date endDate, PageRequest pageRequest);
 
     @Query("SELECT e FROM Event e " +
-            "WHERE e.isActive = true " +
+            "WHERE e.active = true " +
             "AND (:name IS NULL OR LOWER(e.name) LIKE LOWER(CONCAT('%', :name, '%'))) " +
             "AND (:description IS NULL OR LOWER(e.description) LIKE LOWER(CONCAT('%', :description, '%'))) " +
             "AND (:type IS NULL OR e.type.name = :type) " +

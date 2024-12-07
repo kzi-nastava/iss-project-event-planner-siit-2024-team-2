@@ -15,16 +15,13 @@ import java.util.Optional;
 
 @Repository
 public interface ServiceRepository extends JpaRepository<Service, Long> {
-    List<Service> findAllByIsActiveTrue();
-    Optional<Service> findByIdAndIsActiveTrue(long id);
-
     @Query("SELECT s FROM Service s " +
-            "WHERE s.isActive = true " +
+            "WHERE s.active = true " +
             "AND (s.name LIKE %:name%)")
     Page<Service> searchByName(@Param("name") String name, Pageable pageable);
 
     @Query("SELECT s FROM Service s " +
-            "WHERE s.isActive = true " +
+            "WHERE s.active = true " +
             //"AND (:categories IS NULL OR s.category.name IN :categories) " +
             "AND (:minPrice IS NULL OR :minPrice <= s.price)" +
             "AND (:maxPrice IS NULL OR :maxPrice >= s.price)" +

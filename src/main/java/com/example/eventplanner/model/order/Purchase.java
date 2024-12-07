@@ -15,7 +15,7 @@ import org.hibernate.annotations.SQLRestriction;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@SQLRestriction("isActive = true")
+@SQLRestriction("active = true")
 @jakarta.persistence.Entity
 public class Purchase extends Entity {
     @ManyToOne(cascade = {CascadeType.ALL})

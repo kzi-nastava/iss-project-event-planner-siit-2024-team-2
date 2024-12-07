@@ -1,12 +1,8 @@
 package com.example.eventplanner.dto.order.booking;
 
 import com.example.eventplanner.dto.event.event.EventMapper;
-import com.example.eventplanner.dto.order.booking.BookingDto;
-import com.example.eventplanner.dto.order.booking.BookingNoIdDto;
-import com.example.eventplanner.dto.serviceproduct.ServiceMapper;
+import com.example.eventplanner.dto.serviceproduct.service.ServiceMapper;
 import com.example.eventplanner.model.order.Booking;
-
-import java.util.Optional;
 
 public class BookingMapper {
     public static BookingDto toDto(Booking booking) {

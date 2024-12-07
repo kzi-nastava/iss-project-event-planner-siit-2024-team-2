@@ -42,7 +42,7 @@ public class UserService {
     private boolean validateUser(RegisterUserDto user) {
         if (user == null) return false;
         if (user.getEmail() == null || user.getEmail().isEmpty())  return false;
-        if (userRepository.existsByEmailAndIsActiveTrue(user.getEmail())) return false;
+        if (userRepository.existsByEmail(user.getEmail())) return false;
         if (user.getPassword() == null || user.getPassword().length() < 6) return false;
         if (user.getFirstName() == null || user.getFirstName().isEmpty()) return false;
         if (user.getLastName() == null || user.getLastName().isEmpty()) return false;
@@ -51,20 +51,20 @@ public class UserService {
     }
 
     public List<RegisterUserDto> getAllUsers() {
-        return userRepository.findAllByIsActiveTrue()
+        return userRepository.findAll()
                 .stream()
                 .map(UserMapper::toDto)
                 .toList();
     }
 
     public RegisterUserDto getUserById(long id) {
-        return userRepository.findByIdAndIsActiveTrue(id)
+        return userRepository.findById(id)
                 .map(UserMapper::toDto)
                 .orElse(null);
     }
 
     public boolean delete(long id) {
-        return userRepository.findByIdAndIsActiveTrue(id)
+        return userRepository.findById(id)
                 .map(u -> {
                     u.setActive(false);
                     userRepository.save(u);
@@ -74,13 +74,13 @@ public class UserService {
 
     public RegisterUserDto login(LoginDto loginDto) {
         return UserMapper.toDto(userRepository
-                .findByEmailAndPasswordAndIsActiveTrue(loginDto.getEmail(), loginDto.getPassword())
+                .findByEmailAndPassword(loginDto.getEmail(), loginDto.getPassword())
                 .orElse(null));
     }
 
     public boolean resetPassword(ResetPasswordDto resetPasswordDto) {
         return userRepository
-                .findByIdAndIsActiveTrueAndPassword(resetPasswordDto.getUserId(), resetPasswordDto.getOldPassword())
+                .findByIdAndPassword(resetPasswordDto.getUserId(), resetPasswordDto.getOldPassword())
                 .map(u -> {
                     u.setPassword(resetPasswordDto.getNewPassword());
                     userRepository.save(u);

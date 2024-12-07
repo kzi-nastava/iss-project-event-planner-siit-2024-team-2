@@ -11,6 +11,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ServiceProductCategoryDto {
     private Long id;
-    private boolean isActive = true;
     private String name;
 }

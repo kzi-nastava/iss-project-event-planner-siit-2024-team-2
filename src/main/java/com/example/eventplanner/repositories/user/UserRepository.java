@@ -10,9 +10,7 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<BaseUser, Long> {
-    Optional<BaseUser> findByIdAndIsActiveTrue(long id);
-    Optional<BaseUser> findByIdAndIsActiveTrueAndPassword(long id, String password);
-    List<RegisterUserDto> findAllByIsActiveTrue();
-    Optional<BaseUser> findByEmailAndPasswordAndIsActiveTrue(String email, String password);
-    boolean existsByEmailAndIsActiveTrue(String email);
+    Optional<BaseUser> findByIdAndPassword(long id, String password);
+    Optional<BaseUser> findByEmailAndPassword(String email, String password);
+    boolean existsByEmail(String email);
 }
