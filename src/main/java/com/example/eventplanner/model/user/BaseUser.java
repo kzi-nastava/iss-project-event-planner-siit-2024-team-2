@@ -4,6 +4,7 @@ import com.example.eventplanner.model.Entity;
 import com.example.eventplanner.model.utils.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.List;
 
@@ -11,6 +12,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@SQLRestriction("active = true")
 @jakarta.persistence.Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class BaseUser extends Entity {

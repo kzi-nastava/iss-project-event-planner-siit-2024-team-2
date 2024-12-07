@@ -5,11 +5,13 @@ import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.utils.ReviewStatus;
 import jakarta.persistence.ManyToOne;
 import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@SQLRestriction("active = true")
 @jakarta.persistence.Entity
 public class ServiceProductReview extends Entity {
     private int grade;

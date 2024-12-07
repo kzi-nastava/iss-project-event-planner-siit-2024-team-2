@@ -4,6 +4,7 @@ import com.example.eventplanner.model.serviceproduct.ServiceProduct;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToMany;
 import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.List;
 
@@ -11,6 +12,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@SQLRestriction("active = true")
 @Entity
 public class EventOrganizer extends BaseUser {
     @ManyToMany
