@@ -17,14 +17,14 @@ public class ServiceProductCategoryService {
     private final ServiceProductCategoryRepository serviceProductCategoryRepository;
 
     public Collection<ServiceProductCategoryDto> getAll() {
-        return serviceProductCategoryRepository.findAllByIsActiveTrue()
+        return serviceProductCategoryRepository.findAll()
                 .stream()
                 .map(ServiceProductCategoryMapper::toDto)
                 .toList();
     }
 
     public ServiceProductCategoryDto getById(long id) {
-        return serviceProductCategoryRepository.findByIdAndIsActiveTrue(id)
+        return serviceProductCategoryRepository.findById(id)
                 .map(ServiceProductCategoryMapper::toDto)
                 .orElse(null);
     }
@@ -41,13 +41,12 @@ public class ServiceProductCategoryService {
         ServiceProductCategoryDto updatedDto = new ServiceProductCategoryDto();
         updatedDto.setId(id);
         updatedDto.setName(dto.getName());
-        updatedDto.setActive(true);
         serviceProductCategoryRepository.save(ServiceProductCategoryMapper.toEntity(updatedDto));
         return updatedDto;
     }
 
     public boolean delete(long id) {
-        return serviceProductCategoryRepository.findByIdAndIsActiveTrue(id)
+        return serviceProductCategoryRepository.findById(id)
                 .map(category -> {
                     category.setActive(false);
                     serviceProductCategoryRepository.save(category);

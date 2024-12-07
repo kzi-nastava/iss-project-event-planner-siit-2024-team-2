@@ -1,5 +1,7 @@
 package com.example.eventplanner.dto.order.purchase;
 
+import com.example.eventplanner.dto.event.event.EventDto;
+import com.example.eventplanner.dto.serviceproduct.product.ProductDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PurchaseNoIdDto {
-    private long eventId;
-    private long productId;
+    private EventDto event;
+    private ProductDto product;
     private double price;
 }

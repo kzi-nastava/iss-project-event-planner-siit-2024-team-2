@@ -1,8 +1,10 @@
 package com.example.eventplanner.dto.order.booking;
 
-import com.example.eventplanner.dto.order.booking.BookingDto;
-import com.example.eventplanner.dto.order.booking.BookingNoIdDto;
+import com.example.eventplanner.dto.event.event.EventMapper;
+import com.example.eventplanner.dto.serviceproduct.service.ServiceMapper;
 import com.example.eventplanner.model.order.Booking;
+
+import java.util.Date;
 
 public class BookingMapper {
     public static BookingDto toDto(Booking booking) {
@@ -10,10 +12,10 @@ public class BookingMapper {
             return null;
         return new BookingDto(
                 booking.getId(),
-                booking.getEvent().getId(),
-                booking.getService().getId(),
+                EventMapper.toDto(booking.getEvent()),
+                ServiceMapper.toDto(booking.getService()),
                 booking.getPrice(),
-                booking.getDate(),
+                booking.getDate().getTime(),
                 booking.getDuration()
         );
     }
@@ -22,38 +24,33 @@ public class BookingMapper {
         if (booking == null)
             return null;
         return new BookingNoIdDto(
-                booking.getEvent().getId(),
-                booking.getService().getId(),
+                EventMapper.toDto(booking.getEvent()),
+                ServiceMapper.toDto(booking.getService()),
                 booking.getPrice(),
-                booking.getDate(),
+                booking.getDate().getTime(),
                 booking.getDuration()
         );
     }
 
-    public static Booking toEntity(BookingDto dto) {
-        if (dto == null)
+    public static Booking toEntity(BookingDto dto, int depth) {
+        if (dto == null || depth > 1)
             return null;
-        Booking booking = new Booking(
-                null,
-                null,
+        return (Booking) new Booking(
+                EventMapper.toEntity(dto.getEvent(), depth + 1),
+                ServiceMapper.toEntity(dto.getService(), depth + 1),
                 dto.getPrice(),
-                dto.getDate(),
-                dto.getDuration());
-        booking.setId(dto.getId());
-        booking.setActive(true);
-        return booking;
+                new Date(dto.getDate()),
+                dto.getDuration()).withId(dto.getId());
     }
 
-    public static Booking toEntity(BookingNoIdDto dto) {
-        if (dto == null)
+    public static Booking toEntity(BookingNoIdDto dto, int depth) {
+        if (dto == null || depth > 1)
             return null;
-        Booking booking = new Booking(
-                null,
-                null,
+        return new Booking(
+                EventMapper.toEntity(dto.getEvent(), depth + 1),
+                ServiceMapper.toEntity(dto.getService(), depth + 1),
                 dto.getPrice(),
-                dto.getDate(),
+                new Date(dto.getDate()),
                 dto.getDuration());
-        booking.setActive(true);
-        return booking;
     }
 }

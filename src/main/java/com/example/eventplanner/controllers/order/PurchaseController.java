@@ -46,8 +46,7 @@ public class PurchaseController {
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<PurchaseDto> deletePurchase(@PathVariable("id") Long id) {
-        boolean success = purchaseService.delete(id);
-        return success ?
+        return purchaseService.delete(id) ?
                 new ResponseEntity<>(HttpStatus.NO_CONTENT) :
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }

@@ -6,11 +6,13 @@ import com.example.eventplanner.model.utils.ReviewStatus;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.ManyToOne;
 import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@SQLRestriction("active = true")
 @jakarta.persistence.Entity
 public class EventReview extends Entity {
     private int grade;

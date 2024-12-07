@@ -19,7 +19,6 @@ public class ServiceProductCategoryMapper {
         ServiceProductCategory entity = new ServiceProductCategory();
         entity.setId(dto.getId());
         entity.setName(dto.getName());
-        entity.setActive(true);
         return entity;
     }
 

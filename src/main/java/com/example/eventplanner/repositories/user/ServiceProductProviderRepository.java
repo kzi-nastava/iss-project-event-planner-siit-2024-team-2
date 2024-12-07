@@ -5,6 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface ServiceProductProviderRepository extends JpaRepository<ServiceProductProvider, Long> {
-    boolean existsByEmailAndIsActiveTrue(String email);
-    Optional<ServiceProductProvider> findByIdAndIsActiveTrue(long id);
+    boolean existsByEmail(String email);
 }

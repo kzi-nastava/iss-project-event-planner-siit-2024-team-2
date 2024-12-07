@@ -14,8 +14,8 @@ import java.util.Date;
 @AllArgsConstructor
 public class ActivityDto {
     private String name;
-    private Date activityStart;
-    private Date activityEnd;
+    private long activityStart;
+    private long activityEnd;
     private String description;
     private String location;
 }

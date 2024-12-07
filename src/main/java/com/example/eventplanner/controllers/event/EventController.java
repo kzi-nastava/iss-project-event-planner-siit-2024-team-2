@@ -4,6 +4,8 @@ import com.example.eventplanner.dto.event.activity.ActivityDto;
 import com.example.eventplanner.dto.event.event.EventDto;
 import com.example.eventplanner.dto.event.event.EventNoIdDto;
 import com.example.eventplanner.dto.event.event.EventSummaryDto;
+import com.example.eventplanner.dto.order.booking.BookingDto;
+import com.example.eventplanner.dto.order.purchase.PurchaseDto;
 import com.example.eventplanner.model.event.Activity;
 import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.order.Booking;
@@ -95,16 +97,16 @@ public class EventController {
     }
 
     @GetMapping(value = "/{id}/purchases")
-    public ResponseEntity<List<Purchase>> getPurchases(@PathVariable("id") Long id) {
-        List<Purchase> result = eventService.getPurchases(id);
+    public ResponseEntity<List<PurchaseDto>> getPurchases(@PathVariable("id") Long id) {
+        List<PurchaseDto> result = eventService.getPurchases(id);
         return result != null ?
             new ResponseEntity<>(result, HttpStatus.OK) :
             new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @GetMapping(value = "/{id}/bookings")
-    public ResponseEntity<List<Booking>> getBookings(@PathVariable("id") Long id) {
-        List<Booking> result = eventService.getBookings(id);
+    public ResponseEntity<List<BookingDto>> getBookings(@PathVariable("id") Long id) {
+        List<BookingDto> result = eventService.getBookings(id);
         return result != null ?
                 new ResponseEntity<>(result, HttpStatus.OK) :
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);

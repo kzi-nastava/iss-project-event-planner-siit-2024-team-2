@@ -16,7 +16,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ServiceDto {
 	private Long id;
-    private boolean isActive = true;
     private double price;
     private double discount;
     private String name;

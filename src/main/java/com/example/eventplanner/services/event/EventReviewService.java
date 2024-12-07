@@ -31,14 +31,14 @@ public class EventReviewService {
     private final UserRepository userRepository;
 
     public List<EventReviewDto> getAll() {
-        return eventReviewRepository.findAllByIsActiveTrue()
+        return eventReviewRepository.findAll()
                 .stream()
                 .map(EventReviewMapper::toDto)
                 .toList();
     }
 
     public EventReviewDto getById(long id) {
-        return eventReviewRepository.findByIdAndIsActiveTrue(id)
+        return eventReviewRepository.findById(id)
                 .map(EventReviewMapper::toDto)
                 .orElse(null);
     }
@@ -48,10 +48,10 @@ public class EventReviewService {
         eventReview.setActive(true);
 
         // link user
-        BaseUser user = userRepository.findByIdAndIsActiveTrue(dto.getUserId()).orElse(null);
+        BaseUser user = userRepository.findById(dto.getUserId()).orElse(null);
         eventReview.setUser(user);
         // link event
-        Event testEvent = eventRepository.findByIdAndIsActiveTrue(dto.getEventId()).orElse(null);
+        Event testEvent = eventRepository.findById(dto.getEventId()).orElse(null);
         eventReview.setEvent(testEvent);
 
         eventReviewRepository.save(eventReview);
@@ -59,7 +59,7 @@ public class EventReviewService {
     }
 
     public EventReviewDto update(EventReviewNoIdDto dto, long id) {
-        return eventReviewRepository.findByIdAndIsActiveTrue(id)
+        return eventReviewRepository.findById(id)
                 .map(e -> {
                     EventReview eventReview = new EventReview();
                     eventReview.setId(id);
@@ -79,7 +79,7 @@ public class EventReviewService {
     }
 
     public boolean delete(long id) {
-        return eventReviewRepository.findByIdAndIsActiveTrue(id)
+        return eventReviewRepository.findById(id)
                 .map(eventReview -> {
                     eventReview.setActive(false);
                     eventReviewRepository.save(eventReview);
@@ -89,7 +89,7 @@ public class EventReviewService {
     }
 
     public EventReviewStatusDto updateStatus(Long id, ReviewStatus status) {
-        return eventReviewRepository.findByIdAndIsActiveTrue(id)
+        return eventReviewRepository.findById(id)
                 .map(e -> {
                     EventReview eventReview = new EventReview();
                     eventReview.setReviewStatus(status);
@@ -99,7 +99,7 @@ public class EventReviewService {
     }
 
     public EventReviewCommentDto updateComment(Long id, String comment) {
-        return eventReviewRepository.findByIdAndIsActiveTrue(id)
+        return eventReviewRepository.findById(id)
                 .map(e -> {
                     EventReview eventReview = new EventReview();
                     eventReview.setComment(comment);

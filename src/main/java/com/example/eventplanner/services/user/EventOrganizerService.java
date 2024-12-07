@@ -1,20 +1,13 @@
 package com.example.eventplanner.services.user;
 
-import com.example.eventplanner.dto.event.event.EventDto;
-import com.example.eventplanner.dto.event.event.EventMapper;
-import com.example.eventplanner.dto.event.event.EventNoIdDto;
 import com.example.eventplanner.dto.user.user.EventOrganizerMapper;
 import com.example.eventplanner.dto.user.user.RegisterEventOrganizerDto;
 import com.example.eventplanner.dto.user.user.UpdateEventOrganizerDto;
-import com.example.eventplanner.dto.user.user.UserMapper;
-import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.user.EventOrganizer;
 import com.example.eventplanner.model.utils.UserRole;
 import com.example.eventplanner.repositories.user.EventOrganizerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +24,7 @@ public class EventOrganizerService {
     private boolean validateEventOrganizer(RegisterEventOrganizerDto user) {
         if (user == null) return false;
         if (user.getEmail() == null || user.getEmail().isEmpty()) return false;
-        if (eventOrganizerRepository.existsByEmailAndIsActiveTrue(user.getEmail())) return false;
+        if (eventOrganizerRepository.existsByEmail(user.getEmail())) return false;
         if (user.getPassword() == null || user.getPassword().length() < 6) return false;
         if (user.getFirstName() == null || user.getFirstName().isEmpty()) return false;
         if (user.getLastName() == null || user.getLastName().isEmpty()) return false;
@@ -40,13 +33,13 @@ public class EventOrganizerService {
     }
 
     public RegisterEventOrganizerDto getEventOrganizerById(long id) {
-        return eventOrganizerRepository.findByIdAndIsActiveTrue(id)
+        return eventOrganizerRepository.findById(id)
                 .map(EventOrganizerMapper::toDto)
                .orElse(null);
     }
 
     public UpdateEventOrganizerDto updateEventOrganizer(long id, UpdateEventOrganizerDto eventOrganizerDto) {
-        return eventOrganizerRepository.findByIdAndIsActiveTrue(id)
+        return eventOrganizerRepository.findById(id)
                 .map(existing -> {
                     EventOrganizer eventOrganizer = EventOrganizerMapper.toUpdateEntity(eventOrganizerDto);
                     eventOrganizer.setActive(true);

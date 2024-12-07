@@ -4,6 +4,8 @@ import com.example.eventplanner.model.event.Activity;
 import com.example.eventplanner.model.event.Budget;
 import com.example.eventplanner.model.event.Event;
 
+import java.util.Date;
+
 public class EventMapper {
     public static EventDto toDto(Event event) {
         if (event == null)
@@ -17,7 +19,7 @@ public class EventMapper {
                 event.isOpen(),
                 event.getLongitude(),
                 event.getLatitude(),
-                event.getDate(),
+                event.getDate().getTime(),
                 event.getActivities().stream().map(Activity::getId).toList(),
                 event.getBudgets().stream().map(Budget::getId).toList()
         );
@@ -34,7 +36,7 @@ public class EventMapper {
                 event.isOpen(),
                 event.getLongitude(),
                 event.getLatitude(),
-                event.getDate(),
+                event.getDate().getTime(),
                 event.getActivities().stream().map(Activity::getId).toList(),
                 event.getBudgets().stream().map(Budget::getId).toList()
         );
@@ -52,11 +54,11 @@ public class EventMapper {
                 event.isOpen(),
                 event.getLongitude(),
                 event.getLatitude(),
-                event.getDate()
+                event.getDate().getTime()
         );
     }
 
-    public static Event toEntity(EventDto dto) {
+    public static Event toEntity(EventDto dto, int depth) {
         if (dto == null)
             return null;
         Event event = new Event(
@@ -67,7 +69,7 @@ public class EventMapper {
                 dto.isOpen(),
                 dto.getLongitude(),
                 dto.getLatitude(),
-                dto.getDate(),
+                new Date(dto.getDate()),
                 null,
                 null);
         event.setId(dto.getId());
@@ -86,7 +88,7 @@ public class EventMapper {
                 dto.isOpen(),
                 dto.getLongitude(),
                 dto.getLatitude(),
-                dto.getDate(),
+                new Date(dto.getDate()),
                 null,
                 null);
         event.setActive(true);

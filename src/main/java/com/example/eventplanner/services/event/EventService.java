@@ -1,5 +1,13 @@
 package com.example.eventplanner.services.event;
 
+import com.example.eventplanner.dto.event.event.EventSummaryDto;
+import com.example.eventplanner.dto.order.booking.BookingDto;
+import com.example.eventplanner.dto.order.purchase.PurchaseDto;
+import com.example.eventplanner.model.event.Event;
+import com.example.eventplanner.model.order.Booking;
+import com.example.eventplanner.services.order.BookingService;
+import com.example.eventplanner.services.order.PurchaseService;
+import lombok.Getter;
 import com.example.eventplanner.dto.event.activity.ActivityDto;
 import com.example.eventplanner.dto.event.activity.ActivityMapper;
 import com.example.eventplanner.dto.event.event.EventDto;
@@ -32,14 +40,14 @@ public class EventService {
     private final BookingService bookingService;
 
     public List<EventDto> getAll() {
-        return eventRepository.findAllByIsActiveTrue()
+        return eventRepository.findAll()
                 .stream()
                 .map(EventMapper::toDto)
                 .toList();
     }
 
     public EventDto getById(long id) {
-        return eventRepository.findByIdAndIsActiveTrue(id)
+        return eventRepository.findById(id)
                 .map(EventMapper::toDto)
                 .orElse(null);
     }
@@ -56,12 +64,12 @@ public class EventService {
     }
 
     public EventDto update(EventNoIdDto dto, long id) {
-        return eventRepository.findByIdAndIsActiveTrue(id)
+        return eventRepository.findById(id)
                 .map(existingEvent -> {
                     Event event = EventMapper.toEntity(dto);
                     event.setId(id);
                     event.setActive(true);
-                    event.setDate(dto.getDate());
+                    event.setDate(new Date(dto.getDate()));
                     event.setDescription(dto.getDescription());
                     event.setName(dto.getName());
                     event.setOpen(dto.isOpen());
@@ -78,7 +86,7 @@ public class EventService {
     }
 
     public boolean delete(long id) {
-        return eventRepository.findByIdAndIsActiveTrue(id)
+        return eventRepository.findById(id)
                 .map(event -> {
                     event.setActive(false);
                     eventRepository.save(event);
@@ -88,7 +96,7 @@ public class EventService {
     }
 
     public Collection<EventSummaryDto> getTop5() {
-        return eventRepository.findTop5ByIsActiveTrueOrderByDateAsc()
+        return eventRepository.findTop5ByOrderByDateAsc()
                 .stream()
                 .map(EventMapper::toSummaryDto)
                 .toList();
@@ -133,7 +141,7 @@ public class EventService {
     }
 
     public boolean createAgenda(long id, List<ActivityDto> activityDtos) {
-        return eventRepository.findByIdAndIsActiveTrue(id)
+        return eventRepository.findById(id)
                 .map(event -> {
                     List<Activity> activities = activityDtos.stream()
                             .map(ActivityMapper::toEntity)
@@ -145,15 +153,15 @@ public class EventService {
                 .orElse(false);
     }
 
-    public List<Purchase> getPurchases(long id) {
-        return purchaseService.getPurchases().values()
+    public List<PurchaseDto> getPurchases(long id) {
+        return purchaseService.getAll()
                 .stream()
                 .filter(purchase -> purchase.getEvent().getId() == id)
                 .toList();
     }
 
-    public List<Booking> getBookings(long id) {
-        return bookingService.getBookings().values()
+    public List<BookingDto> getBookings(long id) {
+        return bookingService.getAll()
                 .stream()
                 .filter(booking -> booking.getEvent().getId() == id)
                 .toList();

@@ -11,18 +11,17 @@ public class ServiceMapper {
             return null;
         }
         return new ServiceDto(
-                service.getId(), service.isActive(), service.getPrice(), service.getDiscount(), service.getName(),
+                service.getId(), service.getPrice(), service.getDiscount(), service.getName(),
                 service.getDescription(), service.getAvailableEventTypes(), service.getCategory(), service.isAvailable());
         // service.getImages().get(0),
     }
 
-    public static Service toEntity(ServiceDto serviceDto) {
+    public static Service toEntity(ServiceDto serviceDto, int depth) {
         if (serviceDto == null) {
             return null;
         }
         Service service = new Service();
         service.setId(serviceDto.getId());
-        service.setActive(serviceDto.isActive());
         service.setPrice(serviceDto.getPrice());
         service.setDiscount(serviceDto.getDiscount());
         service.setName(serviceDto.getName());
@@ -42,7 +41,6 @@ public class ServiceMapper {
             return null;
         }
         Service service = new Service();
-        service.setActive(dto.isActive());
         service.setPrice(dto.getPrice());
         service.setDiscount(dto.getDiscount());
         service.setName(dto.getName());

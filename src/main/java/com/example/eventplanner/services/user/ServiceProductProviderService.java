@@ -23,7 +23,7 @@ public class ServiceProductProviderService {
     private boolean validateServiceProductProvider(RegisterServiceProductProviderDto user) {
         if (user == null) return false;
         if (user.getEmail() == null || user.getEmail().isEmpty()) return false;
-        if (serviceProductProviderRepository.existsByEmailAndIsActiveTrue(user.getEmail())) return false;
+        if (serviceProductProviderRepository.existsByEmail(user.getEmail())) return false;
         if (user.getPassword() == null || user.getPassword().length() < 6) return false;
         if (user.getFirstName() == null || user.getFirstName().isEmpty()) return false;
         if (user.getCompanyName() == null || user.getCompanyName().isEmpty()) return false;
@@ -33,14 +33,14 @@ public class ServiceProductProviderService {
     }
 
     public RegisterServiceProductProviderDto getServiceProductProviderById(long id) {
-        return serviceProductProviderRepository.findByIdAndIsActiveTrue(id)
+        return serviceProductProviderRepository.findById(id)
                 .map(ServiceProductProviderMapper::toDto)
                 .orElse(null);
     }
 
 
     public UpdateServiceProductProviderDto updateServiceProductProvider(long id, UpdateServiceProductProviderDto serviceProductProviderDto) {
-        return serviceProductProviderRepository.findByIdAndIsActiveTrue(id)
+        return serviceProductProviderRepository.findById(id)
                 .map(existing -> {
                     ServiceProductProvider serviceProductProvider = ServiceProductProviderMapper.toUpdateEntity(serviceProductProviderDto);
                     serviceProductProvider.setActive(true);

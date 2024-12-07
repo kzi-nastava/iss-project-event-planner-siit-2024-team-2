@@ -14,7 +14,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateServiceDto {
-    private boolean isActive = true;
     private double price;
     private double discount;
     private String name;

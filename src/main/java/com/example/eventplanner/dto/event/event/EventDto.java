@@ -24,7 +24,7 @@ public class EventDto {
     private boolean isOpen;
     private double longitude;
     private double latitude;
-    private Date date;
+    private long date;
     private List<Long> activityIds;
     private List<Long> budgets;
 }

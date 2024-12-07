@@ -10,7 +10,4 @@ import java.util.Optional;
 
 @Repository
 public interface EventReviewRepository extends JpaRepository<EventReview, Long> {
-    List<EventReview> findAllByIsActiveTrue();
-
-    Optional<EventReview> findByIdAndIsActiveTrue(long id);
 }

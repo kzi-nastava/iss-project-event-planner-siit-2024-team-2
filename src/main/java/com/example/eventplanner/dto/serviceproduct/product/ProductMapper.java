@@ -17,8 +17,8 @@ public class ProductMapper {
         dto.setPrice(entity.getPrice());
         return dto;
     }
-    public static Product toEntity(ProductDto dto) {
-        if (dto == null) {
+    public static Product toEntity(ProductDto dto, int depth) {
+        if (dto == null || depth > 1) {
             return null;
         }
         Product entity = new Product();
@@ -29,8 +29,8 @@ public class ProductMapper {
         return entity;
     }
 
-    public static CreateProductDto toCreateDto(Product entity) {
-        if (entity == null) {
+    public static CreateProductDto toCreateDto(Product entity, int depth) {
+        if (entity == null || depth > 1) {
             return null;
         }
         CreateProductDto dto = new CreateProductDto();

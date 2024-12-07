@@ -5,14 +5,16 @@ import com.example.eventplanner.model.event.Activity;
 import com.example.eventplanner.model.event.Budget;
 import com.example.eventplanner.model.event.Event;
 
+import java.util.Date;
+
 public class ActivityMapper {
     public static ActivityDto toDto(Activity activity) {
         if (activity == null)
             return null;
         return new ActivityDto(
                 activity.getName(),
-                activity.getActivityStart(),
-                activity.getActivityEnd(),
+                activity.getActivityStart().getTime(),
+                activity.getActivityEnd().getTime(),
                 activity.getDescription(),
                 activity.getLocation()
         );
@@ -22,8 +24,8 @@ public class ActivityMapper {
             return null;
         Activity activity = new Activity(
                 dto.getName(),
-                dto.getActivityStart(),
-                dto.getActivityEnd(),
+                new Date(dto.getActivityStart()),
+                new Date(dto.getActivityEnd()),
                 dto.getDescription(),
                 dto.getLocation());
         activity.setActive(true);

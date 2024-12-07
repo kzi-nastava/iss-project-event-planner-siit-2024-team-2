@@ -46,8 +46,7 @@ public class BookingController {
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<BookingDto> deleteBooking(@PathVariable("id") Long id) {
-        boolean success = bookingService.delete(id);
-        return success ?
+        return bookingService.delete(id) ?
                 new ResponseEntity<>(HttpStatus.NO_CONTENT) :
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }

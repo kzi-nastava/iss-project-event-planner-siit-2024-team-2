@@ -10,6 +10,4 @@ import java.util.Optional;
 
 @Repository
 public interface ServiceProductCategoryRepository extends JpaRepository<ServiceProductCategory, Long> {
-    List<ServiceProductCategory> findAllByIsActiveTrue();
-    Optional<ServiceProductCategory> findByIdAndIsActiveTrue(long id);
 }
