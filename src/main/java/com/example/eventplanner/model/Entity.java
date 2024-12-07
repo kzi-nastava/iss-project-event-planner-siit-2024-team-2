@@ -1,33 +1,23 @@
 package com.example.eventplanner.model;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
-import org.hibernate.annotations.SoftDelete;
-import org.hibernate.annotations.SoftDeleteType;
+import org.hibernate.annotations.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @MappedSuperclass
-@SoftDelete(columnName = "isActive", strategy = SoftDeleteType.ACTIVE)
-@SQLRestriction("isActive = true")
+@SQLRestriction("active = true")
 public class Entity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-//    private boolean isActive = true;
+    @ColumnDefault("true")
+    private boolean active = true;
     public Entity withId(long id) {
         this.id = id;
         return this;
     }
-    public boolean isActive() {
-        return true;
-    }
-    public void setActive(boolean active) {}
 }

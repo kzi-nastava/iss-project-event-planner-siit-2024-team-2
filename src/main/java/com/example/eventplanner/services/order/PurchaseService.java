@@ -3,18 +3,13 @@ package com.example.eventplanner.services.order;
 import com.example.eventplanner.dto.order.purchase.PurchaseDto;
 import com.example.eventplanner.dto.order.purchase.PurchaseMapper;
 import com.example.eventplanner.dto.order.purchase.PurchaseNoIdDto;
-import com.example.eventplanner.model.Entity;
-import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.order.Purchase;
-import com.example.eventplanner.model.serviceproduct.Service;
 import com.example.eventplanner.repositories.order.PurchaseRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @org.springframework.stereotype.Service
 @Getter

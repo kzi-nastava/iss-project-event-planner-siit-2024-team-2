@@ -10,9 +10,10 @@ public class ServiceMapper {
         if (service == null) {
             return null;
         }
+        String image = service.getImages().isEmpty() ? "" : service.getImages().get(0);
         return new ServiceDto(
                 service.getId(), service.isActive(), service.getPrice(), service.getDiscount(), service.getName(),
-                service.getDescription(), service.getImages().get(0), service.getAvailableEventTypes(), service.getCategory(), service.isAvailable());
+                service.getDescription(), image, service.getAvailableEventTypes(), service.getCategory(), service.isAvailable());
     }
 
     public static Service toEntity(ServiceDto serviceDto, int depth) {

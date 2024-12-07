@@ -3,18 +3,13 @@ package com.example.eventplanner.services.order;
 import com.example.eventplanner.dto.order.booking.BookingDto;
 import com.example.eventplanner.dto.order.booking.BookingMapper;
 import com.example.eventplanner.dto.order.booking.BookingNoIdDto;
-import com.example.eventplanner.model.Entity;
-import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.order.Booking;
-import com.example.eventplanner.model.serviceproduct.Service;
 import com.example.eventplanner.repositories.order.BookingRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @org.springframework.stereotype.Service
 @Getter
@@ -51,7 +46,6 @@ public class BookingService {
     public boolean delete(long id) {
         if (!bookingRepository.existsById(id))
             return false;
-        System.out.println(id);
         bookingRepository.deleteById(id);
         return true;
     }
