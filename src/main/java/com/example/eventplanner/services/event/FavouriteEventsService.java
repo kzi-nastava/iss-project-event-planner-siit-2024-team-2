@@ -1,18 +1,10 @@
 package com.example.eventplanner.services.event;
 
-import com.example.eventplanner.dto.event.FavouriteEventsDto;
-import com.example.eventplanner.dto.serviceproduct.CreateServiceDto;
-import com.example.eventplanner.dto.serviceproduct.ServiceDto;
-import com.example.eventplanner.dto.serviceproduct.ServiceMapper;
-import com.example.eventplanner.model.Entity;
+import com.example.eventplanner.dto.event.event.FavouriteEventsDto;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
-
-import static java.util.spi.ToolProvider.findFirst;
 
 @Service
 public class FavouriteEventsService {

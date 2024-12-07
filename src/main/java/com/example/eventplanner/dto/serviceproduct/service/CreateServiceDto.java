@@ -1,4 +1,4 @@
-package com.example.eventplanner.dto.serviceproduct;
+package com.example.eventplanner.dto.serviceproduct.service;
 
 import com.example.eventplanner.model.event.EventType;
 import com.example.eventplanner.model.serviceproduct.ServiceProductCategory;
@@ -14,11 +14,12 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateServiceDto {
+    private boolean isActive = true;
     private double price;
     private double discount;
     private String name;
     private String description;
-    private String coverImage;
+    //private String coverImage;
     private List<EventType> availableEventTypes;
     private ServiceProductCategory category;
     private boolean available;

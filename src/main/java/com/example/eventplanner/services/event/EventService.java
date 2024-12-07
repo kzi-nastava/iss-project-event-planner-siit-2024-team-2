@@ -13,88 +13,91 @@ import com.example.eventplanner.dto.event.activity.ActivityMapper;
 import com.example.eventplanner.dto.event.event.EventDto;
 import com.example.eventplanner.dto.event.event.EventMapper;
 import com.example.eventplanner.dto.event.event.EventNoIdDto;
-import com.example.eventplanner.model.Entity;
+import com.example.eventplanner.dto.event.event.EventSummaryDto;
 import com.example.eventplanner.model.event.Activity;
+import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.event.EventType;
+import com.example.eventplanner.model.order.Booking;
+import com.example.eventplanner.model.order.Purchase;
+import com.example.eventplanner.repositories.event.EventRepository;
+import com.example.eventplanner.repositories.event.EventTypeRepository;
+import com.example.eventplanner.services.order.BookingService;
+import com.example.eventplanner.services.order.PurchaseService;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Stream;
 
 @Service
-@Getter
-@Setter
 @RequiredArgsConstructor
 public class EventService {
-    Map<Long, Event> events = new HashMap<>();
-    private long idCounter = 0;
+
+    private final EventRepository eventRepository;
+    private final EventTypeRepository eventTypeRepository;
     private final PurchaseService purchaseService;
     private final BookingService bookingService;
 
     public List<EventDto> getAll() {
-        return events.values()
+        return eventRepository.findAllByIsActiveTrue()
                 .stream()
-                .filter(Entity::isActive)
                 .map(EventMapper::toDto)
                 .toList();
     }
 
     public EventDto getById(long id) {
-        if (!events.containsKey(id) || !events.get(id).isActive())
-            return null;
-        return EventMapper.toDto(events.get(id));
+        return eventRepository.findByIdAndIsActiveTrue(id)
+                .map(EventMapper::toDto)
+                .orElse(null);
     }
 
     public EventDto create(EventNoIdDto dto) {
         Event event = EventMapper.toEntity(dto);
-        event.setId(idCounter++);
         event.setActive(true);
-        // link type
-        EventType tmpType = new EventType();
-        tmpType.setId(event.getId());
-        event.setType(tmpType);
-        // link activities
+        eventTypeRepository.findById(dto.getTypeId()).ifPresent(event::setType);
         event.setActivities(new ArrayList<>());
-        // link budgets
         event.setBudgets(new ArrayList<>());
 
-        events.put(event.getId(), event);
-        return EventMapper.toDto(event);
+        Event savedEvent = eventRepository.save(event);
+        return EventMapper.toDto(savedEvent);
     }
 
     public EventDto update(EventNoIdDto dto, long id) {
-        if (this.getById(id) == null)
-            return null;
-        Event event = EventMapper.toEntity(dto);
-
-        // link type
-        EventType tmpType = new EventType();
-        tmpType.setId(dto.getTypeId());
-        event.setType(tmpType);
-        // link activities
-        event.setActivities(new ArrayList<>());
-        // link budgets
-        event.setBudgets(new ArrayList<>());
-
-        events.put(id, EventMapper.toEntity(dto));
-        return EventMapper.toDto(event);
+        return eventRepository.findByIdAndIsActiveTrue(id)
+                .map(existingEvent -> {
+                    Event event = EventMapper.toEntity(dto);
+                    event.setId(id);
+                    event.setActive(true);
+                    event.setDate(dto.getDate());
+                    event.setDescription(dto.getDescription());
+                    event.setName(dto.getName());
+                    event.setOpen(dto.isOpen());
+                    event.setLatitude(dto.getLatitude());
+                    event.setLongitude(dto.getLongitude());
+                    event.setMaxAttendances(dto.getMaxAttendances());
+                    eventTypeRepository.findById(dto.getTypeId()).ifPresent(event::setType);
+                    event.setActivities(new ArrayList<>());
+                    event.setBudgets(new ArrayList<>());
+                    Event updatedEvent = eventRepository.save(event);
+                    return EventMapper.toDto(updatedEvent);
+                })
+                .orElse(null);
     }
 
     public boolean delete(long id) {
-        if (this.getById(id) == null)
-            return false;
-        events.get(id).setActive(false);
-        return true;
+        return eventRepository.findByIdAndIsActiveTrue(id)
+                .map(event -> {
+                    event.setActive(false);
+                    eventRepository.save(event);
+                    return true;
+                })
+                .orElse(false);
     }
 
     public Collection<EventSummaryDto> getTop5() {
-        return events.values()
+        return eventRepository.findTop5ByIsActiveTrueOrderByDateAsc()
                 .stream()
-                .filter(Entity::isActive)
-                .sorted(Comparator.comparing(Event::getDate))
-                .limit(5)
                 .map(EventMapper::toSummaryDto)
                 .toList();
     }
@@ -104,22 +107,12 @@ public class EventService {
             Integer minMaxAttendances, Integer maxMaxAttendances, Boolean open,
             List<Double> longitudes, List<Double> latitudes, Double maxDistance,
             Date startDate, Date endDate) {
-        Stream<Event> filtered = events.values().stream()
-                .filter(Entity::isActive)
-                .filter(event -> name == null || name.isEmpty() || event.getName().toLowerCase().contains(name.toLowerCase()))
-                .filter(event -> description == null || description.isEmpty()
-                        || event.getDescription().toLowerCase().contains(description.toLowerCase()))
-                .filter(event -> type == null || type.isEmpty() || event.getType().getName().equals(type))
-                .filter(event -> minMaxAttendances == null || event.getMaxAttendances() >= maxMaxAttendances)
-                .filter(event -> maxMaxAttendances == null || event.getMaxAttendances() <= maxMaxAttendances)
-                .filter(event -> open == null || event.isOpen() == open)
-                .filter(event -> latitudes == null || longitudes == null || latitudes.size() != longitudes.size()
-                        || isEventNearAnyCity(event, longitudes, latitudes, maxDistance))
-                .filter(event -> startDate == null || event.getDate().after(startDate))
-                .filter(event -> endDate == null || event.getDate().before(endDate));
-        if (size != null && size > 0)
-            filtered = filtered.skip((long) page * size).limit(size);
-        return filtered.map(EventMapper::toDto).toList();
+        PageRequest pageRequest = PageRequest.of(page, size != null ? size : 10);
+        return eventRepository.findAllFiltered(
+                name, description, type, minMaxAttendances, maxMaxAttendances, open,
+                //longitudes, latitudes, maxDistance,
+                startDate, endDate, pageRequest
+        ).stream().map(EventMapper::toDto).toList();
     }
 
     private static boolean isEventNearAnyCity(Event event, List<Double> longitudes, List<Double> latitudes, double maxDistance) {
@@ -137,7 +130,6 @@ public class EventService {
     }
 
     private static double haversine(double lat1, double lon1, double lat2, double lon2) {
-        // Earth radius in kilometers
         final int R = 6371;
         double latDistance = Math.toRadians(lat2 - lat1);
         double lonDistance = Math.toRadians(lon2 - lon1);
@@ -145,16 +137,20 @@ public class EventService {
                 + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
                 * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return R * c; // returns the distance in kilometers
+        return R * c;
     }
 
     public boolean createAgenda(long id, List<ActivityDto> activityDtos) {
-        if (!events.containsKey(id) || !events.get(id).isActive())
-            return false;
-        Event event = events.get(id);
-        List<Activity> activities = activityDtos.stream().map(ActivityMapper::toEntity).toList();
-        event.setActivities(activities);
-        return true;
+        return eventRepository.findByIdAndIsActiveTrue(id)
+                .map(event -> {
+                    List<Activity> activities = activityDtos.stream()
+                            .map(ActivityMapper::toEntity)
+                            .toList();
+                    event.setActivities(activities);
+                    eventRepository.save(event);
+                    return true;
+                })
+                .orElse(false);
     }
 
     public List<PurchaseDto> getPurchases(long id) {
