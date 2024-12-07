@@ -4,6 +4,8 @@ import com.example.eventplanner.dto.event.event.EventMapper;
 import com.example.eventplanner.dto.serviceproduct.service.ServiceMapper;
 import com.example.eventplanner.model.order.Booking;
 
+import java.util.Date;
+
 public class BookingMapper {
     public static BookingDto toDto(Booking booking) {
         if (booking == null)
@@ -13,7 +15,7 @@ public class BookingMapper {
                 EventMapper.toDto(booking.getEvent()),
                 ServiceMapper.toDto(booking.getService()),
                 booking.getPrice(),
-                booking.getDate(),
+                booking.getDate().getTime(),
                 booking.getDuration()
         );
     }
@@ -25,7 +27,7 @@ public class BookingMapper {
                 EventMapper.toDto(booking.getEvent()),
                 ServiceMapper.toDto(booking.getService()),
                 booking.getPrice(),
-                booking.getDate(),
+                booking.getDate().getTime(),
                 booking.getDuration()
         );
     }
@@ -37,7 +39,7 @@ public class BookingMapper {
                 EventMapper.toEntity(dto.getEvent(), depth + 1),
                 ServiceMapper.toEntity(dto.getService(), depth + 1),
                 dto.getPrice(),
-                dto.getDate(),
+                new Date(dto.getDate()),
                 dto.getDuration()).withId(dto.getId());
     }
 
@@ -48,7 +50,7 @@ public class BookingMapper {
                 EventMapper.toEntity(dto.getEvent(), depth + 1),
                 ServiceMapper.toEntity(dto.getService(), depth + 1),
                 dto.getPrice(),
-                dto.getDate(),
+                new Date(dto.getDate()),
                 dto.getDuration());
     }
 }

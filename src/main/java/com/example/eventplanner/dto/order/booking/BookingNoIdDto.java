@@ -17,6 +17,6 @@ public class BookingNoIdDto {
     private EventDto event;
     private ServiceDto service;
     private double price;
-    private Date date;
+    private long date;
     private double duration;
 }

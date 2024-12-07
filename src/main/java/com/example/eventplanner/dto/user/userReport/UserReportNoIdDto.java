@@ -14,6 +14,6 @@ import java.util.Date;
 public class UserReportNoIdDto {
     private long reporterId;
     private long reportedId;
-    private Date dateApproved;
+    private Long dateApproved;
     private String reason;
 }

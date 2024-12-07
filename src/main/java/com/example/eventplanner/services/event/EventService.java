@@ -69,7 +69,7 @@ public class EventService {
                     Event event = EventMapper.toEntity(dto);
                     event.setId(id);
                     event.setActive(true);
-                    event.setDate(dto.getDate());
+                    event.setDate(new Date(dto.getDate()));
                     event.setDescription(dto.getDescription());
                     event.setName(dto.getName());
                     event.setOpen(dto.isOpen());
