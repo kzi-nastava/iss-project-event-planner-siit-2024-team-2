@@ -1,20 +1,18 @@
 package com.example.eventplanner.services.order;
 
-import com.example.eventplanner.dto.order.booking.BookingMapper;
 import com.example.eventplanner.dto.order.purchase.PurchaseDto;
 import com.example.eventplanner.dto.order.purchase.PurchaseMapper;
 import com.example.eventplanner.dto.order.purchase.PurchaseNoIdDto;
 import com.example.eventplanner.model.event.Event;
-import com.example.eventplanner.model.order.Booking;
 import com.example.eventplanner.model.order.Purchase;
-import com.example.eventplanner.model.serviceproduct.Service;
+import com.example.eventplanner.model.serviceproduct.Product;
 import com.example.eventplanner.repositories.event.EventRepository;
 import com.example.eventplanner.repositories.order.PurchaseRepository;
+import com.example.eventplanner.repositories.serviceproduct.ProductRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
 import java.util.List;
 
 @org.springframework.stereotype.Service
@@ -24,6 +22,7 @@ import java.util.List;
 public class PurchaseService {
     private final PurchaseRepository purchaseRepository;
     private final EventRepository eventRepository;
+    private final ProductRepository productRepository;
 
     public List<PurchaseDto> getAll() {
         return purchaseRepository.findAll()
@@ -40,7 +39,8 @@ public class PurchaseService {
 
     public PurchaseDto create(PurchaseNoIdDto dto) {
         Event event = eventRepository.getReferenceById(dto.getEventId());
-        Purchase purchase = PurchaseMapper.toEntity(dto, event, null);
+        Product product = productRepository.getReferenceById(dto.getProductId());
+        Purchase purchase = PurchaseMapper.toEntity(dto, event, product);
         return PurchaseMapper.toDto(purchaseRepository.save(purchase));
     }
 
@@ -50,10 +50,10 @@ public class PurchaseService {
             return null;
 
         Event event = eventRepository.getReferenceById(dto.getEventId());
-//        Service service = serviceRepository.getReferenceById(dto.getServiceId());
+        Product product = productRepository.getReferenceById(dto.getProductId());
 
         purchase.setEvent(event);
-//        purchase.setService(service);
+        purchase.setProduct(product);
         purchase.setPrice(dto.getPrice());
         return PurchaseMapper.toDto(purchaseRepository.save(purchase));
     }
