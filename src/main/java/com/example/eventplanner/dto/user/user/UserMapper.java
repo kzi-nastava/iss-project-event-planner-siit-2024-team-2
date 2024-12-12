@@ -70,4 +70,20 @@ public class UserMapper {
                 user.getPhoneNumber()
         );
     }
+
+    public static ServiceProductProviderDto toServiceProductProviderDto(ServiceProductProvider spp) {
+        if (spp == null)
+            return null;
+        return new ServiceProductProviderDto(
+                spp.getId(),
+                spp.getEmail(),
+                spp.getUserRole(),
+                spp.getFirstName(),
+                spp.getLastName(),
+                spp.getAddress(),
+                spp.getPhoneNumber(),
+                spp.getCompanyName(),
+                spp.getCompanyDescription()
+        );
+    }
 }

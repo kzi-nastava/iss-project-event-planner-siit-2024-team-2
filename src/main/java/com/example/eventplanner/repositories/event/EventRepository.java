@@ -5,6 +5,7 @@ import io.micrometer.observation.ObservationFilter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -17,7 +18,6 @@ import java.util.Optional;
 
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long> {
-    List<Event> findAll();
     List<Event> findTop5ByOrderByDateAsc();
     //List<Event> findAllFiltered(String name, String description, String type, Integer minMaxAttendances, Integer maxMaxAttendances, Boolean open, List<Double> longitudes, List<Double> latitudes, Double maxDistance, Date startDate, Date endDate, PageRequest pageRequest);
 
@@ -33,6 +33,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "AND (:endDate IS NULL OR e.date <= :endDate)"
     )
     Page<Event> findAllFiltered(
+            Sort sort,
             @Param("name") String name,
             @Param("description") String description,
             @Param("type") String type,

@@ -15,6 +15,8 @@ import com.example.eventplanner.services.event.EventService;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,9 +32,11 @@ public class EventController {
     private final EventService eventService;
     
     @GetMapping
-    public ResponseEntity<Collection<EventDto>> getEvents(
+    public ResponseEntity<Page<EventDto>> getEvents(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(required = false) Integer size,
+            @RequestParam(defaultValue = "id") String sortField,
+            @RequestParam(defaultValue = "desc") Sort.Direction sortDirection,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String description,
             @RequestParam(required = false) String type,
@@ -44,8 +48,9 @@ public class EventController {
             @RequestParam(required = false) Double maxDistance,
             @RequestParam(required = false) Date startDate,
             @RequestParam(required = false) Date endDate) {
-        Collection<EventDto> result = eventService.getAllFilteredPaginated(
-                page, size, name, description, type, minMaxAttendances, maxMaxAttendances,
+        Sort sort = Sort.by(sortDirection, sortField);
+        Page<EventDto> result = eventService.getAllFilteredPaginatedSorted(
+                page, size, sort, name, description, type, minMaxAttendances, maxMaxAttendances,
                 open, longitudes, latitudes, maxDistance, startDate, endDate);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

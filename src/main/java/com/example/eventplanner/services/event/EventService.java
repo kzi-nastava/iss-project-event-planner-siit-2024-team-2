@@ -24,7 +24,9 @@ import com.example.eventplanner.repositories.event.EventTypeRepository;
 import com.example.eventplanner.services.order.BookingService;
 import com.example.eventplanner.services.order.PurchaseService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -94,17 +96,17 @@ public class EventService {
                 .toList();
     }
 
-    public Collection<EventDto> getAllFilteredPaginated(
-            int page, Integer size, String name, String description, String type,
+    public Page<EventDto> getAllFilteredPaginatedSorted(
+            int page, Integer size, Sort sort, String name, String description, String type,
             Integer minMaxAttendances, Integer maxMaxAttendances, Boolean open,
             List<Double> longitudes, List<Double> latitudes, Double maxDistance,
             Date startDate, Date endDate) {
-        PageRequest pageRequest = PageRequest.of(page, size != null ? size : 10);
+        PageRequest pageRequest = PageRequest.of(page, size != null ? size : 10, sort);
         return eventRepository.findAllFiltered(
-                name, description, type, minMaxAttendances, maxMaxAttendances, open,
+                sort, name, description, type, minMaxAttendances, maxMaxAttendances, open,
                 //longitudes, latitudes, maxDistance,
                 startDate, endDate, pageRequest
-        ).stream().map(EventMapper::toDto).toList();
+        ).map(EventMapper::toDto);
     }
 
     private static boolean isEventNearAnyCity(Event event, List<Double> longitudes, List<Double> latitudes, double maxDistance) {
