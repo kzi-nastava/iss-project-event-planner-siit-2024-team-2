@@ -53,20 +53,15 @@ public class EventService {
     }
 
     public EventDto create(EventNoIdDto dto) {
-        Event event = EventMapper.toEntity(dto);
-        event.setActive(true);
-        eventTypeRepository.findById(dto.getTypeId()).ifPresent(event::setType);
-        event.setActivities(new ArrayList<>());
-        event.setBudgets(new ArrayList<>());
-
+        EventType type = eventTypeRepository.getReferenceById(dto.getTypeId());
+        Event event = EventMapper.toEntity(dto, type, new ArrayList<>(), new ArrayList<>());
         Event savedEvent = eventRepository.save(event);
         return EventMapper.toDto(savedEvent);
     }
 
     public EventDto update(EventNoIdDto dto, long id) {
         return eventRepository.findById(id)
-                .map(existingEvent -> {
-                    Event event = EventMapper.toEntity(dto);
+                .map(event -> {
                     event.setId(id);
                     event.setActive(true);
                     event.setDate(new Date(dto.getDate()));
@@ -86,13 +81,10 @@ public class EventService {
     }
 
     public boolean delete(long id) {
-        return eventRepository.findById(id)
-                .map(event -> {
-                    event.setActive(false);
-                    eventRepository.save(event);
-                    return true;
-                })
-                .orElse(false);
+        if (!eventRepository.existsById(id))
+            return false;
+        eventRepository.deleteById(id);
+        return true;
     }
 
     public Collection<EventSummaryDto> getTop5() {

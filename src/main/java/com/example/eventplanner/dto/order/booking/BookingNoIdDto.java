@@ -14,8 +14,8 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookingNoIdDto {
-    private EventDto event;
-    private ServiceDto service;
+    private long eventId;
+    private long serviceId;
     private double price;
     private long date;
     private double duration;

@@ -1,5 +1,7 @@
 package com.example.eventplanner.dto.user.userReport;
 
+import com.example.eventplanner.dto.user.user.UserMapper;
+import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.user.UserReport;
 
 import java.util.Date;
@@ -10,8 +12,8 @@ public class UserReportMapper {
             return null;
         return new UserReportDto(
                 userReport.getId(),
-                userReport.getReporter().getId(),
-                userReport.getReported().getId(),
+                UserMapper.toBaseUserDto(userReport.getReporter()),
+                UserMapper.toBaseUserDto(userReport.getReported()),
                 userReport.getDateApproved().getTime(),
                 userReport.getReason()
         );
@@ -28,28 +30,13 @@ public class UserReportMapper {
         );
     }
 
-    public static UserReport toEntity(UserReportDto dto) {
+    public static UserReport toEntity(UserReportNoIdDto dto, BaseUser reporter, BaseUser reported) {
         if (dto == null)
             return null;
-        UserReport userReport = new UserReport(
-                null,
-                null,
+        return new UserReport(
+                reporter,
+                reported,
                 new Date(dto.getDateApproved()),
                 dto.getReason());
-        userReport.setId(dto.getId());
-        userReport.setActive(true);
-        return userReport;
-    }
-
-    public static UserReport toEntity(UserReportNoIdDto dto) {
-        if (dto == null)
-            return null;
-        UserReport userReport = new UserReport(
-                null,
-                null,
-                new Date(dto.getDateApproved()),
-                dto.getReason());
-        userReport.setActive(true);
-        return userReport;
     }
 }

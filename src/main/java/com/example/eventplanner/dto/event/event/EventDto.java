@@ -1,7 +1,10 @@
 package com.example.eventplanner.dto.event.event;
 
+import com.example.eventplanner.dto.event.activity.ActivityDto;
+import com.example.eventplanner.dto.event.eventtype.EventTypeDto;
 import com.example.eventplanner.model.event.Activity;
 import com.example.eventplanner.model.event.Budget;
+import com.example.eventplanner.model.event.EventType;
 import com.example.eventplanner.model.utils.ReviewStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,12 +22,12 @@ public class EventDto {
     private long id;
     private String name;
     private String description;
-    private long typeId;
+    private EventTypeDto type;
     private int maxAttendances;
     private boolean isOpen;
     private double longitude;
     private double latitude;
     private long date;
-    private List<Long> activityIds;
-    private List<Long> budgets;
+    private List<ActivityDto> activity;
+    private List<Budget> budgets;
 }

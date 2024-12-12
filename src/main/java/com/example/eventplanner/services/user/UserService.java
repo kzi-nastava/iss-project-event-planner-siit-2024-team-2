@@ -91,7 +91,7 @@ public class UserService {
     public Collection<UserReportDto> getUserReports(long id, Boolean approved) {
         return userReportService.getAll()
                 .stream()
-                .filter(report -> report.getReportedId() == id)
+                .filter(report -> report.getReported().getId() == id)
                 .filter(report -> approved == null || approved == (report.getDateApproved() != null))
                 .toList();
     }

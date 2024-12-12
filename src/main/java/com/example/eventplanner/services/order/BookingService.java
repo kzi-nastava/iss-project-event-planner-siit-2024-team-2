@@ -3,12 +3,17 @@ package com.example.eventplanner.services.order;
 import com.example.eventplanner.dto.order.booking.BookingDto;
 import com.example.eventplanner.dto.order.booking.BookingMapper;
 import com.example.eventplanner.dto.order.booking.BookingNoIdDto;
+import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.order.Booking;
+import com.example.eventplanner.model.serviceproduct.Service;
+import com.example.eventplanner.repositories.event.EventRepository;
 import com.example.eventplanner.repositories.order.BookingRepository;
+import com.example.eventplanner.repositories.serviceproduct.ServiceRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.util.Date;
 import java.util.List;
 
 @org.springframework.stereotype.Service
@@ -17,6 +22,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BookingService {
     private final BookingRepository bookingRepository;
+    private final EventRepository eventRepository;
+    private final ServiceRepository serviceRepository;
 
     public List<BookingDto> getAll() {
         return bookingRepository.findAll()
@@ -32,14 +39,25 @@ public class BookingService {
     }
 
     public BookingDto create(BookingNoIdDto dto) {
-        Booking booking = BookingMapper.toEntity(dto, 0);
+        Event event = eventRepository.getReferenceById(dto.getEventId());
+        Service service = serviceRepository.getReferenceById(dto.getServiceId());
+        Booking booking = BookingMapper.toEntity(dto, event, service);
         return BookingMapper.toDto(bookingRepository.save(booking));
     }
 
     public BookingDto update(BookingNoIdDto dto, long id) {
-        if (!bookingRepository.existsById(id))
+        Booking booking = bookingRepository.findById(id).orElse(null);
+        if (booking == null)
             return null;
-        Booking booking = (Booking) BookingMapper.toEntity(dto, 0).withId(id);
+
+        Event event = eventRepository.getReferenceById(dto.getEventId());
+        Service service = serviceRepository.getReferenceById(dto.getServiceId());
+
+        booking.setEvent(event);
+        booking.setService(service);
+        booking.setPrice(dto.getPrice());
+        booking.setDate(new Date(dto.getDate()));
+        booking.setDuration(dto.getDuration());
         return BookingMapper.toDto(bookingRepository.save(booking));
     }
 

@@ -1,10 +1,14 @@
 package com.example.eventplanner.dto.event.event;
 
+import com.example.eventplanner.dto.event.activity.ActivityMapper;
+import com.example.eventplanner.dto.event.eventtype.EventTypeMapper;
 import com.example.eventplanner.model.event.Activity;
 import com.example.eventplanner.model.event.Budget;
 import com.example.eventplanner.model.event.Event;
+import com.example.eventplanner.model.event.EventType;
 
 import java.util.Date;
+import java.util.List;
 
 public class EventMapper {
     public static EventDto toDto(Event event) {
@@ -14,14 +18,14 @@ public class EventMapper {
                 event.getId(),
                 event.getName(),
                 event.getDescription(),
-                event.getType().getId(),
+                EventTypeMapper.toDto(event.getType()),
                 event.getMaxAttendances(),
                 event.isOpen(),
                 event.getLongitude(),
                 event.getLatitude(),
                 event.getDate().getTime(),
-                event.getActivities().stream().map(Activity::getId).toList(),
-                event.getBudgets().stream().map(Budget::getId).toList()
+                event.getActivities().stream().map(ActivityMapper::toDto).toList(),
+                event.getBudgets()
         );
     }
 
@@ -49,7 +53,7 @@ public class EventMapper {
                 event.getId(),
                 event.getName(),
                 event.getDescription(),
-                event.getType().getId(),
+                EventTypeMapper.toDto(event.getType()),
                 event.getMaxAttendances(),
                 event.isOpen(),
                 event.getLongitude(),
@@ -58,41 +62,20 @@ public class EventMapper {
         );
     }
 
-    public static Event toEntity(EventDto dto, int depth) {
+    public static Event toEntity(EventNoIdDto dto, EventType eventType, List<Activity> activities, List<Budget> budgets) {
         if (dto == null)
             return null;
-        Event event = new Event(
+        return new Event(
                 dto.getName(),
                 dto.getDescription(),
-                null,
+                eventType,
                 dto.getMaxAttendances(),
                 dto.isOpen(),
                 dto.getLongitude(),
                 dto.getLatitude(),
                 new Date(dto.getDate()),
-                null,
-                null);
-        event.setId(dto.getId());
-        event.setActive(true);
-        return event;
-    }
-
-    public static Event toEntity(EventNoIdDto dto) {
-        if (dto == null)
-            return null;
-        Event event = new Event(
-                dto.getName(),
-                dto.getDescription(),
-                null,
-                dto.getMaxAttendances(),
-                dto.isOpen(),
-                dto.getLongitude(),
-                dto.getLatitude(),
-                new Date(dto.getDate()),
-                null,
-                null);
-        event.setActive(true);
-        return event;
+                activities,
+                budgets);
     }
 
 }

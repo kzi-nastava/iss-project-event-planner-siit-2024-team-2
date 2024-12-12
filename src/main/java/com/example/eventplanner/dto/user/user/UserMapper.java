@@ -56,4 +56,18 @@ public class UserMapper {
         dto.setUserRole(entity.getUserRole());
         return dto;
     }
+
+    public static BaseUserDto toBaseUserDto(BaseUser user) {
+        if (user == null)
+            return null;
+        return new BaseUserDto(
+                user.getId(),
+                user.getEmail(),
+                user.getUserRole(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getAddress(),
+                user.getPhoneNumber()
+        );
+    }
 }
