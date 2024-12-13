@@ -39,10 +39,10 @@ public class ServiceProductController {
     public ResponseEntity<Page<ServiceProductDto>> getServiceProducts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(required = false) Integer size,
-            @RequestParam(defaultValue = "id") String sortField,
-            @RequestParam(defaultValue = "desc") Sort.Direction sortDirection,
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) String description,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "DESC") Sort.Direction sortDirection,
+            @RequestParam(defaultValue = "") String name,
+            @RequestParam(defaultValue = "") String description,
             @RequestParam(required = false) List<Long> categoryIds,
             @RequestParam(required = false) Boolean available,
             @RequestParam(required = false) Boolean visible,
@@ -50,7 +50,8 @@ public class ServiceProductController {
             @RequestParam(required = false) Integer maxPrice,
             @RequestParam(required = false) List<Long> availableEventTypeIds,
             @RequestParam(required = false) Long serviceProductProviderId) {
-        Sort sort = Sort.by(sortDirection, sortField);
+//        System.out.println(name);
+        Sort sort = Sort.by(sortDirection, sortBy);
         Page<ServiceProductDto> result = serviceProductService.getAllFilteredPaginatedSorted(
                 page, size, sort, name, description, categoryIds, available, visible,
                 minPrice, maxPrice, availableEventTypeIds, serviceProductProviderId);

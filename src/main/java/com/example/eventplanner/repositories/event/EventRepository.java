@@ -33,7 +33,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "AND (:endDate IS NULL OR e.date <= :endDate)"
     )
     Page<Event> findAllFiltered(
-            Sort sort,
             @Param("name") String name,
             @Param("description") String description,
             @Param("type") String type,

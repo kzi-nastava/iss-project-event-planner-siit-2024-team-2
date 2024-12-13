@@ -11,5 +11,4 @@ import java.util.Optional;
 
 @Repository
 public interface ServiceProductCategoryRepository extends JpaRepository<ServiceProductCategory, Long> {
-    List<EventType> findAllEventTypes();
 }

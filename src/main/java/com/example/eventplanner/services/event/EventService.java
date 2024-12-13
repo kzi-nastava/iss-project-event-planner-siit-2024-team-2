@@ -103,7 +103,7 @@ public class EventService {
             Date startDate, Date endDate) {
         PageRequest pageRequest = PageRequest.of(page, size != null ? size : 10, sort);
         return eventRepository.findAllFiltered(
-                sort, name, description, type, minMaxAttendances, maxMaxAttendances, open,
+                name, description, type, minMaxAttendances, maxMaxAttendances, open,
                 //longitudes, latitudes, maxDistance,
                 startDate, endDate, pageRequest
         ).map(EventMapper::toDto);

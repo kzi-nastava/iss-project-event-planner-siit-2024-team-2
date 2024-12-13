@@ -18,40 +18,38 @@ public interface ServiceProductRepository extends JpaRepository<ServiceProduct, 
     @Modifying
     @Query("UPDATE ServiceProduct e SET e.active = false WHERE e.id = :id")
     void deleteById(@Param("id") long id);
-    @Query("select f.sp " +
-            "from (" +
-            "   select avg(spr.grade) as grade, spr.serviceProduct as sp" +
-            "   from ServiceProductReview spr " +
-            "   where spr.reviewStatus = 1 and sp.id = :id and sp.visible = true" +
-            "   group by spr.serviceProduct" +
-            ") f " +
-            "order by f.grade desc " +
+    @Query("select spr.serviceProduct " +
+            "from ServiceProductReview spr " +
+            "where spr.reviewStatus = 1 " +
+            "and spr.serviceProduct.id = :id " +
+            "and spr.serviceProduct.visible = true " +
+            "group by spr.serviceProduct " +
+            "order by avg(spr.grade) desc " +
             "limit 5")
     List<ServiceProduct> findTop5();
     @Query("SELECT sp FROM ServiceProduct sp " +
-            "WHERE (:name IS NULL OR LOWER(sp.name) LIKE LOWER(CONCAT('%', :name, '%'))) " +
-            "AND (:description IS NULL OR LOWER(sp.description) LIKE LOWER(CONCAT('%', :description, '%'))) " +
-            "AND (:categoryIds IS EMPTY OR sp.category in :categoryIds) " +
+            "WHERE (:name LIKE '' OR LOWER(sp.name) LIKE LOWER(CONCAT('%', :name, '%'))) " +
+            "AND (:description LIKE '' OR LOWER(sp.description) LIKE LOWER(CONCAT('%', :description, '%'))) " +
+            "AND (:categoryIds IS NULL OR sp.category.id in :categoryIds) " +
             "AND (:available IS NULL OR sp.available = :available) " +
             "AND (:visible IS NULL OR sp.visible = :visible) " +
             "AND (:minPrice IS NULL OR sp.price >= :minPrice) " +
             "AND (:maxPrice IS NULL OR sp.price <= :maxPrice) " +
-            "AND (:typeIds IS EMPTY OR EXISTS (" +
+            "AND (:typeIds IS NULL OR EXISTS (" +
             "   SELECT 0 " +
             "   FROM sp.availableEventTypes type" +
             "   WHERE type.id in :typeIds ))" +
-            "AND (:spp IS NULL OR sp.serviceProductProvider = :spp)"
+            "AND (:spp IS NULL OR sp.serviceProductProvider.id = :spp)"
     )
     Page<ServiceProduct> findAllFiltered(
-            Sort sort,
             @Param("name") String name,
             @Param("description") String description,
-            @Param("categoryIds") Long[] categoryIds,
+            @Param("categoryIds") List<Long> categoryIds,
             @Param("available") Boolean available,
             @Param("visible") Boolean visible,
             @Param("minPrice") Integer minPrice,
             @Param("maxPrice") Integer maxPrice,
-            @Param("typeIds") Long[] availableEventTypeIds,
+            @Param("typeIds") List<Long> availableEventTypeIds,
             @Param("spp") Long serviceProductProviderId,
             Pageable pageable
     );
