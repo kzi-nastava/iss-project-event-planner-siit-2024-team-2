@@ -74,10 +74,6 @@ public class ServiceProductService {
             Boolean available, Boolean visible, Integer minPrice, Integer maxPrice,
             List<Long> availableEventTypeIds, Long serviceProductProviderId) {
         PageRequest pageRequest = PageRequest.of(page, size != null ? size : 10, sort);
-//        Long[] categoryIdsArray = categoryIds == null ? new Long[0] : categoryIds.toArray(new Long[0]);
-//        Long[] eventTypeIdsArray = availableEventTypeIds == null ?
-//                new Long[0] :
-//                availableEventTypeIds.toArray(new Long[0]);
         return serviceProductRepository.findAllFiltered(name, description,
                         categoryIds,
                         available,
