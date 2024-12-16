@@ -28,7 +28,7 @@ public class ServiceProduct extends Entity {
     @CollectionTable(name = "user_images", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "image_path")
     private List<String> images;
-    @OneToMany(cascade = {CascadeType.ALL})
+    @ManyToMany(cascade = {CascadeType.ALL})
     private List<EventType> availableEventTypes;
     @ManyToOne(cascade = {CascadeType.ALL})
     private ServiceProductProvider serviceProductProvider;
