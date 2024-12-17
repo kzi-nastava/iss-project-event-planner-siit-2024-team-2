@@ -1,6 +1,10 @@
 package com.example.eventplanner.dto.serviceproduct.serviceproductreview;
 
+import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductMapper;
+import com.example.eventplanner.dto.user.user.UserMapper;
+import com.example.eventplanner.model.serviceproduct.ServiceProduct;
 import com.example.eventplanner.model.serviceproduct.ServiceProductReview;
+import com.example.eventplanner.model.user.BaseUser;
 
 public class ServiceProductReviewMapper {
     public static ServiceProductReviewDto toDto(ServiceProductReview serviceProductReview) {
@@ -10,8 +14,8 @@ public class ServiceProductReviewMapper {
                 serviceProductReview.getId(),
                 serviceProductReview.getGrade(),
                 serviceProductReview.getComment(),
-                serviceProductReview.getUser().getId(),
-                serviceProductReview.getServiceProduct().getId(),
+                ServiceProductMapper.toDto(serviceProductReview.getServiceProduct()),
+                UserMapper.toBaseUserDto(serviceProductReview.getUser()),
                 serviceProductReview.getReviewStatus()
         );
     }
@@ -22,36 +26,22 @@ public class ServiceProductReviewMapper {
         return new ServiceProductReviewNoIdDto(
                 serviceProductReview.getGrade(),
                 serviceProductReview.getComment(),
-                serviceProductReview.getUser().getId(),
                 serviceProductReview.getServiceProduct().getId(),
+                serviceProductReview.getUser().getId(),
                 serviceProductReview.getReviewStatus()
         );
     }
 
-    public static ServiceProductReview toEntity(ServiceProductReviewDto dto) {
+    public static ServiceProductReview toEntity(ServiceProductReviewNoIdDto dto,
+                                                ServiceProduct serviceProduct,
+                                                BaseUser user) {
         if (dto == null)
             return null;
-        ServiceProductReview serviceProductReview = new ServiceProductReview(
+        return new ServiceProductReview(
                 dto.getGrade(),
                 dto.getComment(),
-                null,
-                null,
+                serviceProduct,
+                user,
                 dto.getReviewStatus());
-        serviceProductReview.setId(dto.getId());
-        serviceProductReview.setActive(true);
-        return serviceProductReview;
-    }
-
-    public static ServiceProductReview toEntity(ServiceProductReviewNoIdDto dto) {
-        if (dto == null)
-            return null;
-        ServiceProductReview serviceProductReview = new ServiceProductReview(
-                dto.getGrade(),
-                dto.getComment(),
-                null,
-                null,
-                dto.getReviewStatus());
-        serviceProductReview.setActive(true);
-        return serviceProductReview;
     }
 }
