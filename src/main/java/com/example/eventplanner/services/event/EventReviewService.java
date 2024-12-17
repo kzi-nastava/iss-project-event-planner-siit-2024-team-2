@@ -44,48 +44,35 @@ public class EventReviewService {
     }
 
     public EventReviewDto create(EventReviewNoIdDto dto) {
-        EventReview eventReview = EventReviewMapper.toEntity(dto);
-        eventReview.setActive(true);
+        BaseUser user = userRepository.getReferenceById(dto.getUserId());
+        Event event = eventRepository.getReferenceById(dto.getEventId());
 
-        // link user
-        BaseUser user = userRepository.findById(dto.getUserId()).orElse(null);
-        eventReview.setUser(user);
-        // link event
-        Event testEvent = eventRepository.findById(dto.getEventId()).orElse(null);
-        eventReview.setEvent(testEvent);
-
+        EventReview eventReview = EventReviewMapper.toEntity(dto, user, event);
         eventReviewRepository.save(eventReview);
         return EventReviewMapper.toDto(eventReview);
     }
 
     public EventReviewDto update(EventReviewNoIdDto dto, long id) {
         return eventReviewRepository.findById(id)
-                .map(e -> {
-                    EventReview eventReview = new EventReview();
-                    eventReview.setId(id);
-                    eventReview.setActive(true);
-                    eventReview.setReviewStatus(dto.getReviewStatus());
-                    eventReview.setComment(dto.getComment());
-                    eventReview.setGrade(dto.getGrade());
-                    BaseUser baseUser = new BaseUser();
-                    baseUser.setId(dto.getUserId());
-                    eventReview.setUser(baseUser);
-                    userRepository.findById(dto.getUserId()).ifPresent(eventReview::setUser);
-                    eventRepository.findById(dto.getEventId()).ifPresent(eventReview::setEvent);
-                    EventReview updatedEventReview = eventReviewRepository.save(eventReview);
-                    return EventReviewMapper.toDto(updatedEventReview);
+                .map(er -> {
+                    er.setActive(true);
+                    er.setReviewStatus(dto.getReviewStatus());
+                    er.setComment(dto.getComment());
+                    er.setGrade(dto.getGrade());
+                    BaseUser user = userRepository.getReferenceById(dto.getUserId());
+                    Event event = eventRepository.getReferenceById(dto.getEventId());
+                    er.setUser(user);
+                    er.setEvent(event);
+                    return EventReviewMapper.toDto(eventReviewRepository.save(er));
                 })
                 .orElse(null);
     }
 
     public boolean delete(long id) {
-        return eventReviewRepository.findById(id)
-                .map(eventReview -> {
-                    eventReview.setActive(false);
-                    eventReviewRepository.save(eventReview);
-                    return true;
-                })
-                .orElse(false);
+        if (!eventReviewRepository.existsById(id))
+            return false;
+        eventReviewRepository.deleteById(id);
+        return true;
     }
 
     public EventReviewStatusDto updateStatus(Long id, ReviewStatus status) {

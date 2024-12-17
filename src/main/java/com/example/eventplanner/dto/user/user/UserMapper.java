@@ -56,4 +56,34 @@ public class UserMapper {
         dto.setUserRole(entity.getUserRole());
         return dto;
     }
+
+    public static BaseUserDto toBaseUserDto(BaseUser user) {
+        if (user == null)
+            return null;
+        return new BaseUserDto(
+                user.getId(),
+                user.getEmail(),
+                user.getUserRole(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getAddress(),
+                user.getPhoneNumber()
+        );
+    }
+
+    public static ServiceProductProviderDto toServiceProductProviderDto(ServiceProductProvider spp) {
+        if (spp == null)
+            return null;
+        return new ServiceProductProviderDto(
+                spp.getId(),
+                spp.getEmail(),
+                spp.getUserRole(),
+                spp.getFirstName(),
+                spp.getLastName(),
+                spp.getAddress(),
+                spp.getPhoneNumber(),
+                spp.getCompanyName(),
+                spp.getCompanyDescription()
+        );
+    }
 }

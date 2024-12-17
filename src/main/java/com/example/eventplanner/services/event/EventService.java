@@ -24,9 +24,16 @@ import com.example.eventplanner.repositories.event.EventTypeRepository;
 import com.example.eventplanner.services.order.BookingService;
 import com.example.eventplanner.services.order.PurchaseService;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.type.descriptor.java.LocalDateTimeJavaType;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -53,20 +60,15 @@ public class EventService {
     }
 
     public EventDto create(EventNoIdDto dto) {
-        Event event = EventMapper.toEntity(dto);
-        event.setActive(true);
-        eventTypeRepository.findById(dto.getTypeId()).ifPresent(event::setType);
-        event.setActivities(new ArrayList<>());
-        event.setBudgets(new ArrayList<>());
-
+        EventType type = eventTypeRepository.getReferenceById(dto.getTypeId());
+        Event event = EventMapper.toEntity(dto, type, new ArrayList<>(), new ArrayList<>());
         Event savedEvent = eventRepository.save(event);
         return EventMapper.toDto(savedEvent);
     }
 
     public EventDto update(EventNoIdDto dto, long id) {
         return eventRepository.findById(id)
-                .map(existingEvent -> {
-                    Event event = EventMapper.toEntity(dto);
+                .map(event -> {
                     event.setId(id);
                     event.setActive(true);
                     event.setDate(new Date(dto.getDate()));
@@ -86,13 +88,10 @@ public class EventService {
     }
 
     public boolean delete(long id) {
-        return eventRepository.findById(id)
-                .map(event -> {
-                    event.setActive(false);
-                    eventRepository.save(event);
-                    return true;
-                })
-                .orElse(false);
+        if (!eventRepository.existsById(id))
+            return false;
+        eventRepository.deleteById(id);
+        return true;
     }
 
     public Collection<EventSummaryDto> getTop5() {
@@ -102,17 +101,35 @@ public class EventService {
                 .toList();
     }
 
-    public Collection<EventDto> getAllFilteredPaginated(
-            int page, Integer size, String name, String description, String type,
+    public Page<EventDto> getAllFilteredPaginatedSorted(
+            int page, Integer size, Sort sort, String name, String description, List<Long> types,
             Integer minMaxAttendances, Integer maxMaxAttendances, Boolean open,
-            List<Double> longitudes, List<Double> latitudes, Double maxDistance,
-            Date startDate, Date endDate) {
-        PageRequest pageRequest = PageRequest.of(page, size != null ? size : 10);
+            List<Double> latitudes, List<Double> longitudes, Double maxDistance,
+            Long startDate, Long endDate) {
+        PageRequest pageRequest = PageRequest.of(page, size != null ? size : 10, sort);
+        LocalDateTime startDateTime = startDate != null ?
+                LocalDateTime.ofInstant(Instant.ofEpochMilli(startDate), TimeZone.getDefault().toZoneId()) :
+                LocalDateTime.of(-4711, 1, 1, 0, 0);
+        LocalDateTime endDateTime = endDate != null ?
+                LocalDateTime.ofInstant(Instant.ofEpochMilli(endDate), TimeZone.getDefault().toZoneId()) :
+                LocalDateTime.of(294275, 12, 31, 23, 59);
+        Double[] latitudesArray, longitudesArray;
+        if (latitudes == null || longitudes == null || maxDistance == null  || maxDistance == 0) {
+            latitudesArray = new Double[0];
+            longitudesArray = new Double[0];
+            maxDistance = 0D;
+        } else {
+            latitudesArray = latitudes.toArray(new Double[0]);
+            longitudesArray = longitudes.toArray(new Double[0]);
+        }
+        Long[] eventTypeIdsArray = types == null ?
+                new Long[0] :
+                types.toArray(new Long[0]);
         return eventRepository.findAllFiltered(
-                name, description, type, minMaxAttendances, maxMaxAttendances, open,
-                //longitudes, latitudes, maxDistance,
-                startDate, endDate, pageRequest
-        ).stream().map(EventMapper::toDto).toList();
+                name, description, eventTypeIdsArray, minMaxAttendances, maxMaxAttendances, open,
+                latitudesArray, longitudesArray, maxDistance,
+                startDateTime, endDateTime, pageRequest
+        ).map(EventMapper::toDto);
     }
 
     private static boolean isEventNearAnyCity(Event event, List<Double> longitudes, List<Double> latitudes, double maxDistance) {

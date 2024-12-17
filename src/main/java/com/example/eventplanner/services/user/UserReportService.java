@@ -40,7 +40,7 @@ public class UserReportService {
     }
 
     public UserReportDto create(UserReportNoIdDto dto) {
-        UserReport userReport = UserReportMapper.toEntity(dto);
+        UserReport userReport = UserReportMapper.toEntity(dto, null, null);
         userReport.setId(idCounter++);
         userReport.setActive(true);
 
@@ -60,7 +60,7 @@ public class UserReportService {
     public UserReportDto update(UserReportNoIdDto dto, long id) {
         if (this.getById(id) == null)
             return null;
-        UserReport userReport = UserReportMapper.toEntity(dto);
+        UserReport userReport = UserReportMapper.toEntity(dto, null, null);
 
         // link reporter
         BaseUser testReporter = new BaseUser();
@@ -71,7 +71,7 @@ public class UserReportService {
         testReported.setId(dto.getReportedId());
         userReport.setReported(testReported);
 
-        userReports.put(id, UserReportMapper.toEntity(dto));
+        userReports.put(id, UserReportMapper.toEntity(dto, null, null));
         return UserReportMapper.toDto(userReport);
     }
 

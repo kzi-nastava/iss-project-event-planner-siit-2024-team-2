@@ -1,6 +1,9 @@
 package com.example.eventplanner.dto.event.eventreview;
 
+import com.example.eventplanner.dto.event.event.EventMapper;
+import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.event.EventReview;
+import com.example.eventplanner.model.user.BaseUser;
 
 public class EventReviewMapper {
     public static EventReviewDto toDto(EventReview eventReview) {
@@ -10,48 +13,19 @@ public class EventReviewMapper {
                 eventReview.getId(),
                 eventReview.getGrade(),
                 eventReview.getComment(),
-                eventReview.getUser().getId(),
-                eventReview.getEvent().getId(),
+                EventMapper.toDto(eventReview.getEvent()),
                 eventReview.getReviewStatus()
         );
     }
 
-    public static EventReviewNoIdDto toDtoNoId(EventReview eventReview) {
-        if (eventReview == null)
-            return null;
-        return new EventReviewNoIdDto(
-                eventReview.getGrade(),
-                eventReview.getComment(),
-                eventReview.getUser().getId(),
-                eventReview.getEvent().getId(),
-                eventReview.getReviewStatus()
-        );
-    }
-
-    public static EventReview toEntity(EventReviewDto dto) {
+    public static EventReview toEntity(EventReviewNoIdDto dto, BaseUser user, Event event) {
         if (dto == null)
             return null;
-        EventReview eventReview = new EventReview(
+        return new EventReview(
                 dto.getGrade(),
                 dto.getComment(),
-                null,
-                null,
+                user,
+                event,
                 dto.getReviewStatus());
-        eventReview.setId(dto.getId());
-        eventReview.setActive(true);
-        return eventReview;
-    }
-
-    public static EventReview toEntity(EventReviewNoIdDto dto) {
-        if (dto == null)
-            return null;
-        EventReview eventReview = new EventReview(
-                dto.getGrade(),
-                dto.getComment(),
-                null,
-                null,
-                dto.getReviewStatus());
-        eventReview.setActive(true);
-        return eventReview;
     }
 }

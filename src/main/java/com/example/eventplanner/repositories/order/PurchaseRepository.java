@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
 
 public interface PurchaseRepository extends JpaRepository<Purchase, Long> {
     @Modifying
-    @Query("UPDATE Booking e SET e.active = false WHERE e.id = :id")
+    @Query("UPDATE Purchase e SET e.active = false WHERE e.id = :id")
     void deleteById(@Param("id") long id);
 }

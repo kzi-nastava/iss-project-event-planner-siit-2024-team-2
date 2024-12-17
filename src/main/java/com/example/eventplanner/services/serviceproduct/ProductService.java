@@ -40,8 +40,8 @@ public class ProductService {
     public ProductDto update(Long id, CreateProductDto createProductDto) {
         if (this.getById(id) == null) {
             return null;
-        }
-        Product product = ProductMapper.toEntity(getById(id), 0);
+        }                                                   // get spp from its repo
+        Product product = ProductMapper.toEntity(getById(id), null);
         product.setName(createProductDto.getName());
         product.setPrice(createProductDto.getPrice());
         product.setAvailable(createProductDto.isAvailable());

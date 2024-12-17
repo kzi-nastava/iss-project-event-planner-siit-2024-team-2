@@ -7,6 +7,8 @@ import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProduct
 import com.example.eventplanner.model.serviceproduct.ServiceProduct;
 import com.example.eventplanner.services.serviceproduct.ServiceProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,11 +36,13 @@ public class ServiceProductController {
     }
 
     @GetMapping
-    public ResponseEntity<Collection<ServiceProductDto>> getServiceProducts(
+    public ResponseEntity<Page<ServiceProductDto>> getServiceProducts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(required = false) Integer size,
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) String description,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "DESC") Sort.Direction sortDirection,
+            @RequestParam(defaultValue = "") String name,
+            @RequestParam(defaultValue = "") String description,
             @RequestParam(required = false) List<Long> categoryIds,
             @RequestParam(required = false) Boolean available,
             @RequestParam(required = false) Boolean visible,
@@ -46,8 +50,10 @@ public class ServiceProductController {
             @RequestParam(required = false) Integer maxPrice,
             @RequestParam(required = false) List<Long> availableEventTypeIds,
             @RequestParam(required = false) Long serviceProductProviderId) {
-        Collection<ServiceProductDto> result = serviceProductService.getAllFilteredPaginated(
-                page, size, name, description, categoryIds, available, visible,
+//        System.out.println(name);
+        Sort sort = Sort.by(sortDirection, sortBy);
+        Page<ServiceProductDto> result = serviceProductService.getAllFilteredPaginatedSorted(
+                page, size, sort, name, description, categoryIds, available, visible,
                 minPrice, maxPrice, availableEventTypeIds, serviceProductProviderId);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
@@ -58,12 +64,6 @@ public class ServiceProductController {
         return result != null ?
                 new ResponseEntity<>(result, HttpStatus.OK) :
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
-
-    @PostMapping
-    public ResponseEntity<ServiceProductDto> createServiceProduct(@RequestBody ServiceProductNoIdDto dto) {
-        ServiceProductDto result = serviceProductService.create(dto);
-        return new ResponseEntity<>(result, HttpStatus.CREATED);
     }
 
     @DeleteMapping(value = "/{id}")

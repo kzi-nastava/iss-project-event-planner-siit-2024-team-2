@@ -12,7 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PurchaseNoIdDto {
-    private EventDto event;
-    private ProductDto product;
+    private long eventId;
+    private long productId;
     private double price;
 }

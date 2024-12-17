@@ -13,7 +13,6 @@ import java.util.Collection;
 @Service
 @RequiredArgsConstructor
 public class ServiceProductCategoryService {
-
     private final ServiceProductCategoryRepository serviceProductCategoryRepository;
 
     public Collection<ServiceProductCategoryDto> getAll() {
