@@ -24,11 +24,16 @@ import com.example.eventplanner.repositories.event.EventTypeRepository;
 import com.example.eventplanner.services.order.BookingService;
 import com.example.eventplanner.services.order.PurchaseService;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.type.descriptor.java.LocalDateTimeJavaType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -97,15 +102,33 @@ public class EventService {
     }
 
     public Page<EventDto> getAllFilteredPaginatedSorted(
-            int page, Integer size, Sort sort, String name, String description, String type,
+            int page, Integer size, Sort sort, String name, String description, List<Long> types,
             Integer minMaxAttendances, Integer maxMaxAttendances, Boolean open,
-            List<Double> longitudes, List<Double> latitudes, Double maxDistance,
-            Date startDate, Date endDate) {
+            List<Double> latitudes, List<Double> longitudes, Double maxDistance,
+            Long startDate, Long endDate) {
         PageRequest pageRequest = PageRequest.of(page, size != null ? size : 10, sort);
+        LocalDateTime startDateTime = startDate != null ?
+                LocalDateTime.ofInstant(Instant.ofEpochMilli(startDate), TimeZone.getDefault().toZoneId()) :
+                LocalDateTime.of(-4711, 1, 1, 0, 0);
+        LocalDateTime endDateTime = endDate != null ?
+                LocalDateTime.ofInstant(Instant.ofEpochMilli(endDate), TimeZone.getDefault().toZoneId()) :
+                LocalDateTime.of(294275, 12, 31, 23, 59);
+        Double[] latitudesArray, longitudesArray;
+        if (latitudes == null || longitudes == null || maxDistance == null  || maxDistance == 0) {
+            latitudesArray = new Double[0];
+            longitudesArray = new Double[0];
+            maxDistance = 0D;
+        } else {
+            latitudesArray = latitudes.toArray(new Double[0]);
+            longitudesArray = longitudes.toArray(new Double[0]);
+        }
+        Long[] eventTypeIdsArray = types == null ?
+                new Long[0] :
+                types.toArray(new Long[0]);
         return eventRepository.findAllFiltered(
-                name, description, type, minMaxAttendances, maxMaxAttendances, open,
-                //longitudes, latitudes, maxDistance,
-                startDate, endDate, pageRequest
+                name, description, eventTypeIdsArray, minMaxAttendances, maxMaxAttendances, open,
+                latitudesArray, longitudesArray, maxDistance,
+                startDateTime, endDateTime, pageRequest
         ).map(EventMapper::toDto);
     }
 

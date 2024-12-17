@@ -13,6 +13,7 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @SQLRestriction("active = true")
 @jakarta.persistence.Entity
 public class EventType extends Entity {

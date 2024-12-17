@@ -35,23 +35,23 @@ public class EventController {
     public ResponseEntity<Page<EventDto>> getEvents(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(required = false) Integer size,
-            @RequestParam(defaultValue = "id") String sortField,
-            @RequestParam(defaultValue = "desc") Sort.Direction sortDirection,
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) String description,
-            @RequestParam(required = false) String type,
+            @RequestParam(defaultValue = "date") String sortBy,
+            @RequestParam(defaultValue = "DESC") Sort.Direction sortDirection,
+            @RequestParam(defaultValue = "") String name,
+            @RequestParam(defaultValue = "") String description,
+            @RequestParam(required = false) List<Long> types,
             @RequestParam(required = false) Integer minMaxAttendances,
             @RequestParam(required = false) Integer maxMaxAttendances,
             @RequestParam(required = false) Boolean open,
-            @RequestParam(required = false) List<Double> longitudes,
             @RequestParam(required = false) List<Double> latitudes,
+            @RequestParam(required = false) List<Double> longitudes,
             @RequestParam(required = false) Double maxDistance,
-            @RequestParam(required = false) Date startDate,
-            @RequestParam(required = false) Date endDate) {
-        Sort sort = Sort.by(sortDirection, sortField);
+            @RequestParam(required = false) Long startDate,
+            @RequestParam(required = false) Long endDate) {
+        Sort sort = Sort.by(sortDirection, sortBy);
         Page<EventDto> result = eventService.getAllFilteredPaginatedSorted(
-                page, size, sort, name, description, type, minMaxAttendances, maxMaxAttendances,
-                open, longitudes, latitudes, maxDistance, startDate, endDate);
+                page, size, sort, name, description, types, minMaxAttendances, maxMaxAttendances,
+                open, latitudes, longitudes, maxDistance, startDate, endDate);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

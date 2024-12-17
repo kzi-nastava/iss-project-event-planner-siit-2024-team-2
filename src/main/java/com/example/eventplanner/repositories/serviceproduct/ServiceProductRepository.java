@@ -36,7 +36,7 @@ public interface ServiceProductRepository extends JpaRepository<ServiceProduct, 
             "AND (:minPrice IS NULL OR sp.price >= :minPrice) " +
             "AND (:maxPrice IS NULL OR sp.price <= :maxPrice) " +
             "AND (:typeIds IS NULL OR EXISTS (" +
-            "   SELECT 0 " +
+            "   SELECT 1 " +
             "   FROM sp.availableEventTypes type" +
             "   WHERE type.id in :typeIds ))" +
             "AND (:spp IS NULL OR sp.serviceProductProvider.id = :spp)"
