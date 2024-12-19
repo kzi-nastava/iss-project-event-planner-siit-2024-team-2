@@ -55,7 +55,6 @@ public class EventReviewService {
     public EventReviewDto update(EventReviewNoIdDto dto, long id) {
         return eventReviewRepository.findById(id)
                 .map(er -> {
-                    er.setActive(true);
                     er.setReviewStatus(dto.getReviewStatus());
                     er.setComment(dto.getComment());
                     er.setGrade(dto.getGrade());

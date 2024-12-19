@@ -1,84 +1,71 @@
 package com.example.eventplanner.services.user;
 
-import com.example.eventplanner.model.user.UserReport;
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 import com.example.eventplanner.dto.user.userReport.UserReportDto;
 import com.example.eventplanner.dto.user.userReport.UserReportMapper;
 import com.example.eventplanner.dto.user.userReport.UserReportNoIdDto;
-import com.example.eventplanner.model.Entity;
 import com.example.eventplanner.model.user.BaseUser;
-import lombok.NoArgsConstructor;
+import com.example.eventplanner.model.user.UserReport;
+import com.example.eventplanner.model.utils.ReviewStatus;
+import com.example.eventplanner.repositories.serviceproduct.ServiceProductRepository;
+import com.example.eventplanner.repositories.user.UserReportRepository;
+import com.example.eventplanner.repositories.user.UserRepository;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Date;
+import java.util.List;
 
 @Service
 @Getter
 @Setter
-
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class UserReportService {
-    Map<Long, UserReport> userReports = new HashMap<>();
-    private long idCounter = 0;
+    private final UserReportRepository userReportRepository;
+    private final ServiceProductRepository serviceProductRepository;
+    private final UserRepository userRepository;
 
     public List<UserReportDto> getAll() {
-        return userReports.values()
+        return userReportRepository.findAll()
                 .stream()
-                .filter(Entity::isActive)
                 .map(UserReportMapper::toDto)
                 .toList();
     }
 
     public UserReportDto getById(long id) {
-        if (!userReports.containsKey(id) || !userReports.get(id).isActive())
-            return null;
-        return UserReportMapper.toDto(userReports.get(id));
+        return userReportRepository.findById(id)
+                .map(UserReportMapper::toDto)
+                .orElse(null);
     }
 
     public UserReportDto create(UserReportNoIdDto dto) {
-        UserReport userReport = UserReportMapper.toEntity(dto, null, null);
-        userReport.setId(idCounter++);
-        userReport.setActive(true);
+        BaseUser reporter = userRepository.getReferenceById(dto.getReporterId());
+        BaseUser reported = userRepository.getReferenceById(dto.getReportedId());
 
-        // link reporter
-        BaseUser testReporter = new BaseUser();
-        testReporter.setId(dto.getReporterId());
-        userReport.setReporter(testReporter);
-        // link reported
-        BaseUser testReported = new BaseUser();
-        testReported.setId(dto.getReportedId());
-        userReport.setReported(testReported);
-
-        userReports.put(userReport.getId(), userReport);
+        UserReport userReport = UserReportMapper.toEntity(dto, reporter, reported);
+        userReportRepository.save(userReport);
         return UserReportMapper.toDto(userReport);
     }
 
     public UserReportDto update(UserReportNoIdDto dto, long id) {
-        if (this.getById(id) == null)
-            return null;
-        UserReport userReport = UserReportMapper.toEntity(dto, null, null);
-
-        // link reporter
-        BaseUser testReporter = new BaseUser();
-        testReporter.setId(dto.getReporterId());
-        userReport.setReporter(testReporter);
-        // link reported
-        BaseUser testReported = new BaseUser();
-        testReported.setId(dto.getReportedId());
-        userReport.setReported(testReported);
-
-        userReports.put(id, UserReportMapper.toEntity(dto, null, null));
-        return UserReportMapper.toDto(userReport);
+        return userReportRepository.findById(id)
+                .map(ur -> {
+                    ur.setDateApproved(new Date(dto.getDateApproved()));
+                    ur.setReason(dto.getReason());
+                    BaseUser reporter = userRepository.getReferenceById(dto.getReporterId());
+                    BaseUser reported = userRepository.getReferenceById(dto.getReportedId());
+                    ur.setReporter(reporter);
+                    ur.setReported(reported);
+                    return UserReportMapper.toDto(userReportRepository.save(ur));
+                })
+                .orElse(null);
     }
 
     public boolean delete(long id) {
-        if (this.getById(id) == null)
+        if (!userReportRepository.existsById(id))
             return false;
-        userReports.get(id).setActive(false);
+        userReportRepository.deleteById(id);
         return true;
     }
 }

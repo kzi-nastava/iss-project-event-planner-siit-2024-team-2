@@ -13,7 +13,7 @@ import lombok.Setter;
 public class ServiceProductReviewNoIdDto {
     private int grade;
     private String comment;
-    private long userId;
     private long serviceProductId;
+    private long userId;
     private ReviewStatus reviewStatus;
 }
