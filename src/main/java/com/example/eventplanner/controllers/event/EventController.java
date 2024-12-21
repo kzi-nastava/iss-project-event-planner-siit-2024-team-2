@@ -17,7 +17,6 @@ import lombok.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.web.config.EnableSpringDataWebSupport;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,12 +25,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import static org.springframework.data.web.config.EnableSpringDataWebSupport.PageSerializationMode.VIA_DTO;
-
 @RestController
 @RequestMapping("/api/events")
 @RequiredArgsConstructor()
-@EnableSpringDataWebSupport(pageSerializationMode = VIA_DTO)
 public class EventController {
     private final EventService eventService;
     

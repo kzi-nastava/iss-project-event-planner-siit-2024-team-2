@@ -1,4 +1,4 @@
-package com.example.eventplanner.security;
+package com.example.eventplanner.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
