@@ -1,4 +1,4 @@
-package com.example.eventplanner.database;
+package com.example.eventplanner.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

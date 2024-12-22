@@ -12,6 +12,7 @@ import com.example.eventplanner.dto.serviceproduct.service.ServiceDto;
 import com.example.eventplanner.model.serviceproduct.ServiceProductCategory;
 import com.example.eventplanner.repositories.serviceproduct.ServiceRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 
@@ -57,18 +58,16 @@ public class ServiceService {
 				.orElse(false);
 	}
 
-	public Collection<ServiceDto> searchByName(int page, Integer size, String name) {
+	public Page<ServiceDto> searchByName(int page, Integer size, String name) {
 		PageRequest pageRequest = PageRequest.of(page, size != null ? size : 10);
  		return serviceRepository.searchByName(name, pageRequest)
-				.stream().map(ServiceMapper::toDto)
-				.toList();
+				.map(ServiceMapper::toDto);
 	}
 
-	public Collection<ServiceDto> filter(int page, Integer size, List<String> categories, Float minPrice, Float maxPrice, boolean available) {
+	public Page<ServiceDto> filter(int page, Integer size, List<String> categories, Float minPrice, Float maxPrice, boolean available) {
 		PageRequest pageRequest = PageRequest.of(page, size != null ? size : 10);
 		return serviceRepository.findAllFiltered(minPrice, maxPrice, available, pageRequest)
-				.stream().map(ServiceMapper::toDto)
-				.toList();
+				.map(ServiceMapper::toDto);
 		//		List<String> categoryNames = new ArrayList<>();
 //		if (categories != null) {
 //			for (ServiceProductCategory category : categories)
