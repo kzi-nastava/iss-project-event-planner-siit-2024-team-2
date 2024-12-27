@@ -1,15 +1,11 @@
 package com.example.eventplanner.services.serviceproduct;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
 
 import com.example.eventplanner.dto.serviceproduct.service.CreateServiceDto;
 import com.example.eventplanner.dto.serviceproduct.service.ServiceMapper;
-import com.example.eventplanner.model.Entity;
-import com.example.eventplanner.model.event.EventType;
 import com.example.eventplanner.model.serviceproduct.Service;
 import com.example.eventplanner.dto.serviceproduct.service.ServiceDto;
-import com.example.eventplanner.model.serviceproduct.ServiceProductCategory;
 import com.example.eventplanner.repositories.serviceproduct.ServiceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -64,22 +60,10 @@ public class ServiceService {
 				.toList();
 	}
 
-	public Collection<ServiceDto> filter(int page, Integer size, List<String> categories, Float minPrice, Float maxPrice, boolean available) {
+	public Collection<ServiceDto> filter(int page, Integer size, List<String> categories, Float minPrice, Float maxPrice, Boolean available) {
 		PageRequest pageRequest = PageRequest.of(page, size != null ? size : 10);
-		return serviceRepository.findAllFiltered(minPrice, maxPrice, available, pageRequest)
+		return serviceRepository.findAllFiltered(minPrice, maxPrice, available, categories, pageRequest)
 				.stream().map(ServiceMapper::toDto)
 				.toList();
-		//		List<String> categoryNames = new ArrayList<>();
-//		if (categories != null) {
-//			for (ServiceProductCategory category : categories)
-//				categoryNames.add(category.getName());
-//		}
-//
-//		return services.values().stream()
-//				.filter(service -> categoryNames.isEmpty() || categoryNames.contains(service.getCategory().getName()))
-//				.filter(service -> eventTypes == null || service.getAvailableEventTypes().stream().map(EventType::getName).anyMatch(eventTypes::contains))
-//				.filter(service -> available == null || available == service.isAvailable())
-//				.filter(service -> (minPrice == null || minPrice <= service.getPrice()) && (maxPrice == null || maxPrice >= service.getPrice()))
-//				.map(ServiceMapper::toDto).toList();
 	}
 }

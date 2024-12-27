@@ -2,7 +2,6 @@ package com.example.eventplanner.controllers.serviceproduct;
 
 import com.example.eventplanner.dto.serviceproduct.service.CreateServiceDto;
 import com.example.eventplanner.dto.serviceproduct.service.ServiceDto;
-import com.example.eventplanner.model.serviceproduct.ServiceProductCategory;
 import com.example.eventplanner.services.serviceproduct.ServiceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -74,7 +73,7 @@ public class ServiceController {
                                                                  @RequestParam(required = false) List<String> categories,
                                                                  @RequestParam(required = false) Float minPrice,
                                                                  @RequestParam(required = false) Float maxPrice,
-                                                                 @RequestParam(required = false) boolean available) {
+                                                                 @RequestParam(required = false) Boolean available) {
 //                                                                 @RequestParam(value = "eventTypes", required = false) List<String> eventTypes,
         return ResponseEntity.ok(serviceService.filter(page, size, categories, minPrice, maxPrice, available));
     }
