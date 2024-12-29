@@ -22,10 +22,15 @@ public interface ServiceRepository extends JpaRepository<Service, Long> {
             "AND (:categories IS NULL OR s.category.name IN :categories) " +
             "AND (:minPrice IS NULL OR :minPrice <= s.price)" +
             "AND (:maxPrice IS NULL OR :maxPrice >= s.price)" +
-            "AND (:available IS NULL OR s.available = :available)")
+            "AND (:available IS NULL OR s.available = :available)" +
+            "AND (:typeIds IS NULL OR EXISTS (" +
+            "   SELECT 1 " +
+            "   FROM s.availableEventTypes type" +
+            "   WHERE type.id in :typeIds ))")
     Page<Service> findAllFiltered(@Param("minPrice") Float minPrice,
                                   @Param("maxPrice") Float maxPrice,
                                   @Param("available") Boolean available,
                                   @Param("categories") List<String> categories,
+                                  @Param("typeIds") List<Long> availableEventTypeIds,
                                   Pageable pageable);
 }

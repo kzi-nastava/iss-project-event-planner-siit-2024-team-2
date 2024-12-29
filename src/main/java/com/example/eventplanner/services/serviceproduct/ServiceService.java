@@ -60,9 +60,10 @@ public class ServiceService {
 				.toList();
 	}
 
-	public Collection<ServiceDto> filter(int page, Integer size, List<String> categories, Float minPrice, Float maxPrice, Boolean available) {
+	public Collection<ServiceDto> filter(int page, Integer size, Float minPrice, Float maxPrice, Boolean available,
+										 List<String> categories, List<Long> availableEventTypeIds) {
 		PageRequest pageRequest = PageRequest.of(page, size != null ? size : 10);
-		return serviceRepository.findAllFiltered(minPrice, maxPrice, available, categories, pageRequest)
+		return serviceRepository.findAllFiltered(minPrice, maxPrice, available, categories, availableEventTypeIds, pageRequest)
 				.stream().map(ServiceMapper::toDto)
 				.toList();
 	}

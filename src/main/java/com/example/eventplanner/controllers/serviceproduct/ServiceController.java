@@ -73,8 +73,8 @@ public class ServiceController {
                                                                  @RequestParam(required = false) List<String> categories,
                                                                  @RequestParam(required = false) Float minPrice,
                                                                  @RequestParam(required = false) Float maxPrice,
-                                                                 @RequestParam(required = false) Boolean available) {
-//                                                                 @RequestParam(value = "eventTypes", required = false) List<String> eventTypes,
-        return ResponseEntity.ok(serviceService.filter(page, size, categories, minPrice, maxPrice, available));
+                                                                 @RequestParam(required = false) Boolean available,
+                                                                 @RequestParam(required = false) List<Long> availableEventTypeIds) {
+        return ResponseEntity.ok(serviceService.filter(page, size, minPrice, maxPrice, available, categories, availableEventTypeIds));
     }
 }
