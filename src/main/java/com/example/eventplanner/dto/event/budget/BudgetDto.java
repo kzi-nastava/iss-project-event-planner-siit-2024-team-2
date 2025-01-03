@@ -13,6 +13,6 @@ import lombok.Setter;
 public class BudgetDto {
     private long id;
     private double plannedSpending;
-    private double maxAmount;
+    private double currentSpent;
     private ServiceProductCategoryDto serviceProductCategory;
 }

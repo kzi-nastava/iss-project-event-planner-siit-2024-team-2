@@ -11,6 +11,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class BudgetNoIdDto {
     private double plannedSpending;
-    private double maxAmount;
+    private double currentSpent;
     private long serviceProductCategoryId;
 }

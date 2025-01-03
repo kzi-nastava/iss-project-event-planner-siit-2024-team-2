@@ -10,20 +10,8 @@ public class BudgetMapper {
         if (budget == null) {
             return null;
         }
-        return new BudgetDto(budget.getId(), budget.getPlannedSpending(), budget.getMaxAmount(),
+        return new BudgetDto(budget.getId(), budget.getPlannedSpending(), budget.getCurrentSpent(),
                 ServiceProductCategoryMapper.toDto(budget.getServiceProductCategory()));
-    }
-
-    public static Budget toEntity(BudgetDto budgetDto, ServiceProductCategory category) {
-        if (budgetDto == null) {
-            return null;
-        }
-        Budget budget = new Budget();
-        budget.setId(budgetDto.getId());
-        budget.setPlannedSpending(budgetDto.getPlannedSpending());
-        budget.setMaxAmount(budgetDto.getMaxAmount());
-        budget.setServiceProductCategory(category);
-        return budget;
     }
 
     public static Budget toEntity(BudgetNoIdDto budgetDto, ServiceProductCategory category) {
@@ -32,7 +20,7 @@ public class BudgetMapper {
         }
         Budget budget = new Budget();
         budget.setPlannedSpending(budgetDto.getPlannedSpending());
-        budget.setMaxAmount(budgetDto.getMaxAmount());
+        budget.setCurrentSpent(budgetDto.getCurrentSpent());
         budget.setServiceProductCategory(category);
         return budget;
     }
