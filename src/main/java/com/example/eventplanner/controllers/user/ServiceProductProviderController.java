@@ -4,6 +4,7 @@ import com.example.eventplanner.dto.user.user.RegisterServiceProductProviderDto;
 import com.example.eventplanner.dto.user.user.UpdateServiceProductProviderDto;
 import com.example.eventplanner.services.user.ServiceProductProviderService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,7 +16,7 @@ public class ServiceProductProviderController {
     @PostMapping
     public ResponseEntity<Boolean> registerServiceProductProvider (@RequestBody RegisterServiceProductProviderDto registerServiceProductProvider) {
         return serviceProductProviderService.registerServiceProductProvider(registerServiceProductProvider)
-                ? ResponseEntity.ok(true)
+                ? new ResponseEntity<>(true, HttpStatus.OK)
                 : ResponseEntity.badRequest().build();
     }
 

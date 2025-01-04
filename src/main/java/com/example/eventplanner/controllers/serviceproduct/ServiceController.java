@@ -35,7 +35,7 @@ public class ServiceController {
 
     @PostMapping()
     public ResponseEntity<ServiceDto> createService(@RequestBody CreateServiceDto ServiceDto) {
-        return ResponseEntity.ok(serviceService.create(ServiceDto));
+        return new ResponseEntity<>(serviceService.create(ServiceDto), HttpStatus.CREATED);
     }
 
     @PutMapping(value = "/{id}")

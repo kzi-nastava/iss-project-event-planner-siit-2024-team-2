@@ -4,6 +4,7 @@ import com.example.eventplanner.dto.event.eventtype.EventTypeDto;
 import com.example.eventplanner.services.event.EventTypeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -29,8 +30,8 @@ public class EventTypeController {
     }
 
     @PostMapping()
-    public ResponseEntity<EventTypeDto> createEventType(@RequestBody EventTypeDto eventTypeDto){
-        return ResponseEntity.ok(eventTypeService.create(eventTypeDto));
+    public ResponseEntity<EventTypeDto> createEventType(@RequestBody EventTypeDto eventTypeDto) {
+        return new ResponseEntity<>(eventTypeService.create(eventTypeDto), HttpStatus.CREATED);
     }
     @PutMapping("/{id}")
     public ResponseEntity<EventTypeDto> updateEventType(@PathVariable long id, @RequestBody EventTypeDto eventTypeDto){

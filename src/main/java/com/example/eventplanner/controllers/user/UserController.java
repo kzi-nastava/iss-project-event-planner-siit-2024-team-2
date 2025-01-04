@@ -38,7 +38,7 @@ public class UserController {
     @PostMapping()
     public ResponseEntity<Boolean> registerUser (@RequestBody RegisterUserDto registerUserDto) {
         return userService.registerUser(registerUserDto)
-                ? ResponseEntity.ok(true)
+                ? new ResponseEntity<>(true, HttpStatus.CREATED)
                 : ResponseEntity.badRequest().build();
     }
 

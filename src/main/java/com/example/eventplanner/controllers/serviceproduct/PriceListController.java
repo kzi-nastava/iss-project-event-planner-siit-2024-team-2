@@ -4,6 +4,7 @@ import com.example.eventplanner.dto.serviceproduct.pricelist.CreatePriceListDto;
 import com.example.eventplanner.dto.serviceproduct.pricelist.PriceListDto;
 import com.example.eventplanner.services.serviceproduct.PriceListService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,7 +32,7 @@ public class PriceListController {
 
     @PostMapping()
     public ResponseEntity<PriceListDto> createPriceList(@RequestBody CreatePriceListDto createPriceListDto) {
-        return ResponseEntity.ok(priceListService.create(createPriceListDto));
+        return new ResponseEntity<>(priceListService.create(createPriceListDto), HttpStatus.CREATED);
     }
 
     @PutMapping(value = "/{id}")

@@ -3,6 +3,7 @@ package com.example.eventplanner.controllers.event;
 import com.example.eventplanner.dto.event.event.FavouriteEventsDto;
 import com.example.eventplanner.services.event.FavouriteEventsService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +24,7 @@ public class FavouriteEventsController {
 
     @PostMapping()
     public ResponseEntity<FavouriteEventsDto> createFavouriteEvents(@RequestBody FavouriteEventsDto eventsDto) {
-        return ResponseEntity.ok(favouriteEventsService.create(eventsDto));
+        return new ResponseEntity<>(favouriteEventsService.create(eventsDto), HttpStatus.CREATED);
     }
 
     @PutMapping()

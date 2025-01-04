@@ -4,6 +4,7 @@ import com.example.eventplanner.dto.user.user.RegisterEventOrganizerDto;
 import com.example.eventplanner.dto.user.user.UpdateEventOrganizerDto;
 import com.example.eventplanner.services.user.EventOrganizerService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +26,7 @@ public class EventOrganizerController {
     @PostMapping
     public ResponseEntity<Boolean> registerEventOrganizer (@RequestBody RegisterEventOrganizerDto registerEventOrganizerDto) {
         return eventOrganizerService.registerEventOrganizer(registerEventOrganizerDto)
-                ? ResponseEntity.ok(true)
+                ? new ResponseEntity<>(true, HttpStatus.CREATED)
                 : ResponseEntity.badRequest().build();
     }
 
