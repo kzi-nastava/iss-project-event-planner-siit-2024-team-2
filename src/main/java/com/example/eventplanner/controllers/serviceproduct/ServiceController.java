@@ -27,10 +27,9 @@ public class ServiceController {
     public ResponseEntity<ServiceDto> getServiceById(@PathVariable("id") Long id) {
         ServiceDto serviceDto = serviceService.getById(id);
 
-        if (serviceDto == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        return ResponseEntity.ok(serviceDto);
+        return serviceDto != null ?
+                ResponseEntity.ok(serviceDto) :
+                ResponseEntity.notFound().build();
     }
 
     @PostMapping()
@@ -41,10 +40,9 @@ public class ServiceController {
     @PutMapping(value = "/{id}")
     public ResponseEntity<ServiceDto> updateService(@RequestBody CreateServiceDto serviceDto, @PathVariable("id") Long id) {
         ServiceDto updatedServiceDto = serviceService.update(id, serviceDto);
-        if (updatedServiceDto == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        return ResponseEntity.ok(updatedServiceDto);
+        return updatedServiceDto != null ?
+                ResponseEntity.ok(updatedServiceDto) :
+                ResponseEntity.notFound().build();
     }
 
     @DeleteMapping(value = "/{id}")
@@ -60,11 +58,9 @@ public class ServiceController {
                                                                        @RequestParam(required = false) Integer size,
                                                                        @RequestParam(required = false) String name) {
         Collection<ServiceDto> serviceDtos = serviceService.searchByName(page, size, name);
-        if (serviceDtos.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Collections.emptyList());
-        }
-        return ResponseEntity.ok(serviceDtos);
+        return !serviceDtos.isEmpty() ?
+                ResponseEntity.ok(serviceDtos) :
+                ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
     }
 
     @GetMapping("/filter")

@@ -16,10 +16,9 @@ public class FavouriteEventsController {
     @GetMapping(value = "/{id}")
     public ResponseEntity<FavouriteEventsDto> getFavouriteEventsByOrganizerId(@PathVariable("id") Long id) {
         FavouriteEventsDto eventsDto = favouriteEventsService.getByOrganizerId(id);
-        if (eventsDto == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(eventsDto);
+        return eventsDto != null ?
+                ResponseEntity.ok(eventsDto) :
+                ResponseEntity.notFound().build();
     }
 
     @PostMapping()
@@ -31,9 +30,8 @@ public class FavouriteEventsController {
     public ResponseEntity<FavouriteEventsDto> updateFavouriteEvents(@RequestParam(value = "organizerId") Long organizerId,
                                                                     @RequestParam(value = "eventId") Long eventId) {
         FavouriteEventsDto eventsDto = favouriteEventsService.update(organizerId, eventId);
-        if (eventsDto == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(eventsDto);
+        return eventsDto != null ?
+                ResponseEntity.ok(eventsDto) :
+                ResponseEntity.notFound().build();
     }
 }

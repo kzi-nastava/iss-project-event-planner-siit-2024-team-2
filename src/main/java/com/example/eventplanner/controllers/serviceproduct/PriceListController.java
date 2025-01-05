@@ -24,10 +24,9 @@ public class PriceListController {
     @GetMapping(value = "/{id}")
     public ResponseEntity<PriceListDto> getPriceListById(@PathVariable("id") Long id) {
         PriceListDto priceListDto = priceListService.getById(id);
-        if (priceListDto == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(priceListDto);
+        return priceListDto != null ?
+                ResponseEntity.ok(priceListDto) :
+                ResponseEntity.notFound().build();
     }
 
     @PostMapping()
@@ -38,9 +37,8 @@ public class PriceListController {
     @PutMapping(value = "/{id}")
     public ResponseEntity<PriceListDto> updatePriceList(@PathVariable("id") Long id, @RequestBody CreatePriceListDto createPriceListDto) {
         PriceListDto updatedPriceListDto = priceListService.update(id, createPriceListDto);
-        if (updatedPriceListDto == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(updatedPriceListDto);
+        return updatedPriceListDto != null ?
+                ResponseEntity.ok(updatedPriceListDto) :
+                ResponseEntity.notFound().build();
     }
 }

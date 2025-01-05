@@ -17,10 +17,9 @@ public class EventOrganizerController {
     @GetMapping("/{id}")
     public ResponseEntity<RegisterEventOrganizerDto> getEventOrganizerById(@PathVariable long id) {
         RegisterEventOrganizerDto registerEventOrganizerDto = eventOrganizerService.getEventOrganizerById(id);
-        if (registerEventOrganizerDto == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(registerEventOrganizerDto);
+        return registerEventOrganizerDto != null ?
+                ResponseEntity.ok(registerEventOrganizerDto) :
+                ResponseEntity.notFound().build();
     }
 
     @PostMapping
@@ -33,8 +32,8 @@ public class EventOrganizerController {
     @PutMapping("/{id}")
     public ResponseEntity<UpdateEventOrganizerDto> updateEventOrganizer(@PathVariable long id, @RequestBody UpdateEventOrganizerDto eventOrganizerDto) {
         UpdateEventOrganizerDto user = eventOrganizerService.updateEventOrganizer(id, eventOrganizerDto);
-        if (user == null)
-            return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(eventOrganizerDto);
+        return user != null ?
+                ResponseEntity.ok(eventOrganizerDto) :
+                ResponseEntity.notFound().build();
     }
 }

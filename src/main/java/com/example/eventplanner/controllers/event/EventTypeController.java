@@ -23,10 +23,9 @@ public class EventTypeController {
     @GetMapping("/{id}")
     public ResponseEntity<EventTypeDto> getEventTypeById(@PathVariable long id){
         EventTypeDto eventTypeDto = eventTypeService.getById(id);
-        if(eventTypeDto == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(eventTypeDto);
+        return eventTypeDto != null ?
+                ResponseEntity.ok(eventTypeDto) :
+                ResponseEntity.notFound().build();
     }
 
     @PostMapping()
@@ -36,10 +35,9 @@ public class EventTypeController {
     @PutMapping("/{id}")
     public ResponseEntity<EventTypeDto> updateEventType(@PathVariable long id, @RequestBody EventTypeDto eventTypeDto){
         EventTypeDto eventTypeDto1 = eventTypeService.update(eventTypeDto, id);
-        if (eventTypeDto1 != null) {
-            return ResponseEntity.ok(eventTypeDto1);
-        }
-        return ResponseEntity.notFound().build();
+        return eventTypeDto1 != null ?
+                ResponseEntity.ok(eventTypeDto1) :
+                ResponseEntity.notFound().build();
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<EventTypeDto> deleteEventType(@PathVariable long id){

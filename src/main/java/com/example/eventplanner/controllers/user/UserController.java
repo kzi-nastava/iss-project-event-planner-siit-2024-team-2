@@ -29,16 +29,15 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<RegisterUserDto> getUserByUd(@PathVariable long id) {
         RegisterUserDto registerUserDto = userService.getUserById(id);
-        if (registerUserDto == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(registerUserDto);
+        return registerUserDto != null ?
+                ResponseEntity.ok(registerUserDto) :
+                ResponseEntity.notFound().build();
     }
 
     @PostMapping()
     public ResponseEntity<Boolean> registerUser (@RequestBody RegisterUserDto registerUserDto) {
         return userService.registerUser(registerUserDto)
-                ? new ResponseEntity<>(true, HttpStatus.CREATED)
+                ? ResponseEntity.ok(true)
                 : ResponseEntity.badRequest().build();
     }
 

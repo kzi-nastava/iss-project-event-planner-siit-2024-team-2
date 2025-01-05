@@ -23,16 +23,16 @@ public class ServiceProductProviderController {
     @GetMapping("/{id}")
     public ResponseEntity<RegisterServiceProductProviderDto> getServiceProductProviderById(@PathVariable long id) {
         RegisterServiceProductProviderDto registerServiceProductProviderDto = serviceProductProviderService.getServiceProductProviderById(id);
-        if (registerServiceProductProviderDto == null)
-            return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(registerServiceProductProviderDto);
+        return registerServiceProductProviderDto != null ?
+                ResponseEntity.ok(registerServiceProductProviderDto) :
+                ResponseEntity.notFound().build();
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<UpdateServiceProductProviderDto> updateServiceProductProvider(@PathVariable long id, @RequestBody UpdateServiceProductProviderDto serviceProductProviderDto) {
         UpdateServiceProductProviderDto user = serviceProductProviderService.updateServiceProductProvider(id, serviceProductProviderDto);
-        if (user == null)
-            return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(serviceProductProviderDto);
+        return user != null ?
+                ResponseEntity.ok(serviceProductProviderDto) :
+                ResponseEntity.notFound().build();
     }
 }
