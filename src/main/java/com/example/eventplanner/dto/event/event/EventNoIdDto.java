@@ -25,5 +25,5 @@ public class EventNoIdDto {
     private double latitude;
     private long date;
     private List<Long> activityIds;
-    private List<Long> budgets;
+    private List<Long> budgetIds;
 }
