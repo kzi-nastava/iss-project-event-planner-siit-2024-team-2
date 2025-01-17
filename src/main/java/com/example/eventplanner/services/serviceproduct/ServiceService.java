@@ -14,6 +14,7 @@ import com.example.eventplanner.repositories.serviceproduct.ServiceProductCatego
 import com.example.eventplanner.repositories.serviceproduct.ServiceRepository;
 import com.example.eventplanner.repositories.user.ServiceProductProviderRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 @org.springframework.stereotype.Service
@@ -88,18 +89,16 @@ public class ServiceService {
 		return availableEventTypes;
 	}
 
-	public Collection<ServiceDto> searchByName(int page, Integer size, String name) {
+	public Page<ServiceDto> searchByName(int page, Integer size, String name) {
 		PageRequest pageRequest = PageRequest.of(page, size != null ? size : 10);
  		return serviceRepository.searchByName(name, pageRequest)
-				.stream().map(ServiceMapper::toDto)
-				.toList();
+				.map(ServiceMapper::toDto);
 	}
 
-	public Collection<ServiceDto> filter(int page, Integer size, Float minPrice, Float maxPrice, Boolean available,
+	public Page<ServiceDto> filter(int page, Integer size, Float minPrice, Float maxPrice, Boolean available,
 										 List<String> categories, List<Long> availableEventTypeIds) {
 		PageRequest pageRequest = PageRequest.of(page, size != null ? size : 10);
 		return serviceRepository.findAllFiltered(minPrice, maxPrice, available, categories, availableEventTypeIds, pageRequest)
-				.stream().map(ServiceMapper::toDto)
-				.toList();
+				.map(ServiceMapper::toDto);
 	}
 }

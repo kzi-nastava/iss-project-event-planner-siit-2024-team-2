@@ -4,6 +4,7 @@ import com.example.eventplanner.dto.serviceproduct.service.CreateServiceDto;
 import com.example.eventplanner.dto.serviceproduct.service.ServiceDto;
 import com.example.eventplanner.services.serviceproduct.ServiceService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -54,17 +55,15 @@ public class ServiceController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Collection<ServiceDto>> searchServicesByName(@RequestParam(defaultValue = "0") int page,
+    public ResponseEntity<Page<ServiceDto>> searchServicesByName(@RequestParam(defaultValue = "0") int page,
                                                                        @RequestParam(required = false) Integer size,
                                                                        @RequestParam(required = false) String name) {
-        Collection<ServiceDto> serviceDtos = serviceService.searchByName(page, size, name);
-        return !serviceDtos.isEmpty() ?
-                ResponseEntity.ok(serviceDtos) :
-                ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
+        Page<ServiceDto> serviceDtos = serviceService.searchByName(page, size, name);
+        return ResponseEntity.ok(serviceDtos);
     }
 
     @GetMapping("/filter")
-    public ResponseEntity<Collection<ServiceDto>> filterServices(@RequestParam(defaultValue = "0") int page,
+    public ResponseEntity<Page<ServiceDto>> filterServices(@RequestParam(defaultValue = "0") int page,
                                                                  @RequestParam(required = false) Integer size,
                                                                  @RequestParam(required = false) List<String> categories,
                                                                  @RequestParam(required = false) Float minPrice,
