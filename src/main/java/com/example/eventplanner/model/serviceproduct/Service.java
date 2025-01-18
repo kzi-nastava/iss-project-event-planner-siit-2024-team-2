@@ -17,5 +17,5 @@ public class Service extends ServiceProduct {
     private float maxEngagementDuration;
     private int reservationDaysDeadline;
     private int cancellationDaysDeadline;
-    private boolean hasAutomaticReservation;
+    private boolean automaticReserved;
 }

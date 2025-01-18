@@ -17,7 +17,7 @@ import org.hibernate.annotations.SQLRestriction;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class ServiceProduct extends Entity {
     @ManyToOne
-	private ServiceProductCategory category;
+    private ServiceProductCategory category;
     private boolean available;
     private boolean visible;
     private double price;

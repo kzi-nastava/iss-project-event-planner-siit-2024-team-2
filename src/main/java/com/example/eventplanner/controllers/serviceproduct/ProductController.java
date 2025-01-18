@@ -26,26 +26,24 @@ public class ProductController {
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<ProductDto> getProductById(@PathVariable("id") Long id) {
-        ProductDto serviceDto = productService.getById(id);
+        ProductDto productDto = productService.getById(id);
 
-        if (serviceDto == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        return ResponseEntity.ok(serviceDto);
+        return productDto != null ?
+                ResponseEntity.ok(productDto) :
+                ResponseEntity.notFound().build();
     }
 
     @PostMapping()
     public ResponseEntity<ProductDto> createProduct(@RequestBody CreateProductDto productDto) {
-        return ResponseEntity.ok(productService.create(productDto));
+        return new ResponseEntity<>(productService.create(productDto), HttpStatus.CREATED);
     }
 
     @PutMapping(value = "/{id}")
     public ResponseEntity<ProductDto> updateProduct(@RequestBody CreateProductDto productDto, @PathVariable("id") Long id) {
-        ProductDto updatedServiceDto = productService.update(id, productDto);
-        if (updatedServiceDto == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        return ResponseEntity.ok(updatedServiceDto);
+        ProductDto updatedProductDto = productService.update(id, productDto);
+        return updatedProductDto != null ?
+                ResponseEntity.ok(updatedProductDto) :
+                ResponseEntity.notFound().build();
     }
 
     @DeleteMapping(value = "/{id}")
@@ -59,11 +57,9 @@ public class ProductController {
     @GetMapping("/search")
     public ResponseEntity<Collection<ProductDto>> searchProductsByName(@RequestParam("name") String name) {
         Collection<ProductDto> productDtos = productService.searchByName(name);
-        if (productDtos.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(Collections.emptyList());
-        }
-        return ResponseEntity.ok(productDtos);
+        return !productDtos.isEmpty() ?
+                ResponseEntity.ok(productDtos) :
+                ResponseEntity.status(HttpStatus.NOT_FOUND).body(Collections.emptyList());
     }
 
     @GetMapping("/filter")

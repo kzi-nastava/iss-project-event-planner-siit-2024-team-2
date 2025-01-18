@@ -4,6 +4,7 @@ import com.example.eventplanner.dto.event.eventtype.EventTypeDto;
 import com.example.eventplanner.services.event.EventTypeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -22,23 +23,21 @@ public class EventTypeController {
     @GetMapping("/{id}")
     public ResponseEntity<EventTypeDto> getEventTypeById(@PathVariable long id){
         EventTypeDto eventTypeDto = eventTypeService.getById(id);
-        if(eventTypeDto == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(eventTypeDto);
+        return eventTypeDto != null ?
+                ResponseEntity.ok(eventTypeDto) :
+                ResponseEntity.notFound().build();
     }
 
     @PostMapping()
-    public ResponseEntity<EventTypeDto> createEventType(@RequestBody EventTypeDto eventTypeDto){
-        return ResponseEntity.ok(eventTypeService.create(eventTypeDto));
+    public ResponseEntity<EventTypeDto> createEventType(@RequestBody EventTypeDto eventTypeDto) {
+        return new ResponseEntity<>(eventTypeService.create(eventTypeDto), HttpStatus.CREATED);
     }
     @PutMapping("/{id}")
     public ResponseEntity<EventTypeDto> updateEventType(@PathVariable long id, @RequestBody EventTypeDto eventTypeDto){
         EventTypeDto eventTypeDto1 = eventTypeService.update(eventTypeDto, id);
-        if (eventTypeDto1 != null) {
-            return ResponseEntity.ok(eventTypeDto1);
-        }
-        return ResponseEntity.notFound().build();
+        return eventTypeDto1 != null ?
+                ResponseEntity.ok(eventTypeDto1) :
+                ResponseEntity.notFound().build();
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<EventTypeDto> deleteEventType(@PathVariable long id){

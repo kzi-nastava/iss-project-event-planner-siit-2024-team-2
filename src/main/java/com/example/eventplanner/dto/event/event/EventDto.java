@@ -1,6 +1,7 @@
 package com.example.eventplanner.dto.event.event;
 
 import com.example.eventplanner.dto.event.activity.ActivityDto;
+import com.example.eventplanner.dto.event.budget.BudgetDto;
 import com.example.eventplanner.dto.event.eventtype.EventTypeDto;
 import com.example.eventplanner.model.event.Activity;
 import com.example.eventplanner.model.event.Budget;
@@ -29,5 +30,5 @@ public class EventDto {
     private double latitude;
     private long date;
     private List<ActivityDto> activity;
-    private List<Budget> budgets;
+    private List<BudgetDto> budgets;
 }

@@ -2,7 +2,6 @@ package com.example.eventplanner.controllers.serviceproduct;
 
 import com.example.eventplanner.dto.serviceproduct.service.CreateServiceDto;
 import com.example.eventplanner.dto.serviceproduct.service.ServiceDto;
-import com.example.eventplanner.model.serviceproduct.ServiceProductCategory;
 import com.example.eventplanner.services.serviceproduct.ServiceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -29,24 +28,22 @@ public class ServiceController {
     public ResponseEntity<ServiceDto> getServiceById(@PathVariable("id") Long id) {
         ServiceDto serviceDto = serviceService.getById(id);
 
-        if (serviceDto == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        return ResponseEntity.ok(serviceDto);
+        return serviceDto != null ?
+                ResponseEntity.ok(serviceDto) :
+                ResponseEntity.notFound().build();
     }
 
     @PostMapping()
     public ResponseEntity<ServiceDto> createService(@RequestBody CreateServiceDto ServiceDto) {
-        return ResponseEntity.ok(serviceService.create(ServiceDto));
+        return new ResponseEntity<>(serviceService.create(ServiceDto), HttpStatus.CREATED);
     }
 
     @PutMapping(value = "/{id}")
     public ResponseEntity<ServiceDto> updateService(@RequestBody CreateServiceDto serviceDto, @PathVariable("id") Long id) {
         ServiceDto updatedServiceDto = serviceService.update(id, serviceDto);
-        if (updatedServiceDto == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        return ResponseEntity.ok(updatedServiceDto);
+        return updatedServiceDto != null ?
+                ResponseEntity.ok(updatedServiceDto) :
+                ResponseEntity.notFound().build();
     }
 
     @DeleteMapping(value = "/{id}")
@@ -71,8 +68,8 @@ public class ServiceController {
                                                                  @RequestParam(required = false) List<String> categories,
                                                                  @RequestParam(required = false) Float minPrice,
                                                                  @RequestParam(required = false) Float maxPrice,
-                                                                 @RequestParam(required = false) boolean available) {
-//                                                                 @RequestParam(value = "eventTypes", required = false) List<String> eventTypes,
-        return ResponseEntity.ok(serviceService.filter(page, size, categories, minPrice, maxPrice, available));
+                                                                 @RequestParam(required = false) Boolean available,
+                                                                 @RequestParam(required = false) List<Long> availableEventTypeIds) {
+        return ResponseEntity.ok(serviceService.filter(page, size, minPrice, maxPrice, available, categories, availableEventTypeIds));
     }
 }

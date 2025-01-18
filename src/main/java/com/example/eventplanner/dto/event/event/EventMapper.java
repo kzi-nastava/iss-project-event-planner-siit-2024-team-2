@@ -1,6 +1,7 @@
 package com.example.eventplanner.dto.event.event;
 
 import com.example.eventplanner.dto.event.activity.ActivityMapper;
+import com.example.eventplanner.dto.event.budget.BudgetMapper;
 import com.example.eventplanner.dto.event.eventtype.EventTypeMapper;
 import com.example.eventplanner.model.event.Activity;
 import com.example.eventplanner.model.event.Budget;
@@ -25,7 +26,7 @@ public class EventMapper {
                 event.getLatitude(),
                 event.getDate().getTime(),
                 event.getActivities().stream().map(ActivityMapper::toDto).toList(),
-                event.getBudgets()
+                event.getBudgets().stream().map(BudgetMapper::toDto).toList()
         );
     }
 

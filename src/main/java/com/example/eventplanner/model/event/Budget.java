@@ -16,7 +16,7 @@ import org.hibernate.annotations.SQLRestriction;
 @jakarta.persistence.Entity
 public class Budget extends Entity {
     private double plannedSpending;
-    private double maxAmount;
+    private double currentSpent = 0;
     @ManyToOne(cascade={CascadeType.ALL})
     private ServiceProductCategory serviceProductCategory;
 }
