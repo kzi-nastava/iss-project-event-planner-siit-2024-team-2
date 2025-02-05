@@ -6,15 +6,8 @@ import com.example.eventplanner.dto.event.event.EventNoIdDto;
 import com.example.eventplanner.dto.event.event.EventSummaryDto;
 import com.example.eventplanner.dto.order.booking.BookingDto;
 import com.example.eventplanner.dto.order.purchase.PurchaseDto;
-import com.example.eventplanner.model.event.Activity;
-import com.example.eventplanner.model.event.Event;
-import com.example.eventplanner.model.order.Booking;
-import com.example.eventplanner.model.order.Purchase;
-import com.example.eventplanner.model.serviceproduct.Service;
 import com.example.eventplanner.services.event.EventService;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -22,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -49,7 +41,33 @@ public class EventController {
             @RequestParam(required = false) Long startDate,
             @RequestParam(required = false) Long endDate) {
         Sort sort = Sort.by(sortDirection, sortBy);
-        Page<EventDto> result = eventService.getAllFilteredPaginatedSorted(
+        Page<EventDto> result = eventService.getAllFiltered(
+                EventDto.class,
+                page, size, sort, name, description, types, minMaxAttendances, maxMaxAttendances,
+                open, latitudes, longitudes, maxDistance, startDate, endDate);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/summaries")
+    public ResponseEntity<Page<EventSummaryDto>> getEventSummaries(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) Integer size,
+            @RequestParam(defaultValue = "date") String sortBy,
+            @RequestParam(defaultValue = "DESC") Sort.Direction sortDirection,
+            @RequestParam(defaultValue = "") String name,
+            @RequestParam(defaultValue = "") String description,
+            @RequestParam(required = false) List<Long> types,
+            @RequestParam(required = false) Integer minMaxAttendances,
+            @RequestParam(required = false) Integer maxMaxAttendances,
+            @RequestParam(required = false) Boolean open,
+            @RequestParam(required = false) List<Double> latitudes,
+            @RequestParam(required = false) List<Double> longitudes,
+            @RequestParam(required = false) Double maxDistance,
+            @RequestParam(required = false) Long startDate,
+            @RequestParam(required = false) Long endDate) {
+        Sort sort = Sort.by(sortDirection, sortBy);
+        Page<EventSummaryDto> result = eventService.getAllFiltered(
+                EventSummaryDto.class,
                 page, size, sort, name, description, types, minMaxAttendances, maxMaxAttendances,
                 open, latitudes, longitudes, maxDistance, startDate, endDate);
         return new ResponseEntity<>(result, HttpStatus.OK);
