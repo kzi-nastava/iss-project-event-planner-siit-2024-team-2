@@ -13,7 +13,7 @@ public interface EventOrganizerRepository extends JpaRepository<EventOrganizer, 
 
     @Query(value = "SELECT e.id AS eventId, u.name AS creatorUsername, u.email AS creatorEmail " +
             "FROM Event e " +
-            "JOIN Users u ON e.creator_id = u.id " +
+            "JOIN BaseUser u ON e.creator_id = u.id " +
             "WHERE e.id IN (:eventIds)",
             nativeQuery = true)
     List<EventCreatorProjection> findCreatorsByEventIds(@Param("eventIds") List<Long> eventIds);

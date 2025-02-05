@@ -15,7 +15,7 @@ public interface ServiceProductProviderRepository extends JpaRepository<ServiceP
 
     @Query(value = "SELECT sp.id AS serviceProductId, u.name AS creatorUsername, u.email AS creatorEmail " +
             "FROM ServiceProduct sp " +
-            "JOIN Users u ON sp.creator_id = u.id " +
+            "JOIN BaseUser u ON sp.creator_id = u.id " +
             "WHERE sp.id IN (:serviceProductIds)",
             nativeQuery = true)
     List<ServiceProductCreatorProjection> findCreatorsByServiceProductIds(
