@@ -24,4 +24,6 @@ public class EventSummaryDto {
     private double longitude;
     private double latitude;
     private long date;
+    private String creatorUsername;
+    private String creatorEmail;
 }

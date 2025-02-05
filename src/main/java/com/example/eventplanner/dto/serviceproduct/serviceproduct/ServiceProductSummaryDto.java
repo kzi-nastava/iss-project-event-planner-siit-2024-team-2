@@ -24,4 +24,6 @@ public class ServiceProductSummaryDto {
     private String name;
     private String description;
     private ServiceProductProviderDto serviceProductProvider;
+    private String creatorUsername;
+    private String creatorEmail;
 }

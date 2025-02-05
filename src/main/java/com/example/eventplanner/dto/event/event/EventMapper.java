@@ -47,7 +47,7 @@ public class EventMapper {
         );
     }
 
-    public static EventSummaryDto toSummaryDto(Event event) {
+    public static EventSummaryDto toSummaryDto(Event event, String creatorUsername, String creatorEmail) {
         if (event == null)
             return null;
         return new EventSummaryDto(
@@ -59,7 +59,9 @@ public class EventMapper {
                 event.isOpen(),
                 event.getLongitude(),
                 event.getLatitude(),
-                event.getDate().getTime()
+                event.getDate().getTime(),
+                creatorUsername,
+                creatorEmail
         );
     }
 
