@@ -48,8 +48,10 @@ public class ServiceProductService {
     private final EventTypeRepository eventTypeRepository;
 
     public Collection<ServiceProductSummaryDto> getTop5() {
-        List<ServiceProduct> serviceProducts =  serviceProductRepository.findTop5();
-        return constructServiceProductSummaries(serviceProducts);
+        return serviceProductRepository.findTop5()
+                .stream()
+                .map(ServiceProductMapper::toSummaryDto)
+                .toList();
     }
 
     public List<ServiceProductDto> getAll() {
@@ -87,29 +89,7 @@ public class ServiceProductService {
         if (clazz == ServiceProductDto.class)
             return serviceProducts.map(ServiceProductMapper::toDto).map(clazz::cast);
         else
-            return constructServiceProductSummaries(serviceProducts).map(clazz::cast);
-    }
-
-    private Page<ServiceProductSummaryDto> constructServiceProductSummaries(Page<ServiceProduct> serviceProducts) {
-        Map<Long, ServiceProductCreatorProjection> creatorMap = constructServiceProductCreatorMap(serviceProducts.toList());
-        return serviceProducts.map(serviceProduct -> {
-            ServiceProductCreatorProjection serviceProductCreator = creatorMap.get(serviceProduct.getId());
-            return ServiceProductMapper.toSummaryDto(serviceProduct, serviceProductCreator.getCreatorUsername(), serviceProductCreator.getCreatorEmail());
-        });
-    }
-
-    private List<ServiceProductSummaryDto> constructServiceProductSummaries(List<ServiceProduct> serviceProducts) {
-        Map<Long, ServiceProductCreatorProjection> creatorMap = constructServiceProductCreatorMap(serviceProducts);
-        return serviceProducts.stream().map(serviceProduct -> {
-            ServiceProductCreatorProjection serviceProductCreator = creatorMap.get(serviceProduct.getId());
-            return ServiceProductMapper.toSummaryDto(serviceProduct, serviceProductCreator.getCreatorUsername(), serviceProductCreator.getCreatorEmail());
-        }).toList();
-    }
-
-    private Map<Long, ServiceProductCreatorProjection> constructServiceProductCreatorMap(Collection<ServiceProduct> serviceProducts) {
-        List<Long> serviceProductIds = serviceProducts.stream().map(ServiceProduct::getId).toList();
-        List<ServiceProductCreatorProjection> serviceProductCreators = serviceProductProviderRepository.findCreatorsByServiceProductIds(serviceProductIds);
-        return serviceProductCreators.stream()
-                .collect(Collectors.toMap(ServiceProductCreatorProjection::getServiceProductId, Function.identity()));
+            return serviceProducts.map(ServiceProductMapper::toSummaryDto)
+                .map(clazz::cast);
     }
 }

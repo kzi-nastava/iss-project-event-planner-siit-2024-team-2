@@ -7,6 +7,7 @@ import com.example.eventplanner.model.event.Activity;
 import com.example.eventplanner.model.event.Budget;
 import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.event.EventType;
+import com.example.eventplanner.model.user.EventOrganizer;
 
 import java.util.Date;
 import java.util.List;
@@ -26,7 +27,8 @@ public class EventMapper {
                 event.getLatitude(),
                 event.getDate().getTime(),
                 event.getActivities().stream().map(ActivityMapper::toDto).toList(),
-                event.getBudgets().stream().map(BudgetMapper::toDto).toList()
+                event.getBudgets().stream().map(BudgetMapper::toDto).toList(),
+                event.getEventOrganizer()
         );
     }
 
@@ -43,11 +45,12 @@ public class EventMapper {
                 event.getLatitude(),
                 event.getDate().getTime(),
                 event.getActivities().stream().map(Activity::getId).toList(),
-                event.getBudgets().stream().map(Budget::getId).toList()
+                event.getBudgets().stream().map(Budget::getId).toList(),
+                event.getEventOrganizer().getId()
         );
     }
 
-    public static EventSummaryDto toSummaryDto(Event event, String creatorUsername, String creatorEmail) {
+    public static EventSummaryDto toSummaryDto(Event event) {
         if (event == null)
             return null;
         return new EventSummaryDto(
@@ -60,12 +63,13 @@ public class EventMapper {
                 event.getLongitude(),
                 event.getLatitude(),
                 event.getDate().getTime(),
-                creatorUsername,
-                creatorEmail
+                event.getEventOrganizer().getFirstName() + " " + event.getEventOrganizer().getLastName(),
+                event.getEventOrganizer().getEmail()
         );
     }
 
-    public static Event toEntity(EventNoIdDto dto, EventType eventType, List<Activity> activities, List<Budget> budgets) {
+    public static Event toEntity(EventNoIdDto dto, EventType eventType, List<Activity> activities,
+                                 List<Budget> budgets, EventOrganizer eventOrganizer) {
         if (dto == null)
             return null;
         return new Event(
@@ -78,7 +82,8 @@ public class EventMapper {
                 dto.getLatitude(),
                 new Date(dto.getDate()),
                 activities,
-                budgets);
+                budgets,
+                eventOrganizer);
     }
 
 }

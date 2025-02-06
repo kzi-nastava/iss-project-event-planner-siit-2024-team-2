@@ -12,12 +12,4 @@ import java.util.Optional;
 
 public interface ServiceProductProviderRepository extends JpaRepository<ServiceProductProvider, Long> {
     boolean existsByEmail(String email);
-
-    @Query(value = "SELECT sp.id AS serviceProductId, u.name AS creatorUsername, u.email AS creatorEmail " +
-            "FROM ServiceProduct sp " +
-            "JOIN BaseUser u ON sp.creator_id = u.id " +
-            "WHERE sp.id IN (:serviceProductIds)",
-            nativeQuery = true)
-    List<ServiceProductCreatorProjection> findCreatorsByServiceProductIds(
-            @Param("serviceProductIds") List<Long> serviceProductIds);
 }

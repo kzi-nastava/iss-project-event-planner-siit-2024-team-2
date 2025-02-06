@@ -3,6 +3,7 @@ package com.example.eventplanner.dto.event.event;
 import com.example.eventplanner.model.event.Activity;
 import com.example.eventplanner.model.event.Budget;
 import com.example.eventplanner.model.event.EventType;
+import com.example.eventplanner.model.user.EventOrganizer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,4 +27,5 @@ public class EventNoIdDto {
     private long date;
     private List<Long> activityIds;
     private List<Long> budgetIds;
+    private Long eventOrganizerId;
 }

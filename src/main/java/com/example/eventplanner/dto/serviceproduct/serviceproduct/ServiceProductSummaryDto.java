@@ -1,15 +1,10 @@
 package com.example.eventplanner.dto.serviceproduct.serviceproduct;
 
 import com.example.eventplanner.dto.serviceproduct.serviceproductcategory.ServiceProductCategoryDto;
-import com.example.eventplanner.dto.user.user.ServiceProductProviderDto;
-import com.example.eventplanner.model.serviceproduct.ServiceProductCategory;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.Date;
-import java.util.List;
 
 @Getter
 @Setter
@@ -23,7 +18,6 @@ public class ServiceProductSummaryDto {
     private double discount;
     private String name;
     private String description;
-    private ServiceProductProviderDto serviceProductProvider;
-    private String creatorUsername;
+    private String creatorName;
     private String creatorEmail;
 }

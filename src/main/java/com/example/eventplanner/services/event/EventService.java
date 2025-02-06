@@ -55,7 +55,7 @@ public class EventService {
 
     public EventDto create(EventNoIdDto dto) {
         EventType type = eventTypeRepository.getReferenceById(dto.getTypeId());
-        Event event = EventMapper.toEntity(dto, type, new ArrayList<>(), new ArrayList<>());
+        Event event = EventMapper.toEntity(dto, type, new ArrayList<>(), new ArrayList<>(), null);
         Event savedEvent = eventRepository.save(event);
         return EventMapper.toDto(savedEvent);
     }
@@ -75,6 +75,7 @@ public class EventService {
                     eventTypeRepository.findById(dto.getTypeId()).ifPresent(event::setType);
                     event.setActivities(new ArrayList<>());
                     event.setBudgets(new ArrayList<>());
+                    eventOrganizerRepository.findById(dto.getEventOrganizerId()).ifPresent(event::setEventOrganizer);
                     Event updatedEvent = eventRepository.save(event);
                     return EventMapper.toDto(updatedEvent);
                 })
@@ -89,19 +90,11 @@ public class EventService {
     }
 
     public Collection<EventSummaryDto> getTop5() {
-        List<Event> events = eventRepository.findTop5ByOrderByDateAsc();
-        return constructEventSummaries(events);
+        return eventRepository.findTop5ByOrderByDateAsc()
+                .stream()
+                .map(EventMapper::toSummaryDto)
+                .toList();
     }
-
-//    public Page<EventDto> getAllFilteredFull(
-//            int page, Integer size, Sort sort, String name, String description, List<Long> types,
-//            Integer minMaxAttendances, Integer maxMaxAttendances, Boolean open,
-//            List<Double> latitudes, List<Double> longitudes, Double maxDistance,
-//            Long startDate, Long endDate) {
-//        return getAllFiltered(page, size, sort, name, description, types, minMaxAttendances,
-//                maxMaxAttendances, open, latitudes, longitudes, maxDistance, startDate, endDate).map(EventMapper::toDto);
-//    }
-
 
     public <T> Page<T> getAllFiltered(
             Class<T> clazz, int page, Integer size, Sort sort, String name, String description, List<Long> types,
@@ -134,56 +127,9 @@ public class EventService {
         if (clazz == EventDto.class)
             return events.map(EventMapper::toDto).map(clazz::cast);
         else
-            return constructEventSummaries(events).map(clazz::cast);
+            return events.map(EventMapper::toSummaryDto)
+                    .map(clazz::cast);
     }
-
-    private Page<EventSummaryDto> constructEventSummaries(Page<Event> events) {
-        Map<Long, EventCreatorProjection> creatorMap = constructEventCreatorMap(events.toList());
-        return events.map(event -> {
-            EventCreatorProjection eventCreator = creatorMap.get(event.getId());
-            return EventMapper.toSummaryDto(event, eventCreator.getCreatorUsername(), eventCreator.getCreatorEmail());
-        });
-    }
-
-    private List<EventSummaryDto> constructEventSummaries(List<Event> events) {
-        Map<Long, EventCreatorProjection> creatorMap = constructEventCreatorMap(events);
-        return events.stream().map(event -> {
-            EventCreatorProjection eventCreator = creatorMap.get(event.getId());
-            return EventMapper.toSummaryDto(event, eventCreator.getCreatorUsername(), eventCreator.getCreatorEmail());
-        }).toList();
-    }
-
-    private Map<Long, EventCreatorProjection> constructEventCreatorMap(Collection<Event> events) {
-        List<Long> eventIds = events.stream().map(Event::getId).toList();
-        List<EventCreatorProjection> eventCreators = eventOrganizerRepository.findCreatorsByEventIds(eventIds);
-        return eventCreators.stream()
-                .collect(Collectors.toMap(EventCreatorProjection::getEventId, Function.identity()));
-    }
-
-//    private static boolean isEventNearAnyCity(Event event, List<Double> longitudes, List<Double> latitudes, double maxDistance) {
-//        for (int i = 0; i < longitudes.size(); i++) {
-//            double cityLongitude = longitudes.get(i);
-//            double cityLatitude = latitudes.get(i);
-//
-//            double distance = haversine(event.getLatitude(), event.getLongitude(), cityLatitude, cityLongitude);
-//
-//            if (distance <= maxDistance) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
-
-//    private static double haversine(double lat1, double lon1, double lat2, double lon2) {
-//        final int R = 6371;
-//        double latDistance = Math.toRadians(lat2 - lat1);
-//        double lonDistance = Math.toRadians(lon2 - lon1);
-//        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
-//                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
-//                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
-//        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-//        return R * c;
-//    }
 
     public boolean createAgenda(long id, List<ActivityDto> activityDtos) {
         return eventRepository.findById(id)

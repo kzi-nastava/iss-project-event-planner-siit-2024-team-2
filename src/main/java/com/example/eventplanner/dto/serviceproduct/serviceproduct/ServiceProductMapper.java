@@ -49,7 +49,7 @@ public class ServiceProductMapper {
         );
     }
 
-    public static ServiceProductSummaryDto toSummaryDto(ServiceProduct serviceProduct, String creatorUsername, String creatorEmail) {
+    public static ServiceProductSummaryDto toSummaryDto(ServiceProduct serviceProduct) {
         if (serviceProduct == null)
             return null;
         return new ServiceProductSummaryDto(
@@ -60,9 +60,8 @@ public class ServiceProductMapper {
                 serviceProduct.getDiscount(),
                 serviceProduct.getName(),
                 serviceProduct.getDescription(),
-                UserMapper.toServiceProductProviderDto(serviceProduct.getServiceProductProvider()),
-                creatorUsername,
-                creatorEmail
+                serviceProduct.getServiceProductProvider().getCompanyName(),
+                serviceProduct.getServiceProductProvider().getEmail()
         );
     }
 

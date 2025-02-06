@@ -24,7 +24,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findTop5ByOrderByDateAsc();
     //List<Event> findAllFiltered(String name, String description, String type, Integer minMaxAttendances, Integer maxMaxAttendances, Boolean open, List<Double> longitudes, List<Double> latitudes, Double maxDistance, Date startDate, Date endDate, PageRequest pageRequest);
 
-    @Query(value = "SELECT e.id, e.active, e.name, e.description, e.type_id, e.maxattendances, e.open, e.latitude, e.longitude, e.date " +
+    @Query(value = "SELECT e.id, e.active, e.name, e.description, e.type_id, e.maxattendances, e.open, e.latitude, e.longitude, e.date, e.eventorganizer_id " +
             "FROM Event e " +
             "WHERE (:name = '' OR e.name ILIKE CONCAT('%', :name, '%')) " +
             "AND (:description = '' OR LOWER(e.description) LIKE LOWER(CONCAT('%', :description, '%'))) " +
@@ -44,9 +44,9 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             @Param("minMaxAttendances") Integer minMaxAttendances,
             @Param("maxMaxAttendances") Integer maxMaxAttendances,
             @Param("open") Boolean open,
-            @Param("latitudes")Double[] latitudes,
-            @Param("longitudes")Double[] longitudes,
-            @Param("maxDistance")double maxDistance,
+            @Param("latitudes") Double[] latitudes,
+            @Param("longitudes") Double[] longitudes,
+            @Param("maxDistance") double maxDistance,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate,
             Pageable pageable
