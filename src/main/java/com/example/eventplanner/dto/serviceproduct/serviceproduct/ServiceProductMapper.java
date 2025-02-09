@@ -60,7 +60,8 @@ public class ServiceProductMapper {
                 serviceProduct.getDiscount(),
                 serviceProduct.getName(),
                 serviceProduct.getDescription(),
-                UserMapper.toServiceProductProviderDto(serviceProduct.getServiceProductProvider())
+                serviceProduct.getServiceProductProvider().getCompanyName(),
+                serviceProduct.getServiceProductProvider().getEmail()
         );
     }
 
