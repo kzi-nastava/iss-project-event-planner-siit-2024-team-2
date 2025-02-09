@@ -22,7 +22,6 @@ import java.util.Optional;
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findTop5ByOrderByDateAsc();
-    //List<Event> findAllFiltered(String name, String description, String type, Integer minMaxAttendances, Integer maxMaxAttendances, Boolean open, List<Double> longitudes, List<Double> latitudes, Double maxDistance, Date startDate, Date endDate, PageRequest pageRequest);
 
     @Query(value = "SELECT e.id, e.active, e.name, e.description, e.type_id, e.maxattendances, e.open, e.latitude, e.longitude, e.date, e.eventorganizer_id " +
             "FROM Event e " +
@@ -56,4 +55,3 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     @Query("UPDATE Event e SET e.active = false WHERE e.id = :id")
     void deleteById(@Param("id") long id);
 }
-//SELECT e FROM Event e WHERE (? LIKE '' OR LOWER(e.name) LIKE LOWER(CONCAT('%', ?, '%'))) AND (? LIKE '' OR LOWER(e.description) LIKE LOWER(CONCAT('%', ?, '%'))) AND (? IS NULL OR e.type.id in ?) AND (? IS NULL OR e.maxAttendances >= ?) AND (? IS NULL OR e.maxAttendances <= ?) AND (? IS NULL OR e.open = ?) AND (e.date >= CAST(? as timestamp)) AND (e.date <= CAST(? as timestamp)) AND (? = 0        OR CAST(ANY_LOCATION_WITHING_DISTANCE(?, ?, ?, e.latitude, e.longitude) as boolean)   ) order by e.id desc fetch first ? rows only
