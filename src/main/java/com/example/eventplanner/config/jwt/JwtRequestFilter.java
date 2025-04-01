@@ -1,0 +1,70 @@
+package com.example.eventplanner.config.jwt;
+
+import java.io.IOException;
+
+import com.auth0.jwt.exceptions.TokenExpiredException;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+@Component
+public class JwtRequestFilter extends OncePerRequestFilter {
+    private final UserDetailsService jwtUserDetailsService;
+
+    public JwtRequestFilter(@Lazy UserDetailsService jwtUserDetailsService) {
+        this.jwtUserDetailsService = jwtUserDetailsService;
+    }
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+            throws ServletException, IOException {
+        if (request.getRequestURL().equals("/api/auth/login")) {
+            chain.doFilter(request, response);
+            return;
+        }
+        else if (request.getRequestURL().toString().contains("/api/")) {
+            System.out.println("#### " + request.getMethod() + ":" + request.getRequestURL());
+            System.out.println("#### Authorization: " + request.getHeader("Authorization"));
+            String requestTokenHeader = request.getHeader("Authorization");
+            String username = null;
+            String jwtToken = null;
+            if (requestTokenHeader != null && requestTokenHeader.contains("Bearer")) {
+                jwtToken = requestTokenHeader.substring(requestTokenHeader.indexOf("Bearer ") + 7);
+                System.out.println(">>>>>JWT TOKEN: " + jwtToken);
+                try {
+                    username = jwtTokenUtil.extractUsername(jwtToken);
+                    UserDetails userDetails = this.jwtUserDetailsService.loadUserByUsername(username);
+                    if (jwtTokenUtil.validateToken(jwtToken, username)) {
+                        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+                                userDetails, null, userDetails.getAuthorities());
+                        usernamePasswordAuthenticationToken
+                                .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                        System.out.println("#### Username: " + userDetails.getUsername() + ", role: " + userDetails.getAuthorities());
+                        SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                    }
+                } catch (IllegalArgumentException e) {
+                    logger.warn("Unable to get JWT Token.");
+                } catch(TokenExpiredException ex) {
+                    logger.error("JWT Token expired!");
+                }
+            } else {
+                logger.warn("JWT Token does not exist.");
+            }
+        }
+        chain.doFilter(request, response);
+    }
+}

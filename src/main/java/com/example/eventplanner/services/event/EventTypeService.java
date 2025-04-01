@@ -1,5 +1,6 @@
 package com.example.eventplanner.services.event;
 
+import com.example.eventplanner.dto.event.eventtype.CreateEventTypeDto;
 import com.example.eventplanner.dto.event.eventtype.EventTypeDto;
 import com.example.eventplanner.dto.event.eventtype.EventTypeMapper;
 import com.example.eventplanner.model.Entity;
@@ -23,7 +24,7 @@ public class EventTypeService {
                 .map(EventTypeMapper::toDto)
                 .orElse(null);
     }
-    public EventTypeDto create(EventTypeDto eventTypeDto) {
+    public EventTypeDto create(CreateEventTypeDto eventTypeDto) {
         EventType eventType = EventTypeMapper.toEntity(eventTypeDto);
         EventType savedEventType = eventTypeRepository.save(eventType);
         return EventTypeMapper.toDto(savedEventType);

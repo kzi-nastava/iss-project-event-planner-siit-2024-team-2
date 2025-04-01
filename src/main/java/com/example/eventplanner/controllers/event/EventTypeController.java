@@ -1,5 +1,6 @@
 package com.example.eventplanner.controllers.event;
 
+import com.example.eventplanner.dto.event.eventtype.CreateEventTypeDto;
 import com.example.eventplanner.dto.event.eventtype.EventTypeDto;
 import com.example.eventplanner.services.event.EventTypeService;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +30,7 @@ public class EventTypeController {
     }
 
     @PostMapping()
-    public ResponseEntity<EventTypeDto> createEventType(@RequestBody EventTypeDto eventTypeDto) {
+    public ResponseEntity<EventTypeDto> createEventType(@RequestBody CreateEventTypeDto eventTypeDto) {
         return new ResponseEntity<>(eventTypeService.create(eventTypeDto), HttpStatus.CREATED);
     }
     @PutMapping("/{id}")

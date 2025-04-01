@@ -28,4 +28,15 @@ public class EventTypeMapper {
         eventType.setActive(true);
         return eventType;
     }
+    public static EventType toEntity(CreateEventTypeDto dto) {
+        if (dto == null) {
+            return null;
+        }
+        EventType eventType = new EventType(
+                dto.getName(),
+                dto.getRecommendedServiceProducts()
+        );
+        eventType.setActive(true);
+        return eventType;
+    }
 }

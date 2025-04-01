@@ -25,4 +25,6 @@ public class BaseUser extends Entity {
     private String phoneNumber;
     @ManyToMany
     private List<BaseUser> blockedUsers;
+    @Transient
+    private String jwt;
 }
