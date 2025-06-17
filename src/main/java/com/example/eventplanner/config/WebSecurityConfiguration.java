@@ -44,7 +44,6 @@ public class WebSecurityConfiguration {
                 .requestMatchers("/**").permitAll()
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/auth/**").permitAll()
                 //.anyRequest().authenticated()
                 //.requestMatchers("/api/event-types").hasRole("ADMIN")
                 )
