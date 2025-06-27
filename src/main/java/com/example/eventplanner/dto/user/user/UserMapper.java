@@ -6,7 +6,6 @@ import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.utils.UserRole;
 
 public class UserMapper {
-    //private static final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     public static RegisterUserDto toDto(BaseUser entity) {
         if (entity == null) {
             return null;
@@ -36,7 +35,26 @@ public class UserMapper {
         entity.setLastName(dto.getLastName());
         entity.setAddress(dto.getAddress());
         entity.setPhoneNumber(dto.getPhoneNumber());
-        entity.setUserRole(UserRole.EVENT_ORGANIZER);
+        entity.setUserRole(dto.getUserRole());
+        return entity;
+    }
+
+    public static BaseUser toEntity(RegisterServiceProductProviderDto dto) {
+        if (dto == null) {
+            return null;
+        }
+        ServiceProductProvider entity = new ServiceProductProvider();
+        entity.setId(dto.getId());
+        entity.setActive(true);
+        entity.setPassword(dto.getPassword());
+        entity.setEmail(dto.getEmail());
+        entity.setCompanyName(dto.getCompanyName());
+        entity.setCompanyDescription(dto.getCompanyDescription());
+        entity.setFirstName(dto.getFirstName());
+        entity.setLastName(dto.getLastName());
+        entity.setAddress(dto.getAddress());
+        entity.setPhoneNumber(dto.getPhoneNumber());
+        entity.setUserRole(dto.getUserRole());
         return entity;
     }
 
