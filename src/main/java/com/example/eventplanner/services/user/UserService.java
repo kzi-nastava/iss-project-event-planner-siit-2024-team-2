@@ -19,22 +19,27 @@ import com.example.eventplanner.repositories.user.ServiceProductProviderReposito
 import com.example.eventplanner.repositories.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserService implements UserDetailsService {
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     private final UserReportService userReportService;
     private final UserRepository userRepository;
 
     public boolean registerUser(RegisterUserDto registerUserDto) {
         if (!validateUser(registerUserDto))
             return false;
+        registerUserDto.setPassword(passwordEncoder.encode(registerUserDto.getPassword()));
         userRepository.save(UserMapper.toEntity(registerUserDto));
         return true;
     }
@@ -94,6 +99,23 @@ public class UserService {
                 .filter(report -> report.getReported().getId() == id)
                 .filter(report -> approved == null || approved == (report.getDateApproved() != null))
                 .toList();
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Optional<BaseUser> ret = userRepository.findByEmail(email);
+        if (!ret.isEmpty()) {
+            return org.springframework.security.core.userdetails.User
+                    .withUsername(email)
+                    .password(ret.get().getPassword())
+                    .roles(ret.get().getUserRole().toString())
+                    .build();
+        }
+        throw new UsernameNotFoundException("User not found with this email: " + email);
+    }
+    public BaseUser getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with this email: " + email));
     }
 }
 

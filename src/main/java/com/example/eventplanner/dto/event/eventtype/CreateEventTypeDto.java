@@ -7,12 +7,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class EventTypeDto {
-    public long id;
+public class CreateEventTypeDto {
     public String name;
     public List<ServiceProduct> recommendedServiceProducts;
 }
