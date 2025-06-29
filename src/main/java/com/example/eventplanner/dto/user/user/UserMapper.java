@@ -59,6 +59,22 @@ public class UserMapper {
     }
 
 
+    public static ServiceProductProviderDto toSppDto(ServiceProductProvider entity) {
+        if (entity == null) {
+            return null;
+        }
+        ServiceProductProviderDto dto = new ServiceProductProviderDto();
+        dto.setId(entity.getId());
+        dto.setEmail(entity.getEmail());
+        dto.setFirstName(entity.getFirstName());
+        dto.setLastName(entity.getLastName());
+        dto.setAddress(entity.getAddress());
+        dto.setPhoneNumber(entity.getPhoneNumber());
+        dto.setUserRole(entity.getUserRole());
+        dto.setCompanyName(entity.getCompanyName());
+        dto.setCompanyDescription(entity.getCompanyDescription());
+        return dto;
+    }
     public static RegisterUserDto toDto(RegisterUserDto entity) {
         if (entity == null) {
             return null;

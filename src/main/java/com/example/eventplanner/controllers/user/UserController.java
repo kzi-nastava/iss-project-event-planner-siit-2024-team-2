@@ -34,6 +34,14 @@ public class UserController {
                 ResponseEntity.notFound().build();
     }
 
+    @GetMapping("/company/{id}")
+    public ResponseEntity<CompanyInfoDto> getCompanyByUd(@PathVariable long id) {
+        CompanyInfoDto companyDto = userService.getCompanyById(id);
+        return companyDto != null ?
+                ResponseEntity.ok(companyDto) :
+                ResponseEntity.notFound().build();
+    }
+
     @PostMapping()
     public ResponseEntity<Boolean> registerUser (@RequestBody RegisterUserDto registerUserDto) {
         return userService.registerUser(registerUserDto)

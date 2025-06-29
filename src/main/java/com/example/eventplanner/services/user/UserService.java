@@ -21,6 +21,7 @@ import com.example.eventplanner.repositories.user.ServiceProductProviderReposito
 import com.example.eventplanner.repositories.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -89,6 +90,14 @@ public class UserService implements UserDetailsService {
                 .orElse(null);
     }
 
+
+    public CompanyInfoDto getCompanyById(long id) {
+        ServiceProductProvider serviceProductProvider =
+                (ServiceProductProvider) userRepository.findById(id).orElse(null);
+        assert serviceProductProvider != null;
+        return new CompanyInfoDto(serviceProductProvider.getCompanyName(), serviceProductProvider.getCompanyDescription());
+    }
+
     public boolean delete(long id) {
         return userRepository.findById(id)
                 .map(u -> {
@@ -96,12 +105,6 @@ public class UserService implements UserDetailsService {
                     userRepository.save(u);
                     return true;
                 }).orElse(false);
-    }
-
-    public RegisterUserDto login(LoginDto loginDto) {
-        return UserMapper.toDto(userRepository
-                .findByEmailAndPassword(loginDto.getEmail(), loginDto.getPassword())
-                .orElse(null));
     }
 
     public boolean resetPassword(ResetPasswordDto resetPasswordDto, long userId) {
