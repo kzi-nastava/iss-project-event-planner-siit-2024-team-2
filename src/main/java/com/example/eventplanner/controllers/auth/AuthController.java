@@ -4,6 +4,7 @@ import com.example.eventplanner.config.jwt.JwtTokenUtil;
 import com.example.eventplanner.dto.auth.LoginDto;
 import com.example.eventplanner.dto.auth.LoginResponseDto;
 import com.example.eventplanner.dto.auth.ResetPasswordDto;
+import com.example.eventplanner.dto.user.user.RegisterServiceProductProviderDto;
 import com.example.eventplanner.dto.user.user.RegisterUserDto;
 import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.services.user.UserService;
@@ -52,9 +53,16 @@ public class AuthController {
                 ? ResponseEntity.ok(true)
                 : ResponseEntity.badRequest().build();
     }
-    @PostMapping("/reset-password")
-    public ResponseEntity<Void> resetPassword(@RequestBody ResetPasswordDto resetPasswordDto) {
-        boolean success = userService.resetPassword(resetPasswordDto);
+
+    @PostMapping("/signup/company")
+    public ResponseEntity<Boolean> registerCompany(@RequestBody RegisterServiceProductProviderDto registerCompanyDto) {
+        return userService.registerCompany(registerCompanyDto)
+                ? ResponseEntity.ok(true)
+                : ResponseEntity.badRequest().build();
+    }
+    @PostMapping("/reset-password/{id}")
+    public ResponseEntity<Void> resetPassword(@PathVariable long id, @RequestBody ResetPasswordDto resetPasswordDto) {
+        boolean success = userService.resetPassword(resetPasswordDto, id);
         return success
                 ? ResponseEntity.ok().build()
                 : ResponseEntity.badRequest().build();

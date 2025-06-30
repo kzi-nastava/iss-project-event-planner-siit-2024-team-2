@@ -34,6 +34,14 @@ public class UserController {
                 ResponseEntity.notFound().build();
     }
 
+    @GetMapping("/company/{id}")
+    public ResponseEntity<CompanyInfoDto> getCompanyByUd(@PathVariable long id) {
+        CompanyInfoDto companyDto = userService.getCompanyById(id);
+        return companyDto != null ?
+                ResponseEntity.ok(companyDto) :
+                ResponseEntity.notFound().build();
+    }
+
     @PostMapping()
     public ResponseEntity<Boolean> registerUser (@RequestBody RegisterUserDto registerUserDto) {
         return userService.registerUser(registerUserDto)
@@ -41,6 +49,21 @@ public class UserController {
                 : ResponseEntity.badRequest().build();
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<UserInfoDto> updateUserInfo(@PathVariable long id, @RequestBody UserInfoDto userInfoDto) {
+        UserInfoDto userInfoDto1 = userService.updateUserInfo(userInfoDto, id);
+        return userInfoDto1 != null
+                ? ResponseEntity.ok(userInfoDto1)
+                : ResponseEntity.badRequest().build();
+    }
+
+    @PutMapping("/company/{id}")
+    public ResponseEntity<CompanyInfoDto> updateCompanyInfo(@PathVariable long id, @RequestBody CompanyInfoDto companyInfoDto) {
+        CompanyInfoDto companyInfoDto1 = userService.updateCompanyInfo(companyInfoDto, id);
+        return companyInfoDto1 != null
+                ? ResponseEntity.ok(companyInfoDto1)
+                : ResponseEntity.badRequest().build();
+    }
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable long id) {
         boolean success = userService.delete(id);
