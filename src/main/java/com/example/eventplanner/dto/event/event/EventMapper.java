@@ -7,7 +7,9 @@ import com.example.eventplanner.model.event.Activity;
 import com.example.eventplanner.model.event.Budget;
 import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.event.EventType;
+import com.example.eventplanner.services.util.DateUtil;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -33,6 +35,7 @@ public class EventMapper {
     public static EventNoIdDto toDtoNoId(Event event) {
         if (event == null)
             return null;
+        LocalDate localDate = DateUtil.convertDateToLocalDate(event.getDate());
         return new EventNoIdDto(
                 event.getName(),
                 event.getDescription(),
@@ -41,7 +44,7 @@ public class EventMapper {
                 event.isOpen(),
                 event.getLongitude(),
                 event.getLatitude(),
-                event.getDate().getTime(),
+                localDate,
                 event.getActivities().stream().map(Activity::getId).toList(),
                 event.getBudgets().stream().map(Budget::getId).toList()
         );
@@ -66,6 +69,7 @@ public class EventMapper {
     public static Event toEntity(EventNoIdDto dto, EventType eventType, List<Activity> activities, List<Budget> budgets) {
         if (dto == null)
             return null;
+        Date convertedDate = DateUtil.convertLocalDateToDate(dto.getDate());
         return new Event(
                 dto.getName(),
                 dto.getDescription(),
@@ -74,7 +78,7 @@ public class EventMapper {
                 dto.isOpen(),
                 dto.getLongitude(),
                 dto.getLatitude(),
-                new Date(dto.getDate()),
+                convertedDate,
                 activities,
                 budgets);
     }

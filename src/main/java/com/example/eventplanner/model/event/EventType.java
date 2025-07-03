@@ -18,12 +18,19 @@ import java.util.List;
 @jakarta.persistence.Entity
 public class EventType extends Entity {
     private String name;
+    private String description;
     @ManyToMany(cascade = CascadeType.ALL, mappedBy = "availableEventTypes")
     private List<ServiceProduct> serviceProducts;
     @OneToMany(cascade = {CascadeType.ALL})
     private List<ServiceProduct> recommendedServiceProducts;
     public EventType(String name, List<ServiceProduct> recommendedServiceProducts) {
         this.name = name;
+        this.recommendedServiceProducts = recommendedServiceProducts;
+    }
+
+    public EventType(String name, String description, List<ServiceProduct> recommendedServiceProducts) {
+        this.name = name;
+        this.description = description;
         this.recommendedServiceProducts = recommendedServiceProducts;
     }
 }

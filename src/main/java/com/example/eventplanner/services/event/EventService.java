@@ -7,6 +7,7 @@ import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.order.Booking;
 import com.example.eventplanner.services.order.BookingService;
 import com.example.eventplanner.services.order.PurchaseService;
+import com.example.eventplanner.services.util.DateUtil;
 import lombok.Getter;
 import com.example.eventplanner.dto.event.activity.ActivityDto;
 import com.example.eventplanner.dto.event.activity.ActivityMapper;
@@ -60,25 +61,27 @@ public class EventService {
     }
 
     public EventDto create(EventNoIdDto dto) {
-        EventType type = eventTypeRepository.getReferenceById(dto.getTypeId());
+        EventType type = eventTypeRepository.findById(dto.getEventType()).orElseThrow();
+//        EventType type = eventTypeRepository.getReferenceById(dto.getTypeId());
         Event event = EventMapper.toEntity(dto, type, new ArrayList<>(), new ArrayList<>());
         Event savedEvent = eventRepository.save(event);
         return EventMapper.toDto(savedEvent);
     }
-
     public EventDto update(EventNoIdDto dto, long id) {
+        Date convertedDate = DateUtil.convertLocalDateToDate(dto.getDate());
+
         return eventRepository.findById(id)
                 .map(event -> {
                     event.setId(id);
                     event.setActive(true);
-                    event.setDate(new Date(dto.getDate()));
+                    event.setDate(convertedDate);
                     event.setDescription(dto.getDescription());
                     event.setName(dto.getName());
                     event.setOpen(dto.isOpen());
                     event.setLatitude(dto.getLatitude());
                     event.setLongitude(dto.getLongitude());
                     event.setMaxAttendances(dto.getMaxAttendances());
-                    eventTypeRepository.findById(dto.getTypeId()).ifPresent(event::setType);
+                    eventTypeRepository.findById(dto.getEventType()).ifPresent(event::setType);
                     event.setActivities(new ArrayList<>());
                     event.setBudgets(new ArrayList<>());
                     Event updatedEvent = eventRepository.save(event);
