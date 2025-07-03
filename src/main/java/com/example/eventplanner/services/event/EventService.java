@@ -62,7 +62,6 @@ public class EventService {
 
     public EventDto create(EventNoIdDto dto) {
         EventType type = eventTypeRepository.findById(dto.getEventType()).orElseThrow();
-//        EventType type = eventTypeRepository.getReferenceById(dto.getTypeId());
         Event event = EventMapper.toEntity(dto, type, new ArrayList<>(), new ArrayList<>());
         Event savedEvent = eventRepository.save(event);
         return EventMapper.toDto(savedEvent);
