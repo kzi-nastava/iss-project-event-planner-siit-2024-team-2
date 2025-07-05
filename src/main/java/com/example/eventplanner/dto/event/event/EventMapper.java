@@ -3,10 +3,13 @@ package com.example.eventplanner.dto.event.event;
 import com.example.eventplanner.dto.event.activity.ActivityMapper;
 import com.example.eventplanner.dto.event.budget.BudgetMapper;
 import com.example.eventplanner.dto.event.eventtype.EventTypeMapper;
+import com.example.eventplanner.dto.user.user.EventOrganizerMapper;
+import com.example.eventplanner.dto.user.user.UserMapper;
 import com.example.eventplanner.model.event.Activity;
 import com.example.eventplanner.model.event.Budget;
 import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.event.EventType;
+import com.example.eventplanner.model.user.EventOrganizer;
 import com.example.eventplanner.services.util.DateUtil;
 
 import java.time.LocalDate;
@@ -22,6 +25,7 @@ public class EventMapper {
                 event.getName(),
                 event.getDescription(),
                 EventTypeMapper.toDto(event.getType()),
+                UserMapper.toDto(event.getEventOrganizer()),
                 event.getMaxAttendances(),
                 event.isOpen(),
                 event.getLongitude(),
@@ -40,6 +44,7 @@ public class EventMapper {
                 event.getName(),
                 event.getDescription(),
                 event.getType().getId(),
+                event.getEventOrganizer().getId(),
                 event.getMaxAttendances(),
                 event.isOpen(),
                 event.getLongitude(),
@@ -66,7 +71,7 @@ public class EventMapper {
         );
     }
 
-    public static Event toEntity(EventNoIdDto dto, EventType eventType, List<Activity> activities, List<Budget> budgets) {
+    public static Event toEntity(EventNoIdDto dto, EventType eventType, EventOrganizer eventOrganizer, List<Activity> activities, List<Budget> budgets) {
         if (dto == null)
             return null;
         Date convertedDate = DateUtil.convertLocalDateToDate(dto.getDate());
@@ -74,6 +79,7 @@ public class EventMapper {
                 dto.getName(),
                 dto.getDescription(),
                 eventType,
+                eventOrganizer,
                 dto.getMaxAttendances(),
                 dto.isOpen(),
                 dto.getLongitude(),

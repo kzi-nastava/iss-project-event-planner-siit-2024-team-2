@@ -1,6 +1,7 @@
 package com.example.eventplanner.model.event;
 
 import com.example.eventplanner.model.Entity;
+import com.example.eventplanner.model.user.EventOrganizer;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -21,6 +22,8 @@ public class Event extends Entity {
     private String description;
     @ManyToOne
     private EventType type;
+    @ManyToOne
+    private EventOrganizer eventOrganizer;
     private int maxAttendances;
     private boolean open;
     private double longitude;

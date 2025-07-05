@@ -5,6 +5,9 @@ import com.example.eventplanner.dto.order.booking.BookingDto;
 import com.example.eventplanner.dto.order.purchase.PurchaseDto;
 import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.order.Booking;
+import com.example.eventplanner.model.user.EventOrganizer;
+import com.example.eventplanner.repositories.user.EventOrganizerRepository;
+import com.example.eventplanner.repositories.user.UserRepository;
 import com.example.eventplanner.services.order.BookingService;
 import com.example.eventplanner.services.order.PurchaseService;
 import com.example.eventplanner.services.util.DateUtil;
@@ -46,7 +49,7 @@ public class EventService {
     private final EventTypeRepository eventTypeRepository;
     private final PurchaseService purchaseService;
     private final BookingService bookingService;
-
+    private final UserRepository userRepository;
     public List<EventDto> getAll() {
         return eventRepository.findAll()
                 .stream()
@@ -62,7 +65,8 @@ public class EventService {
 
     public EventDto create(EventNoIdDto dto) {
         EventType type = eventTypeRepository.findById(dto.getEventType()).orElseThrow();
-        Event event = EventMapper.toEntity(dto, type, new ArrayList<>(), new ArrayList<>());
+        EventOrganizer eventOrganizer = (EventOrganizer) userRepository.findById(dto.getEventOrganizer()).orElseThrow();
+        Event event = EventMapper.toEntity(dto, type, eventOrganizer, new ArrayList<>(), new ArrayList<>());
         Event savedEvent = eventRepository.save(event);
         return EventMapper.toDto(savedEvent);
     }

@@ -21,6 +21,7 @@ public class EventNoIdDto {
     private String name;
     private String description;
     private long eventType;
+    private long eventOrganizer;
     private int maxAttendances;
     private boolean open;
     private double longitude;
