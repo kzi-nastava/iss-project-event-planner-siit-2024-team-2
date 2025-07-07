@@ -12,6 +12,7 @@ public class EventTypeMapper {
         return new EventTypeDto(
                 eventType.getId(),
                 eventType.getName(),
+                eventType.getDescription(),
                 eventType.getRecommendedServiceProducts()
         );
     }
@@ -22,6 +23,7 @@ public class EventTypeMapper {
         }
         EventType eventType = new EventType(
                 dto.getName(),
+                dto.getDescription(),
                 dto.getRecommendedServiceProducts()
         );
         eventType.setId(dto.getId());
@@ -34,6 +36,7 @@ public class EventTypeMapper {
         }
         EventType eventType = new EventType(
                 dto.getName(),
+                dto.getDescription(),
                 dto.getRecommendedServiceProducts()
         );
         eventType.setActive(true);
