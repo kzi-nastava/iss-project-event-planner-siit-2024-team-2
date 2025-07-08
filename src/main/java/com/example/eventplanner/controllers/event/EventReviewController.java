@@ -17,7 +17,7 @@ public class EventReviewController {
     private final EventReviewService eventReviewService;
 
     @GetMapping
-    public ResponseEntity<Collection<EventReviewDto>> getEventReviews() {
+    public ResponseEntity<Collection<EventReviewDto>> getAllEventReviews() {
         Collection<EventReviewDto> result = eventReviewService.getAll();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

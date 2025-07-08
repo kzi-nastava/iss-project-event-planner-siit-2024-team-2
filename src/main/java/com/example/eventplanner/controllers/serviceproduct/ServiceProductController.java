@@ -36,7 +36,7 @@ public class ServiceProductController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<ServiceProductDto>> getServiceProducts(
+    public ResponseEntity<Page<ServiceProductDto>> getAllServiceProducts(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(required = false) Integer size,
             @RequestParam(defaultValue = "id") String sortBy,

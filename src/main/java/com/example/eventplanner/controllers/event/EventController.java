@@ -24,7 +24,7 @@ public class EventController {
     private final EventService eventService;
     
     @GetMapping
-    public ResponseEntity<Page<EventDto>> getEvents(
+    public ResponseEntity<Page<EventDto>> getAllEvents(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(required = false) Integer size,
             @RequestParam(defaultValue = "date") String sortBy,

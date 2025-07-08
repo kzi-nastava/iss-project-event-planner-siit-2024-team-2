@@ -21,7 +21,7 @@ public class ServiceProductReviewController {
     private final ServiceProductReviewService serviceProductReviewService;
 
     @GetMapping
-    public ResponseEntity<Collection<ServiceProductReviewDto>> getServiceProductReviews() {
+    public ResponseEntity<Collection<ServiceProductReviewDto>> getAllServiceProductReviews() {
         Collection<ServiceProductReviewDto> result = serviceProductReviewService.getAll();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
