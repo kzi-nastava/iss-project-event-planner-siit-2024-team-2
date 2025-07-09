@@ -29,19 +29,6 @@ public interface ServiceProductRepository extends JpaRepository<ServiceProduct, 
     ORDER BY COALESCE(AVG(spr.grade), 0) DESC
     LIMIT 5
     """, nativeQuery = true)
-//    @Query("SELECT sp " +
-//            "FROM ServiceProduct sp " +
-//            "LEFT JOIN sp.reviews spr WITH spr.reviewStatus = 1 " +
-//            "WHERE sp.visible = true " +
-//            "GROUP BY sp " +
-//            "ORDER BY COALESCE(AVG(spr.grade), 0) DESC")
-//    @Query("select spr.serviceProduct " +
-//            "from ServiceProductReview spr " +
-//            "where spr.reviewStatus = 1 " +
-//            "and spr.serviceProduct.visible = true " +
-//            "group by spr.serviceProduct " +
-//            "order by avg(spr.grade) desc " +
-//            "limit 5")
     List<ServiceProduct> findTop5();
 
     @Query("SELECT sp FROM ServiceProduct sp " +
