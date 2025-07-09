@@ -57,4 +57,7 @@ public interface ServiceProductRepository extends JpaRepository<ServiceProduct, 
             @Param("spp") Long serviceProductProviderId,
             Pageable pageable
     );
+
+    @Query("SELECT MIN(sp.price), MAX(sp.price) FROM ServiceProduct sp WHERE sp.visible = true")
+    List<Object[]> findPriceRange();
 }

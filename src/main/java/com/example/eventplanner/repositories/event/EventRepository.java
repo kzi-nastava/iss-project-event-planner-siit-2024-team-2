@@ -54,4 +54,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     @Modifying
     @Query("UPDATE Event e SET e.active = false WHERE e.id = :id")
     void deleteById(@Param("id") long id);
+
+    @Query("SELECT MIN(e.maxAttendances), MAX(e.maxAttendances) FROM Event e WHERE e.open = true")
+    List<Object[]> findMaxAttendancesRange();
 }

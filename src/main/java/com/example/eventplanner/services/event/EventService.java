@@ -157,4 +157,11 @@ public class EventService {
                 .filter(booking -> booking.getEvent().getId() == id)
                 .toList();
     }
+
+    public List<Integer> getMaxAttendancesRange() {
+        List<Object[]> result = eventRepository.findMaxAttendancesRange();
+        Integer min = (Integer) result.get(0)[0];
+        Integer max = (Integer) result.get(0)[1];
+        return Arrays.asList(min, max);
+    }
 }

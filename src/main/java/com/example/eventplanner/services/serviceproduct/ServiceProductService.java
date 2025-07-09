@@ -92,4 +92,11 @@ public class ServiceProductService {
             return serviceProducts.map(ServiceProductMapper::toSummaryDto)
                 .map(clazz::cast);
     }
+
+    public List<Double> getPriceRange() {
+        List<Object[]> result = serviceProductRepository.findPriceRange();
+        Double min = (Double) result.get(0)[0];
+        Double max = (Double) result.get(0)[1];
+        return Arrays.asList(min, max);
+    }
 }

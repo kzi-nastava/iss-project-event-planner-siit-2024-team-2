@@ -96,4 +96,12 @@ public class ServiceProductController {
                 new ResponseEntity<>(HttpStatus.NO_CONTENT) :
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+
+    @GetMapping(value = "/price-range")
+    public ResponseEntity<List<Double>> getPriceRange() {
+        List<Double> result = serviceProductService.getPriceRange();
+        return result != null ?
+                new ResponseEntity<>(result, HttpStatus.OK) :
+                new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
 }

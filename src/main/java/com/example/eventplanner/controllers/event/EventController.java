@@ -135,5 +135,11 @@ public class EventController {
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-
+    @GetMapping(value = "/max-attendances-range")
+    public ResponseEntity<List<Integer>> getMaxAttendancesRange() {
+        List<Integer> result = eventService.getMaxAttendancesRange();
+        return result != null ?
+                new ResponseEntity<>(result, HttpStatus.OK) :
+                new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
 }
