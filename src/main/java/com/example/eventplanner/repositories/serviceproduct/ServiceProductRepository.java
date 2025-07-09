@@ -18,15 +18,32 @@ public interface ServiceProductRepository extends JpaRepository<ServiceProduct, 
     @Modifying
     @Query("UPDATE ServiceProduct e SET e.active = false WHERE e.id = :id")
     void deleteById(@Param("id") long id);
-    @Query("select spr.serviceProduct " +
-            "from ServiceProductReview spr " +
-            "where spr.reviewStatus = 1 " +
-            "and spr.serviceProduct.id = :id " +
-            "and spr.serviceProduct.visible = true " +
-            "group by spr.serviceProduct " +
-            "order by avg(spr.grade) desc " +
-            "limit 5")
+
+    @Query(value = """
+    SELECT sp.*
+    FROM serviceproduct sp
+    LEFT JOIN serviceproductreview spr
+      ON sp.id = spr.serviceproduct_id AND spr.reviewstatus = 1
+    WHERE sp.visible = true
+    GROUP BY sp.id
+    ORDER BY COALESCE(AVG(spr.grade), 0) DESC
+    LIMIT 5
+    """, nativeQuery = true)
+//    @Query("SELECT sp " +
+//            "FROM ServiceProduct sp " +
+//            "LEFT JOIN sp.reviews spr WITH spr.reviewStatus = 1 " +
+//            "WHERE sp.visible = true " +
+//            "GROUP BY sp " +
+//            "ORDER BY COALESCE(AVG(spr.grade), 0) DESC")
+//    @Query("select spr.serviceProduct " +
+//            "from ServiceProductReview spr " +
+//            "where spr.reviewStatus = 1 " +
+//            "and spr.serviceProduct.visible = true " +
+//            "group by spr.serviceProduct " +
+//            "order by avg(spr.grade) desc " +
+//            "limit 5")
     List<ServiceProduct> findTop5();
+
     @Query("SELECT sp FROM ServiceProduct sp " +
             "WHERE (:name LIKE '' OR LOWER(sp.name) LIKE LOWER(CONCAT('%', :name, '%'))) " +
             "AND (:description LIKE '' OR LOWER(sp.description) LIKE LOWER(CONCAT('%', :description, '%'))) " +
