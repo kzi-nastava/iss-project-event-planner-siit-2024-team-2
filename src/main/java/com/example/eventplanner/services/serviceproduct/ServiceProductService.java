@@ -1,43 +1,30 @@
 package com.example.eventplanner.services.serviceproduct;
 
-import com.example.eventplanner.dto.event.event.EventDto;
-import com.example.eventplanner.dto.event.event.EventMapper;
-import com.example.eventplanner.dto.event.event.EventSummaryDto;
-import com.example.eventplanner.dto.order.booking.BookingMapper;
+import com.example.eventplanner.dto.event.eventtype.EventTypeDto;
+import com.example.eventplanner.dto.event.eventtype.EventTypeMapper;
 import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductDto;
+import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductFilteringValuesDto;
 import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductMapper;
-import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductNoIdDto;
 import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductSummaryDto;
-import com.example.eventplanner.model.Entity;
-import com.example.eventplanner.model.event.Event;
-import com.example.eventplanner.model.event.EventCreatorProjection;
+import com.example.eventplanner.dto.serviceproduct.serviceproductcategory.ServiceProductCategoryDto;
+import com.example.eventplanner.dto.serviceproduct.serviceproductcategory.ServiceProductCategoryMapper;
 import com.example.eventplanner.model.event.EventType;
-import com.example.eventplanner.model.order.Booking;
 import com.example.eventplanner.model.serviceproduct.Product;
 import com.example.eventplanner.model.serviceproduct.ServiceProduct;
 import com.example.eventplanner.model.serviceproduct.ServiceProductCategory;
-import com.example.eventplanner.model.serviceproduct.ServiceProductCreatorProjection;
-import com.example.eventplanner.model.user.ServiceProductProvider;
 import com.example.eventplanner.model.utils.ServiceProductDType;
 import com.example.eventplanner.repositories.event.EventTypeRepository;
 import com.example.eventplanner.repositories.serviceproduct.ServiceProductCategoryRepository;
 import com.example.eventplanner.repositories.serviceproduct.ServiceProductRepository;
-import com.example.eventplanner.repositories.user.ServiceProductProviderRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @Getter
@@ -46,7 +33,6 @@ import java.util.stream.Stream;
 public class ServiceProductService {
     private final ServiceProductRepository serviceProductRepository;
     private final ServiceProductCategoryRepository serviceProductCategoryRepository;
-    private final ServiceProductProviderRepository serviceProductProviderRepository;
     private final EventTypeRepository eventTypeRepository;
 
     public Collection<ServiceProductSummaryDto> getTop5() {
@@ -101,10 +87,27 @@ public class ServiceProductService {
                 .map(clazz::cast);
     }
 
-    public List<Double> getPriceRange() {
+    public ServiceProductFilteringValuesDto getFilteringValues() {
         List<Object[]> result = serviceProductRepository.findPriceRange();
-        Double min = (Double) result.get(0)[0];
-        Double max = (Double) result.get(0)[1];
-        return Arrays.asList(min, max);
+        Double minPrice = (Double) result.get(0)[0];
+        Double maxPrice = (Double) result.get(0)[1];
+
+        result = serviceProductRepository.findDurationRange();
+        Float minDuration = (Float) result.get(0)[0];
+        Float maxDuration = (Float) result.get(0)[1];
+
+        List<ServiceProductCategoryDto> categories = serviceProductCategoryRepository.findAll()
+                .stream().map(ServiceProductCategoryMapper::toDto).toList();
+        List<EventTypeDto> types = eventTypeRepository.findAll()
+                .stream().map(EventTypeMapper::toDto).toList();
+
+        return new ServiceProductFilteringValuesDto(
+                minPrice,
+                maxPrice,
+                minDuration,
+                maxDuration,
+                categories,
+                types
+        );
     }
 }

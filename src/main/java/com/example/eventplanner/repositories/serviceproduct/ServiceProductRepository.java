@@ -70,4 +70,6 @@ public interface ServiceProductRepository extends JpaRepository<ServiceProduct, 
 
     @Query("SELECT MIN(sp.price), MAX(sp.price) FROM ServiceProduct sp WHERE sp.visible = true")
     List<Object[]> findPriceRange();
+    @Query("SELECT MIN(s.duration), MAX(s.duration) FROM Service s WHERE s.visible = true")
+    List<Object[]> findDurationRange();
 }

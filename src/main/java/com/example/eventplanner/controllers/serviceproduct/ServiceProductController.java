@@ -1,10 +1,8 @@
 package com.example.eventplanner.controllers.serviceproduct;
 
-import com.example.eventplanner.dto.event.event.EventDto;
 import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductDto;
-import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductNoIdDto;
+import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductFilteringValuesDto;
 import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductSummaryDto;
-import com.example.eventplanner.model.serviceproduct.ServiceProduct;
 import com.example.eventplanner.model.utils.ServiceProductDType;
 import com.example.eventplanner.services.serviceproduct.ServiceProductService;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -108,9 +105,9 @@ public class ServiceProductController {
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping(value = "/price-range")
-    public ResponseEntity<List<Double>> getPriceRange() {
-        List<Double> result = serviceProductService.getPriceRange();
+    @GetMapping(value = "/filtering-values")
+    public ResponseEntity<ServiceProductFilteringValuesDto> getFilteringValues() {
+        ServiceProductFilteringValuesDto result = serviceProductService.getFilteringValues();
         return result != null ?
                 new ResponseEntity<>(result, HttpStatus.OK) :
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
