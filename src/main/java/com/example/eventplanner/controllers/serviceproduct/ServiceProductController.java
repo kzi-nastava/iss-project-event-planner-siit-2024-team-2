@@ -5,6 +5,7 @@ import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProduct
 import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductNoIdDto;
 import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductSummaryDto;
 import com.example.eventplanner.model.serviceproduct.ServiceProduct;
+import com.example.eventplanner.model.utils.ServiceProductDType;
 import com.example.eventplanner.services.serviceproduct.ServiceProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -43,18 +44,23 @@ public class ServiceProductController {
             @RequestParam(defaultValue = "DESC") Sort.Direction sortDirection,
             @RequestParam(defaultValue = "") String name,
             @RequestParam(defaultValue = "") String description,
+            @RequestParam(required = false) ServiceProductDType type,
             @RequestParam(required = false) List<Long> categoryIds,
             @RequestParam(required = false) Boolean available,
             @RequestParam(required = false) Boolean visible,
             @RequestParam(required = false) Integer minPrice,
             @RequestParam(required = false) Integer maxPrice,
             @RequestParam(required = false) List<Long> availableEventTypeIds,
-            @RequestParam(required = false) Long serviceProductProviderId) {
+            @RequestParam(required = false) Long serviceProductProviderId,
+            @RequestParam(required = false) Float minDuration,
+            @RequestParam(required = false) Float maxDuration,
+            @RequestParam(required = false) Boolean automaticReserved) {
         Sort sort = Sort.by(sortDirection, sortBy);
         Page<ServiceProductDto> result = serviceProductService.getAllFiltered(
-                ServiceProductDto.class,
+                ServiceProductDto.class, type,
                 page, size, sort, name, description, categoryIds, available, visible,
-                minPrice, maxPrice, availableEventTypeIds, serviceProductProviderId);
+                minPrice, maxPrice, availableEventTypeIds, serviceProductProviderId,
+                minDuration, maxDuration, automaticReserved);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -66,18 +72,23 @@ public class ServiceProductController {
             @RequestParam(defaultValue = "DESC") Sort.Direction sortDirection,
             @RequestParam(defaultValue = "") String name,
             @RequestParam(defaultValue = "") String description,
+            @RequestParam(required = false) ServiceProductDType type,
             @RequestParam(required = false) List<Long> categoryIds,
             @RequestParam(required = false) Boolean available,
             @RequestParam(required = false) Boolean visible,
             @RequestParam(required = false) Integer minPrice,
             @RequestParam(required = false) Integer maxPrice,
             @RequestParam(required = false) List<Long> availableEventTypeIds,
-            @RequestParam(required = false) Long serviceProductProviderId) {
+            @RequestParam(required = false) Long serviceProductProviderId,
+            @RequestParam(required = false) Float minDuration,
+            @RequestParam(required = false) Float maxDuration,
+            @RequestParam(required = false) Boolean automaticReserved) {
         Sort sort = Sort.by(sortDirection, sortBy);
         Page<ServiceProductSummaryDto> result = serviceProductService.getAllFiltered(
-                ServiceProductSummaryDto.class,
+                ServiceProductSummaryDto.class, type,
                 page, size, sort, name, description, categoryIds, available, visible,
-                minPrice, maxPrice, availableEventTypeIds, serviceProductProviderId);
+                minPrice, maxPrice, availableEventTypeIds, serviceProductProviderId,
+                minDuration, maxDuration, automaticReserved);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

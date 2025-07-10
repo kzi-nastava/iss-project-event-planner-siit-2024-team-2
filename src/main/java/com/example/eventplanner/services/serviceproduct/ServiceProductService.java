@@ -13,10 +13,12 @@ import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.event.EventCreatorProjection;
 import com.example.eventplanner.model.event.EventType;
 import com.example.eventplanner.model.order.Booking;
+import com.example.eventplanner.model.serviceproduct.Product;
 import com.example.eventplanner.model.serviceproduct.ServiceProduct;
 import com.example.eventplanner.model.serviceproduct.ServiceProductCategory;
 import com.example.eventplanner.model.serviceproduct.ServiceProductCreatorProjection;
 import com.example.eventplanner.model.user.ServiceProductProvider;
+import com.example.eventplanner.model.utils.ServiceProductDType;
 import com.example.eventplanner.repositories.event.EventTypeRepository;
 import com.example.eventplanner.repositories.serviceproduct.ServiceProductCategoryRepository;
 import com.example.eventplanner.repositories.serviceproduct.ServiceProductRepository;
@@ -75,17 +77,23 @@ public class ServiceProductService {
     }
 
     public <T> Page<T> getAllFiltered(
-            Class<T> clazz, int page, Integer size, Sort sort, String name, String description, List<Long> categoryIds,
+            Class<T> clazz, ServiceProductDType type,
+            int page, Integer size, Sort sort, String name, String description, List<Long> categoryIds,
             Boolean available, Boolean visible, Integer minPrice, Integer maxPrice,
-            List<Long> availableEventTypeIds, Long serviceProductProviderId) {
+            List<Long> availableEventTypeIds, Long serviceProductProviderId,
+            Float minDuration, Float maxDuration, Boolean automaticReserved) {
         PageRequest pageRequest = PageRequest.of(page, size != null ? size : 10, sort);
+        Class<?> spType;
+        if (type == ServiceProductDType.SERVICE)
+            spType = com.example.eventplanner.model.serviceproduct.Service.class;
+        else if (type == ServiceProductDType.PRODUCT)
+            spType = Product.class;
+        else
+            spType = null;
         Page<ServiceProduct> serviceProducts =
-                serviceProductRepository.findAllFiltered(name, description,
-                        categoryIds,
-                        available,
-                visible, minPrice, maxPrice,
-                        availableEventTypeIds,
-                        serviceProductProviderId, pageRequest);
+                serviceProductRepository.findAllFiltered(spType, name, description, categoryIds, available,
+                        visible, minPrice, maxPrice, availableEventTypeIds, serviceProductProviderId,
+                        minDuration, maxDuration, automaticReserved, pageRequest);
         if (clazz == ServiceProductDto.class)
             return serviceProducts.map(ServiceProductMapper::toDto).map(clazz::cast);
         else

@@ -2,6 +2,7 @@ package com.example.eventplanner.repositories.serviceproduct;
 
 import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.serviceproduct.ServiceProduct;
+import com.example.eventplanner.model.utils.ServiceProductDType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -41,11 +42,17 @@ public interface ServiceProductRepository extends JpaRepository<ServiceProduct, 
             "AND (:maxPrice IS NULL OR sp.price <= :maxPrice) " +
             "AND (:typeIds IS NULL OR EXISTS (" +
             "   SELECT 1 " +
-            "   FROM sp.availableEventTypes type" +
-            "   WHERE type.id in :typeIds ))" +
-            "AND (:spp IS NULL OR sp.serviceProductProvider.id = :spp)"
+            "   FROM sp.availableEventTypes type " +
+            "   WHERE type.id in :typeIds )) " +
+            "AND (:spp IS NULL OR sp.serviceProductProvider.id = :spp) " +
+            "AND (:type IS NULL OR TYPE(sp) = :type) " +
+            "AND (TYPE(sp) != Service OR (" +
+            "       (:minDuration IS NULL OR TREAT(sp AS Service).duration >= :minDuration) " +
+            "   AND (:maxDuration IS NULL OR TREAT(sp AS Service).duration <= :maxDuration) " +
+            "   AND (:automaticReserved IS NULL OR TREAT(sp AS Service).automaticReserved = :automaticReserved))) "
     )
     Page<ServiceProduct> findAllFiltered(
+            @Param("type") Class<?> type,
             @Param("name") String name,
             @Param("description") String description,
             @Param("categoryIds") List<Long> categoryIds,
@@ -55,6 +62,9 @@ public interface ServiceProductRepository extends JpaRepository<ServiceProduct, 
             @Param("maxPrice") Integer maxPrice,
             @Param("typeIds") List<Long> availableEventTypeIds,
             @Param("spp") Long serviceProductProviderId,
+            @Param("minDuration") Float minDuration,
+            @Param("maxDuration") Float maxDuration,
+            @Param("automaticReserved") Boolean automaticReserved,
             Pageable pageable
     );
 
