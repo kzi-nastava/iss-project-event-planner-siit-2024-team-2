@@ -18,6 +18,6 @@ public class ServiceProductFilteringValuesDto {
     private Double maxPrice;
     private Float minDuration;
     private Float maxDuration;
-    private List<ServiceProductCategoryDto> categoryIds;
-    private List<EventTypeDto> availableEventTypeIds;
+    private List<ServiceProductCategoryDto> categories;
+    private List<EventTypeDto> availableEventTypes;
 }
