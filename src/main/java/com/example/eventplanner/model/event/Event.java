@@ -4,6 +4,7 @@ import com.example.eventplanner.model.Entity;
 import com.example.eventplanner.model.user.EventOrganizer;
 import com.example.eventplanner.model.user.ServiceProductProvider;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.*;
@@ -20,6 +21,7 @@ import java.util.List;
 @jakarta.persistence.Entity
 public class Event extends Entity {
     private String name;
+    @Column(columnDefinition = "TEXT")
     private String description;
     @ManyToOne
     private EventType type;
