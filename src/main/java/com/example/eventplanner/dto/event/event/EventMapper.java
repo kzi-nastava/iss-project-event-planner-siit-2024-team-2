@@ -3,12 +3,16 @@ package com.example.eventplanner.dto.event.event;
 import com.example.eventplanner.dto.event.activity.ActivityMapper;
 import com.example.eventplanner.dto.event.budget.BudgetMapper;
 import com.example.eventplanner.dto.event.eventtype.EventTypeMapper;
+import com.example.eventplanner.dto.user.user.EventOrganizerMapper;
+import com.example.eventplanner.dto.user.user.UserMapper;
 import com.example.eventplanner.model.event.Activity;
 import com.example.eventplanner.model.event.Budget;
 import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.event.EventType;
 import com.example.eventplanner.model.user.EventOrganizer;
+import com.example.eventplanner.services.util.DateUtil;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -21,32 +25,33 @@ public class EventMapper {
                 event.getName(),
                 event.getDescription(),
                 EventTypeMapper.toDto(event.getType()),
+                UserMapper.toBaseUserDto(event.getEventOrganizer()),
                 event.getMaxAttendances(),
                 event.isOpen(),
                 event.getLongitude(),
                 event.getLatitude(),
                 event.getDate().getTime(),
                 event.getActivities().stream().map(ActivityMapper::toDto).toList(),
-                event.getBudgets().stream().map(BudgetMapper::toDto).toList(),
-                event.getEventOrganizer()
+                event.getBudgets().stream().map(BudgetMapper::toDto).toList()
         );
     }
 
     public static EventNoIdDto toDtoNoId(Event event) {
         if (event == null)
             return null;
+        LocalDate localDate = DateUtil.convertDateToLocalDate(event.getDate());
         return new EventNoIdDto(
                 event.getName(),
                 event.getDescription(),
                 event.getType().getId(),
+                event.getEventOrganizer().getId(),
                 event.getMaxAttendances(),
                 event.isOpen(),
                 event.getLongitude(),
                 event.getLatitude(),
-                event.getDate().getTime(),
+                localDate,
                 event.getActivities().stream().map(Activity::getId).toList(),
-                event.getBudgets().stream().map(Budget::getId).toList(),
-                event.getEventOrganizer().getId()
+                event.getBudgets().stream().map(Budget::getId).toList()
         );
     }
 
@@ -68,22 +73,22 @@ public class EventMapper {
         );
     }
 
-    public static Event toEntity(EventNoIdDto dto, EventType eventType, List<Activity> activities,
-                                 List<Budget> budgets, EventOrganizer eventOrganizer) {
+    public static Event toEntity(EventNoIdDto dto, EventType eventType, EventOrganizer eventOrganizer, List<Activity> activities, List<Budget> budgets) {
         if (dto == null)
             return null;
+        Date convertedDate = DateUtil.convertLocalDateToDate(dto.getDate());
         return new Event(
                 dto.getName(),
                 dto.getDescription(),
                 eventType,
+                eventOrganizer,
                 dto.getMaxAttendances(),
                 dto.isOpen(),
                 dto.getLongitude(),
                 dto.getLatitude(),
-                new Date(dto.getDate()),
+                convertedDate,
                 activities,
-                budgets,
-                eventOrganizer);
+                budgets);
     }
 
 }

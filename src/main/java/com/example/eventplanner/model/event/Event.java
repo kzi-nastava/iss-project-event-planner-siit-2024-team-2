@@ -23,6 +23,8 @@ public class Event extends Entity {
     private String description;
     @ManyToOne
     private EventType type;
+    @ManyToOne
+    private EventOrganizer eventOrganizer;
     private int maxAttendances;
     private boolean open;
     private double longitude;
@@ -32,6 +34,4 @@ public class Event extends Entity {
     private List<Activity> activities;
     @OneToMany(cascade = {CascadeType.ALL})
     private List<Budget> budgets;
-    @ManyToOne(cascade = {CascadeType.ALL})
-    private EventOrganizer eventOrganizer;
 }

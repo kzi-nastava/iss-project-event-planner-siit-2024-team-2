@@ -3,12 +3,14 @@ package com.example.eventplanner.dto.event.event;
 import com.example.eventplanner.model.event.Activity;
 import com.example.eventplanner.model.event.Budget;
 import com.example.eventplanner.model.event.EventType;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.example.eventplanner.model.user.EventOrganizer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -19,13 +21,14 @@ import java.util.List;
 public class EventNoIdDto {
     private String name;
     private String description;
-    private long typeId;
+    private long eventTypeId;
+    private long eventOrganizerId;
     private int maxAttendances;
-    private boolean isOpen;
+    private boolean open;
     private double longitude;
     private double latitude;
-    private long date;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate date;
     private List<Long> activityIds;
     private List<Long> budgetIds;
-    private Long eventOrganizerId;
 }

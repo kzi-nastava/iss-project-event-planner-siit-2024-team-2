@@ -1,6 +1,7 @@
 package com.example.eventplanner.services.user;
 
 import com.example.eventplanner.dto.auth.ResetPasswordDto;
+import com.example.eventplanner.dto.event.event.EventMapper;
 import com.example.eventplanner.dto.user.user.*;
 import com.example.eventplanner.dto.auth.LoginDto;
 import com.example.eventplanner.dto.user.user.RegisterUserDto;
@@ -9,6 +10,7 @@ import com.example.eventplanner.dto.user.user.RegisterEventOrganizerDto;
 import com.example.eventplanner.dto.user.user.RegisterServiceProductProviderDto;
 import com.example.eventplanner.dto.user.userReport.UserReportDto;
 import com.example.eventplanner.model.Entity;
+import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.user.Admin;
 import com.example.eventplanner.model.user.EventOrganizer;
 import com.example.eventplanner.model.user.ServiceProductProvider;
@@ -19,23 +21,41 @@ import com.example.eventplanner.repositories.user.ServiceProductProviderReposito
 import com.example.eventplanner.repositories.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserService implements UserDetailsService {
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     private final UserReportService userReportService;
     private final UserRepository userRepository;
 
     public boolean registerUser(RegisterUserDto registerUserDto) {
         if (!validateUser(registerUserDto))
             return false;
+        registerUserDto.setUserRole(UserRole.EVENT_ORGANIZER);
+        registerUserDto.setPassword(passwordEncoder.encode(registerUserDto.getPassword()));
         userRepository.save(UserMapper.toEntity(registerUserDto));
+        return true;
+    }
+
+    public boolean registerCompany(RegisterServiceProductProviderDto registerCompanyDto) {
+        if (!validateUser(registerCompanyDto))
+            return false;
+        if (!validateCompany(registerCompanyDto))
+            return false;
+        registerCompanyDto.setUserRole(UserRole.SERVICE_PRODUCT_PROVIDER);
+        registerCompanyDto.setPassword(passwordEncoder.encode(registerCompanyDto.getPassword()));
+        userRepository.save(UserMapper.toEntity(registerCompanyDto));
         return true;
     }
 
@@ -47,6 +67,13 @@ public class UserService {
         if (user.getFirstName() == null || user.getFirstName().isEmpty()) return false;
         if (user.getLastName() == null || user.getLastName().isEmpty()) return false;
         if (user.getPhoneNumber() == null || !user.getPhoneNumber().matches("\\d{10,15}")) return false;
+        return true;
+    }
+
+    private boolean validateCompany(RegisterServiceProductProviderDto user) {
+        if (user == null) return false;
+        if (user.getCompanyName() == null || user.getFirstName().isEmpty()) return false;
+        if (user.getCompanyDescription() == null || user.getCompanyDescription().isEmpty()) return false;
         return true;
     }
 
@@ -63,6 +90,14 @@ public class UserService {
                 .orElse(null);
     }
 
+
+    public CompanyInfoDto getCompanyById(long id) {
+        ServiceProductProvider serviceProductProvider =
+                (ServiceProductProvider) userRepository.findById(id).orElse(null);
+        assert serviceProductProvider != null;
+        return new CompanyInfoDto(serviceProductProvider.getCompanyName(), serviceProductProvider.getCompanyDescription());
+    }
+
     public boolean delete(long id) {
         return userRepository.findById(id)
                 .map(u -> {
@@ -72,17 +107,12 @@ public class UserService {
                 }).orElse(false);
     }
 
-    public RegisterUserDto login(LoginDto loginDto) {
-        return UserMapper.toDto(userRepository
-                .findByEmailAndPassword(loginDto.getEmail(), loginDto.getPassword())
-                .orElse(null));
-    }
-
-    public boolean resetPassword(ResetPasswordDto resetPasswordDto) {
+    public boolean resetPassword(ResetPasswordDto resetPasswordDto, long userId) {
         return userRepository
-                .findByIdAndPassword(resetPasswordDto.getUserId(), resetPasswordDto.getOldPassword())
+                .findById(userId)
+                .filter(u -> passwordEncoder.matches(resetPasswordDto.getOldPassword(), u.getPassword()))
                 .map(u -> {
-                    u.setPassword(resetPasswordDto.getNewPassword());
+                    u.setPassword(passwordEncoder.encode(resetPasswordDto.getNewPassword()));
                     userRepository.save(u);
                     return true;
                 }).orElse(false);
@@ -94,6 +124,43 @@ public class UserService {
                 .filter(report -> report.getReported().getId() == id)
                 .filter(report -> approved == null || approved == (report.getDateApproved() != null))
                 .toList();
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Optional<BaseUser> ret = userRepository.findByEmail(email);
+        if (!ret.isEmpty()) {
+            return org.springframework.security.core.userdetails.User
+                    .withUsername(email)
+                    .password(ret.get().getPassword())
+                    .roles(ret.get().getUserRole().toString())
+                    .build();
+        }
+        throw new UsernameNotFoundException("User not found with this email: " + email);
+    }
+    public BaseUser getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with this email: " + email));
+    }
+
+    public UserInfoDto updateUserInfo(UserInfoDto userInfoDto, long id) {
+        BaseUser user =  userRepository.findById(id).orElse(null);
+        if (user == null) return null;
+        user.setFirstName(userInfoDto.getFirstName());
+        user.setLastName(userInfoDto.getLastName());
+        user.setAddress(userInfoDto.getAddress());
+        user.setPhoneNumber(userInfoDto.getPhoneNumber());
+        userRepository.save(user);
+        return userInfoDto;
+    }
+
+    public CompanyInfoDto updateCompanyInfo(CompanyInfoDto companyInfoDto, long id) {
+        ServiceProductProvider user = (ServiceProductProvider) userRepository.findById(id).orElse(null);
+        if (user == null) return null;
+        user.setCompanyName(companyInfoDto.getCompanyName());
+        user.setCompanyDescription(companyInfoDto.getCompanyDescription());
+        userRepository.save(user);
+        return companyInfoDto;
     }
 }
 

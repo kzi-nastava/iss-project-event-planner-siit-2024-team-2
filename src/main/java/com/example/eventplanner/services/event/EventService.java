@@ -5,9 +5,16 @@ import com.example.eventplanner.dto.order.booking.BookingDto;
 import com.example.eventplanner.dto.order.purchase.PurchaseDto;
 import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.event.EventCreatorProjection;
+import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.repositories.user.EventOrganizerRepository;
+import com.example.eventplanner.model.order.Booking;
+import com.example.eventplanner.model.user.EventOrganizer;
+import com.example.eventplanner.repositories.user.EventOrganizerRepository;
+import com.example.eventplanner.repositories.user.UserRepository;
 import com.example.eventplanner.services.order.BookingService;
 import com.example.eventplanner.services.order.PurchaseService;
+import com.example.eventplanner.services.util.DateUtil;
+import lombok.Getter;
 import com.example.eventplanner.dto.event.activity.ActivityDto;
 import com.example.eventplanner.dto.event.activity.ActivityMapper;
 import com.example.eventplanner.dto.event.event.EventDto;
@@ -36,10 +43,9 @@ public class EventService {
 
     private final EventRepository eventRepository;
     private final EventTypeRepository eventTypeRepository;
-    private final EventOrganizerRepository eventOrganizerRepository;
     private final PurchaseService purchaseService;
     private final BookingService bookingService;
-
+    private final UserRepository userRepository;
     public List<EventDto> getAll() {
         return eventRepository.findAll()
                 .stream()
@@ -54,28 +60,31 @@ public class EventService {
     }
 
     public EventDto create(EventNoIdDto dto) {
-        EventType type = eventTypeRepository.getReferenceById(dto.getTypeId());
-        Event event = EventMapper.toEntity(dto, type, new ArrayList<>(), new ArrayList<>(), null);
+        EventType type = eventTypeRepository.findById(dto.getEventTypeId()).orElseThrow();
+        EventOrganizer eventOrganizer = (EventOrganizer) userRepository.findById(dto.getEventOrganizerId()).orElseThrow();
+        Event event = EventMapper.toEntity(dto, type, eventOrganizer, new ArrayList<>(), new ArrayList<>());
         Event savedEvent = eventRepository.save(event);
         return EventMapper.toDto(savedEvent);
     }
 
     public EventDto update(EventNoIdDto dto, long id) {
+        Date convertedDate = DateUtil.convertLocalDateToDate(dto.getDate());
+
         return eventRepository.findById(id)
                 .map(event -> {
                     event.setId(id);
                     event.setActive(true);
-                    event.setDate(new Date(dto.getDate()));
+                    event.setDate(convertedDate);
                     event.setDescription(dto.getDescription());
                     event.setName(dto.getName());
                     event.setOpen(dto.isOpen());
                     event.setLatitude(dto.getLatitude());
                     event.setLongitude(dto.getLongitude());
                     event.setMaxAttendances(dto.getMaxAttendances());
-                    eventTypeRepository.findById(dto.getTypeId()).ifPresent(event::setType);
+                    eventTypeRepository.findById(dto.getEventTypeId()).ifPresent(event::setType);
                     event.setActivities(new ArrayList<>());
                     event.setBudgets(new ArrayList<>());
-                    eventOrganizerRepository.findById(dto.getEventOrganizerId()).ifPresent(event::setEventOrganizer);
+                    userRepository.findById(dto.getEventOrganizerId()).ifPresent(eo -> event.setEventOrganizer((EventOrganizer) eo));
                     Event updatedEvent = eventRepository.save(event);
                     return EventMapper.toDto(updatedEvent);
                 })
