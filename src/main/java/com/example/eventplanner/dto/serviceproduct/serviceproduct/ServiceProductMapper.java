@@ -61,7 +61,8 @@ public class ServiceProductMapper {
                 serviceProduct.getName(),
                 serviceProduct.getDescription(),
                 serviceProduct.getServiceProductProvider().getCompanyName(),
-                serviceProduct.getServiceProductProvider().getEmail()
+                serviceProduct.getServiceProductProvider().getEmail(),
+                serviceProduct.getImages().stream().sorted().findFirst().orElse(null)
         );
     }
 

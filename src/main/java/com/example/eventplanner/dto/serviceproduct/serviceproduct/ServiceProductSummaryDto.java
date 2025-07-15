@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -20,4 +22,5 @@ public class ServiceProductSummaryDto {
     private String description;
     private String creatorName;
     private String creatorEmail;
+    private String image;
 }
