@@ -8,6 +8,7 @@ import com.example.eventplanner.model.event.EventType;
 import com.example.eventplanner.model.serviceproduct.ServiceProduct;
 import com.example.eventplanner.model.serviceproduct.ServiceProductCategory;
 import com.example.eventplanner.model.user.ServiceProductProvider;
+import com.example.eventplanner.services.serviceproduct.ImageService;
 
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class ServiceProductMapper {
                 serviceProduct.getDiscount(),
                 serviceProduct.getName(),
                 serviceProduct.getDescription(),
-                serviceProduct.getImages(),
+                serviceProduct.getImages().stream().map(ImageService::encodePath).toList(),
                 serviceProduct.getAvailableEventTypes().stream().map(EventTypeMapper::toDto).toList(),
                 UserMapper.toServiceProductProviderDto(serviceProduct.getServiceProductProvider())
         );
@@ -43,7 +44,7 @@ public class ServiceProductMapper {
                 serviceProduct.getDiscount(),
                 serviceProduct.getName(),
                 serviceProduct.getDescription(),
-                serviceProduct.getImages(),
+                serviceProduct.getImages().stream().map(ImageService::encodePath).toList(),
                 serviceProduct.getAvailableEventTypes().stream().map(EventType::getId).toList(),
                 serviceProduct.getServiceProductProvider().getId()
         );
@@ -62,7 +63,12 @@ public class ServiceProductMapper {
                 serviceProduct.getDescription(),
                 serviceProduct.getServiceProductProvider().getCompanyName(),
                 serviceProduct.getServiceProductProvider().getEmail(),
-                serviceProduct.getImages().stream().sorted().findFirst().orElse(null)
+                ImageService.encodePath(
+                        serviceProduct.getImages()
+                                .stream()
+                                .sorted()
+                                .findFirst()
+                                .orElse(null))
         );
     }
 
@@ -80,7 +86,7 @@ public class ServiceProductMapper {
                 dto.getDiscount(),
                 dto.getName(),
                 dto.getDescription(),
-                dto.getImages(),
+                dto.getImages().stream().map(ImageService::decodePath).toList(),
                 availableEventTypes,
                 serviceProductProvider);
     }

@@ -51,4 +51,15 @@ public class ImageService {
             return null;
         return absolutePath;
     }
+    public static String encodePath(String imagePath) {
+        if (imagePath == null || imagePath.isEmpty())
+            return null;
+        return new String(Base64.getEncoder().encode(imagePath.getBytes()));
+    }
+
+    public static String decodePath(String decodedPath) {
+        if (decodedPath == null || decodedPath.isEmpty())
+            return null;
+        return new String(Base64.getDecoder().decode(decodedPath));
+    }
 }
