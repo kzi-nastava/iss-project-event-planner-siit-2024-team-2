@@ -57,4 +57,8 @@ public class ServiceProductProviderService {
                     return ServiceProductProviderMapper.toUpdateDto(serviceProductProviderRepository.save(serviceProductProvider));
                 }).orElse(null);
     }
+
+    public ServiceProductProvider findByUserUsername(String username) {
+        return serviceProductProviderRepository.findByEmail(username);
+    }
 }

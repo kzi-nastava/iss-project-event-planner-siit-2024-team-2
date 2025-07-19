@@ -4,6 +4,7 @@ import com.example.eventplanner.dto.event.eventtype.EventTypeDto;
 import com.example.eventplanner.dto.serviceproduct.serviceproductcategory.ServiceProductCategoryDto;
 import com.example.eventplanner.model.event.EventType;
 import com.example.eventplanner.model.serviceproduct.ServiceProductCategory;
+import com.example.eventplanner.model.user.ServiceProductProvider;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,4 +24,6 @@ public class CreateProductDto {
     private List<Long> availableEventTypesIds;
     private Long categoryId;
     private boolean available;
+    private boolean visible;
+    private long serviceProductProviderId;
 }

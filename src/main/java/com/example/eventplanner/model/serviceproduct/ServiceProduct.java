@@ -28,8 +28,8 @@ public class ServiceProduct extends Entity {
     @CollectionTable(name = "user_images", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "image_path")
     private List<String> images;
-    @ManyToMany(cascade = {CascadeType.ALL})
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<EventType> availableEventTypes;
-    @ManyToOne(cascade = {CascadeType.ALL})
+    @ManyToOne
     private ServiceProductProvider serviceProductProvider;
 }
