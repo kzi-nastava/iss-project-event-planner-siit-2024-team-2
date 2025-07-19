@@ -9,6 +9,7 @@ import com.example.eventplanner.dto.user.user.UpdateEventOrganizerDto;
 import com.example.eventplanner.model.event.Activity;
 import com.example.eventplanner.model.event.Budget;
 import com.example.eventplanner.model.event.EventType;
+import com.example.eventplanner.model.user.EventOrganizer;
 import com.example.eventplanner.model.utils.ReviewStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,7 +28,7 @@ public class EventDto {
     private String name;
     private String description;
     private EventTypeDto type;
-    private RegisterUserDto eventOrganizerDto;
+    private BaseUserDto eventOrganizerDto;
     private int maxAttendances;
     private boolean isOpen;
     private double longitude;

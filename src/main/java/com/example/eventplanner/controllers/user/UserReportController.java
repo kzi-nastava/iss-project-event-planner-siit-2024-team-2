@@ -21,7 +21,7 @@ public class UserReportController {
     private final UserReportService userReportService;
 
     @GetMapping
-    public ResponseEntity<Collection<UserReportDto>> getUserReports() {
+    public ResponseEntity<Collection<UserReportDto>> getAllUserReports() {
         Collection<UserReportDto> result = userReportService.getAll();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

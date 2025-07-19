@@ -25,7 +25,7 @@ public class EventMapper {
                 event.getName(),
                 event.getDescription(),
                 EventTypeMapper.toDto(event.getType()),
-                UserMapper.toDto(event.getEventOrganizer()),
+                UserMapper.toBaseUserDto(event.getEventOrganizer()),
                 event.getMaxAttendances(),
                 event.isOpen(),
                 event.getLongitude(),
@@ -67,7 +67,9 @@ public class EventMapper {
                 event.isOpen(),
                 event.getLongitude(),
                 event.getLatitude(),
-                event.getDate().getTime()
+                event.getDate().getTime(),
+                event.getEventOrganizer().getFirstName() + " " + event.getEventOrganizer().getLastName(),
+                event.getEventOrganizer().getEmail()
         );
     }
 

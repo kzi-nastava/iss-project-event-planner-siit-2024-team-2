@@ -1,5 +1,6 @@
 package com.example.eventplanner.dto.serviceproduct.serviceproduct;
 
+import com.example.eventplanner.dto.event.eventtype.EventTypeDto;
 import com.example.eventplanner.dto.serviceproduct.serviceproductcategory.ServiceProductCategoryDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,15 +13,11 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ServiceProductSummaryDto {
-    private long id;
-    private ServiceProductCategoryDto category;
-    private boolean available;
-    private double price;
-    private double discount;
-    private String name;
-    private String description;
-    private String creatorName;
-    private String creatorEmail;
-    private String image;
+public class ServiceProductFilteringValuesDto {
+    private Double minPrice;
+    private Double maxPrice;
+    private Float minDuration;
+    private Float maxDuration;
+    private List<ServiceProductCategoryDto> categories;
+    private List<EventTypeDto> availableEventTypes;
 }
