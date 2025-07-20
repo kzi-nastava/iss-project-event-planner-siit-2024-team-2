@@ -1,5 +1,6 @@
 package com.example.eventplanner.dto.serviceproduct.product;
 
+import com.example.eventplanner.dto.event.eventtype.EventTypeMapper;
 import com.example.eventplanner.dto.serviceproduct.serviceproductcategory.ServiceProductCategoryMapper;
 import com.example.eventplanner.dto.user.user.RegisterEventOrganizerDto;
 import com.example.eventplanner.dto.user.user.ServiceProductProviderDto;
@@ -41,7 +42,7 @@ public class ProductMapper {
         dto.setDiscount(entity.getDiscount());
         dto.setServiceProductProvider(UserMapper.toServiceProductProviderDto(entity.getServiceProductProvider()));
         dto.setServiceProductCategoryDto(ServiceProductCategoryMapper.toDto(entity.getCategory()));
-        dto.setEventTypes(entity.getAvailableEventTypes());
+        dto.setEventTypes(entity.getAvailableEventTypes().stream().map(EventTypeMapper::toDto).toList());
         return dto;
     }
 

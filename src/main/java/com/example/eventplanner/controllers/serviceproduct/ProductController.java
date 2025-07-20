@@ -33,7 +33,6 @@ public class ProductController {
     public ResponseEntity<Collection<ProductDto>> getProviderProducts() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-        System.out.println("✅ Logged in as: " + username);
         ServiceProductProvider provider = serviceProductProviderService.findByUserUsername(username);
         if (provider == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
