@@ -7,7 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 class EventplannerApplicationTests {
 
 	@Test
-	void contextLoads() {
+	void contextLoads() { // Testing not yet implemented
 	}
 
 }

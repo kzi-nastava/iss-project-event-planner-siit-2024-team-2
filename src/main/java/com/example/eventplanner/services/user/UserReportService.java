@@ -1,8 +1,8 @@
 package com.example.eventplanner.services.user;
 
-import com.example.eventplanner.dto.user.userReport.UserReportDto;
-import com.example.eventplanner.dto.user.userReport.UserReportMapper;
-import com.example.eventplanner.dto.user.userReport.UserReportNoIdDto;
+import com.example.eventplanner.dto.user.userreport.UserReportDto;
+import com.example.eventplanner.dto.user.userreport.UserReportMapper;
+import com.example.eventplanner.dto.user.userreport.UserReportNoIdDto;
 import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.user.UserReport;
 import com.example.eventplanner.repositories.serviceproduct.ServiceProductRepository;

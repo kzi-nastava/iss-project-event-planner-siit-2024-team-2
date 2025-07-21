@@ -1,4 +1,4 @@
-package com.example.eventplanner.dto.user.userReport;
+package com.example.eventplanner.dto.user.userreport;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

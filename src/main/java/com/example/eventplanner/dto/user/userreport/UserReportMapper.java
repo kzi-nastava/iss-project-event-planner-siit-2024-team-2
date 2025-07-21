@@ -1,4 +1,4 @@
-package com.example.eventplanner.dto.user.userReport;
+package com.example.eventplanner.dto.user.userreport;
 
 import com.example.eventplanner.dto.user.user.UserMapper;
 import com.example.eventplanner.model.user.BaseUser;

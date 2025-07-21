@@ -2,7 +2,7 @@ package com.example.eventplanner.services.user;
 
 import com.example.eventplanner.dto.auth.ResetPasswordDto;
 import com.example.eventplanner.dto.user.user.*;
-import com.example.eventplanner.dto.user.userReport.UserReportDto;
+import com.example.eventplanner.dto.user.userreport.UserReportDto;
 import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.user.ServiceProductProvider;
 import com.example.eventplanner.model.utils.UserRole;

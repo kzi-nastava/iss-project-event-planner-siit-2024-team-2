@@ -20,7 +20,6 @@ public class ImageController {
     private final ImageService imageService;
 
     @GetMapping("/{path}")
-    @ResponseBody
     public ResponseEntity<InputStreamResource> getImage(@PathVariable("path") String path) {
         MediaType contentType = imageService.getMediaType(path);
         StatusPair sp = imageService.getImageStream(path);

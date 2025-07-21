@@ -5,6 +5,8 @@ import java.time.ZoneId;
 import java.util.Date;
 
 public class DateUtil {
+    private DateUtil() {}
+
     public static Date convertLocalDateToDate(LocalDate localDate) {
         if (localDate == null) return null;
         return Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
