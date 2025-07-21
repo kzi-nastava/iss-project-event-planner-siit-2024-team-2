@@ -1,41 +1,32 @@
 package com.example.eventplanner.services.event;
 
-import com.example.eventplanner.dto.event.event.EventSummaryDto;
-import com.example.eventplanner.dto.order.booking.BookingDto;
-import com.example.eventplanner.dto.order.purchase.PurchaseDto;
-import com.example.eventplanner.model.event.Event;
-import com.example.eventplanner.model.event.EventCreatorProjection;
-import com.example.eventplanner.model.user.BaseUser;
-import com.example.eventplanner.repositories.user.EventOrganizerRepository;
-import com.example.eventplanner.model.order.Booking;
-import com.example.eventplanner.model.user.EventOrganizer;
-import com.example.eventplanner.repositories.user.EventOrganizerRepository;
-import com.example.eventplanner.repositories.user.UserRepository;
-import com.example.eventplanner.services.order.BookingService;
-import com.example.eventplanner.services.order.PurchaseService;
-import com.example.eventplanner.services.util.DateUtil;
-import lombok.Getter;
 import com.example.eventplanner.dto.event.activity.ActivityDto;
 import com.example.eventplanner.dto.event.activity.ActivityMapper;
 import com.example.eventplanner.dto.event.event.EventDto;
 import com.example.eventplanner.dto.event.event.EventMapper;
 import com.example.eventplanner.dto.event.event.EventNoIdDto;
+import com.example.eventplanner.dto.event.event.EventSummaryDto;
+import com.example.eventplanner.dto.order.booking.BookingDto;
+import com.example.eventplanner.dto.order.purchase.PurchaseDto;
 import com.example.eventplanner.model.event.Activity;
+import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.event.EventType;
+import com.example.eventplanner.model.user.EventOrganizer;
 import com.example.eventplanner.repositories.event.EventRepository;
 import com.example.eventplanner.repositories.event.EventTypeRepository;
+import com.example.eventplanner.repositories.user.UserRepository;
+import com.example.eventplanner.services.order.BookingService;
+import com.example.eventplanner.services.order.PurchaseService;
+import com.example.eventplanner.services.util.DateUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Type;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

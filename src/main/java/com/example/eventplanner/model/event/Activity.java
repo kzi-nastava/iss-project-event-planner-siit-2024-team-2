@@ -1,7 +1,10 @@
 package com.example.eventplanner.model.event;
 
 import com.example.eventplanner.model.Entity;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.util.Date;

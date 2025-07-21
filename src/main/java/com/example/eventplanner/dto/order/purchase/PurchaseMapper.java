@@ -7,9 +7,12 @@ import com.example.eventplanner.model.order.Purchase;
 import com.example.eventplanner.model.serviceproduct.Product;
 
 public class PurchaseMapper {
+    private PurchaseMapper() {}
+
     public static PurchaseDto toDto(Purchase purchase) {
         if (purchase == null)
             return null;
+
         return new PurchaseDto(
                 purchase.getId(),
                 EventMapper.toDto(purchase.getEvent()),
@@ -21,6 +24,7 @@ public class PurchaseMapper {
     public static PurchaseNoIdDto toDtoNoId(Purchase purchase) {
         if (purchase == null)
             return null;
+
         return new PurchaseNoIdDto(
                 purchase.getEvent().getId(),
                 purchase.getProduct().getId(),

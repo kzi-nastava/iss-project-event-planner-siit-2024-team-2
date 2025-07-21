@@ -1,6 +1,5 @@
 package com.example.eventplanner.controllers.serviceproduct;
 
-import com.example.eventplanner.dto.event.eventreview.EventReviewCommentDto;
 import com.example.eventplanner.dto.serviceproduct.serviceproductreview.ServiceProductReviewCommentDto;
 import com.example.eventplanner.dto.serviceproduct.serviceproductreview.ServiceProductReviewDto;
 import com.example.eventplanner.dto.serviceproduct.serviceproductreview.ServiceProductReviewNoIdDto;

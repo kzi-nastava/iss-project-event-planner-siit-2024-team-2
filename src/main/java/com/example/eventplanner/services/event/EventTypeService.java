@@ -3,7 +3,6 @@ package com.example.eventplanner.services.event;
 import com.example.eventplanner.dto.event.eventtype.CreateEventTypeDto;
 import com.example.eventplanner.dto.event.eventtype.EventTypeDto;
 import com.example.eventplanner.dto.event.eventtype.EventTypeMapper;
-import com.example.eventplanner.model.Entity;
 import com.example.eventplanner.model.event.EventType;
 import com.example.eventplanner.repositories.event.EventTypeRepository;
 import lombok.RequiredArgsConstructor;

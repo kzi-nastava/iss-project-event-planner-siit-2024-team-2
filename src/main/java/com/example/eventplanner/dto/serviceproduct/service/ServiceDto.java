@@ -1,7 +1,5 @@
 package com.example.eventplanner.dto.serviceproduct.service;
 
-import java.util.List;
-
 import com.example.eventplanner.dto.event.eventtype.EventTypeDto;
 import com.example.eventplanner.dto.serviceproduct.serviceproductcategory.ServiceProductCategoryDto;
 import com.example.eventplanner.dto.user.user.RegisterServiceProductProviderDto;
@@ -9,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter
 @Setter

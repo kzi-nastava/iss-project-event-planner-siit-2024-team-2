@@ -4,11 +4,12 @@ import com.example.eventplanner.model.user.EventOrganizer;
 import com.example.eventplanner.model.utils.UserRole;
 
 public class EventOrganizerMapper {
+    private EventOrganizerMapper() {}
 
     public static UpdateEventOrganizerDto toUpdateDto(EventOrganizer entity) {
-        if (entity == null) {
+        if (entity == null)
             return null;
-        }
+
         UpdateEventOrganizerDto dto = new UpdateEventOrganizerDto();
         dto.setFirstName(entity.getFirstName());
         dto.setLastName(entity.getLastName());
@@ -18,9 +19,9 @@ public class EventOrganizerMapper {
     }
 
     public static EventOrganizer toUpdateEntity(UpdateEventOrganizerDto dto) {
-        if (dto == null) {
+        if (dto == null)
             return null;
-        }
+
         EventOrganizer entity = new EventOrganizer();
         entity.setFirstName(dto.getFirstName());
         entity.setLastName(dto.getLastName());
@@ -30,9 +31,9 @@ public class EventOrganizerMapper {
     }
 
     public static EventOrganizer toEntity(RegisterEventOrganizerDto dto) {
-        if (dto == null) {
+        if (dto == null)
             return null;
-        }
+
         EventOrganizer entity = new EventOrganizer();
         entity.setId(dto.getId());
         entity.setActive(true);
@@ -47,9 +48,9 @@ public class EventOrganizerMapper {
     }
 
     public static RegisterEventOrganizerDto toDto(EventOrganizer entity) {
-        if (entity == null) {
+        if (entity == null)
             return null;
-        }
+
         RegisterEventOrganizerDto dto = new RegisterEventOrganizerDto();
         dto.setId(entity.getId());
         dto.setPassword(entity.getPassword());

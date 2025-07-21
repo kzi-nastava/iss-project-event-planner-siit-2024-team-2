@@ -1,12 +1,16 @@
 package com.example.eventplanner.model.serviceproduct;
 
-import java.util.List;
 import com.example.eventplanner.model.Entity;
 import com.example.eventplanner.model.event.EventType;
 import com.example.eventplanner.model.user.ServiceProductProvider;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
+
+import java.util.List;
 
 @Getter
 @Setter

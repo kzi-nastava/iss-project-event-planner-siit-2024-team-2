@@ -11,7 +11,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 @RestController
@@ -21,7 +20,6 @@ public class ImageController {
     private final ImageService imageService;
 
     @GetMapping("/{path}")
-    @ResponseBody
     public ResponseEntity<InputStreamResource> getImage(@PathVariable("path") String path) {
         MediaType contentType = imageService.getMediaType(path);
         StatusPair sp = imageService.getImageStream(path);

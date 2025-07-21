@@ -1,6 +1,5 @@
 package com.example.eventplanner.dto.serviceproduct.serviceproductreview;
 
-import com.example.eventplanner.model.utils.ReviewStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

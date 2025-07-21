@@ -1,6 +1,9 @@
 package com.example.eventplanner.controllers.event;
 
-import com.example.eventplanner.dto.event.eventreview.*;
+import com.example.eventplanner.dto.event.eventreview.EventReviewCommentDto;
+import com.example.eventplanner.dto.event.eventreview.EventReviewDto;
+import com.example.eventplanner.dto.event.eventreview.EventReviewNoIdDto;
+import com.example.eventplanner.dto.event.eventreview.EventReviewStatusDto;
 import com.example.eventplanner.model.utils.ReviewStatus;
 import com.example.eventplanner.services.event.EventReviewService;
 import lombok.RequiredArgsConstructor;
