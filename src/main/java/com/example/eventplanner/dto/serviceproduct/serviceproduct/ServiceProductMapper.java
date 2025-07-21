@@ -12,11 +12,12 @@ import com.example.eventplanner.services.serviceproduct.ImageService;
 import java.util.List;
 
 public class ServiceProductMapper {
-    private static ServiceProductDto dto;
+    private ServiceProductMapper() {}
 
     public static ServiceProductDto toDto(ServiceProduct serviceProduct) {
         if (serviceProduct == null)
             return null;
+
         return new ServiceProductDto(
                 serviceProduct.getId(),
                 ServiceProductCategoryMapper.toDto(serviceProduct.getCategory()),
@@ -35,6 +36,7 @@ public class ServiceProductMapper {
     public static ServiceProductNoIdDto toDtoNoId(ServiceProduct serviceProduct) {
         if (serviceProduct == null)
             return null;
+
         return new ServiceProductNoIdDto(
                 serviceProduct.getCategory().getId(),
                 serviceProduct.isAvailable(),
@@ -52,6 +54,7 @@ public class ServiceProductMapper {
     public static ServiceProductSummaryDto toSummaryDto(ServiceProduct serviceProduct) {
         if (serviceProduct == null)
             return null;
+
         return new ServiceProductSummaryDto(
                 serviceProduct.getId(),
                 ServiceProductCategoryMapper.toDto(serviceProduct.getCategory()),
@@ -77,6 +80,7 @@ public class ServiceProductMapper {
                                           ServiceProductProvider serviceProductProvider) {
         if (dto == null)
             return null;
+
         return new ServiceProduct(
                 category,
                 dto.isAvailable(),

@@ -5,10 +5,12 @@ import com.example.eventplanner.model.user.EventOrganizer;
 import com.example.eventplanner.model.user.ServiceProductProvider;
 
 public class UserMapper {
+    private UserMapper() {}
+
     public static RegisterUserDto toDto(BaseUser entity) {
-        if (entity == null) {
+        if (entity == null)
             return null;
-        }
+
         RegisterEventOrganizerDto dto = new RegisterEventOrganizerDto();
         dto.setId(entity.getId());
         dto.setPassword(entity.getPassword());
@@ -22,9 +24,9 @@ public class UserMapper {
     }
 
     public static BaseUser toEntity(RegisterUserDto dto) {
-        if (dto == null) {
+        if (dto == null)
             return null;
-        }
+
         EventOrganizer entity = new EventOrganizer();
         entity.setId(dto.getId());
         entity.setActive(true);
@@ -39,9 +41,9 @@ public class UserMapper {
     }
 
     public static BaseUser toEntity(RegisterServiceProductProviderDto dto) {
-        if (dto == null) {
+        if (dto == null)
             return null;
-        }
+
         ServiceProductProvider entity = new ServiceProductProvider();
         entity.setId(dto.getId());
         entity.setActive(true);
@@ -59,9 +61,9 @@ public class UserMapper {
 
 
     public static ServiceProductProviderDto toSppDto(ServiceProductProvider entity) {
-        if (entity == null) {
+        if (entity == null)
             return null;
-        }
+
         ServiceProductProviderDto dto = new ServiceProductProviderDto();
         dto.setId(entity.getId());
         dto.setEmail(entity.getEmail());
@@ -75,9 +77,9 @@ public class UserMapper {
         return dto;
     }
     public static RegisterUserDto toDto(RegisterUserDto entity) {
-        if (entity == null) {
+        if (entity == null)
             return null;
-        }
+
         RegisterEventOrganizerDto dto = new RegisterEventOrganizerDto();
         dto.setId(entity.getId());
         dto.setPassword(entity.getPassword());
@@ -93,6 +95,7 @@ public class UserMapper {
     public static BaseUserDto toBaseUserDto(BaseUser user) {
         if (user == null)
             return null;
+
         return new BaseUserDto(
                 user.getId(),
                 user.getEmail(),
@@ -107,6 +110,7 @@ public class UserMapper {
     public static ServiceProductProviderDto toServiceProductProviderDto(ServiceProductProvider spp) {
         if (spp == null)
             return null;
+
         return new ServiceProductProviderDto(
                 spp.getId(),
                 spp.getEmail(),

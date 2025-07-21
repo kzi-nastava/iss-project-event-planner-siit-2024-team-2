@@ -5,10 +5,12 @@ import com.example.eventplanner.model.serviceproduct.Product;
 import com.example.eventplanner.model.user.ServiceProductProvider;
 
 public class ProductMapper {
+    private ProductMapper() {}
+
     public static ProductDto toDto(Product entity) {
-        if (entity == null) {
+        if (entity == null)
             return null;
-        }
+
         ProductDto dto = new ProductDto();
         dto.setName(entity.getName());
         dto.setAvailable(entity.isAvailable());
@@ -18,9 +20,9 @@ public class ProductMapper {
         return dto;
     }
     public static Product toEntity(ProductDto dto, ServiceProductProvider spp) {
-        if (dto == null) {
+        if (dto == null)
             return null;
-        }
+
         Product entity = new Product();
         entity.setName(dto.getName());
         entity.setAvailable(dto.isAvailable());
@@ -31,9 +33,9 @@ public class ProductMapper {
     }
 
     public static CreateProductDto toCreateDto(Product entity) {
-        if (entity == null) {
+        if (entity == null)
             return null;
-        }
+
         CreateProductDto dto = new CreateProductDto();
         dto.setName(entity.getName());
         dto.setAvailable(entity.isAvailable());
@@ -42,9 +44,9 @@ public class ProductMapper {
         return dto;
     }
     public static Product toEntity(CreateProductDto dto) {
-        if (dto == null) {
+        if (dto == null)
             return null;
-        }
+
         Product entity = new Product();
         entity.setName(dto.getName());
         entity.setAvailable(dto.isAvailable());

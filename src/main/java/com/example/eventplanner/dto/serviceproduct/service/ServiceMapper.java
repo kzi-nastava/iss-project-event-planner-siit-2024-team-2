@@ -11,10 +11,12 @@ import com.example.eventplanner.model.user.ServiceProductProvider;
 import java.util.List;
 
 public class ServiceMapper {
+    private ServiceMapper() {}
+
     public static ServiceDto toDto(Service service) {
-        if (service == null) {
+        if (service == null)
             return null;
-        }
+
         return new ServiceDto(
                 service.getId(),
                 ServiceProductCategoryMapper.toDto(service.getCategory()),
@@ -33,9 +35,9 @@ public class ServiceMapper {
                                    List<EventType> availableEventTypes,
                                    ServiceProductCategory serviceProductCategory,
                                    ServiceProductProvider serviceProductProvider) {
-        if (dto == null) {
+        if (dto == null)
             return null;
-        }
+
         Service service = new Service();
         if (serviceProductCategory != null)
             service.setCategory(serviceProductCategory);

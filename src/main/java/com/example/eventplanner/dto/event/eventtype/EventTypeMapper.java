@@ -4,11 +4,12 @@ package com.example.eventplanner.dto.event.eventtype;
 import com.example.eventplanner.model.event.EventType;
 
 public class EventTypeMapper {
+    private EventTypeMapper() {}
 
     public static EventTypeDto toDto(EventType eventType) {
-        if (eventType == null) {
+        if (eventType == null)
             return null;
-        }
+
         return new EventTypeDto(
                 eventType.getId(),
                 eventType.getName(),
@@ -18,9 +19,9 @@ public class EventTypeMapper {
     }
 
     public static EventType toEntity(EventTypeDto dto) {
-        if (dto == null) {
+        if (dto == null)
             return null;
-        }
+
         EventType eventType = new EventType(
                 dto.getName(),
                 dto.getDescription(),
@@ -31,9 +32,9 @@ public class EventTypeMapper {
         return eventType;
     }
     public static EventType toEntity(CreateEventTypeDto dto) {
-        if (dto == null) {
+        if (dto == null)
             return null;
-        }
+
         EventType eventType = new EventType(
                 dto.getName(),
                 dto.getDescription(),

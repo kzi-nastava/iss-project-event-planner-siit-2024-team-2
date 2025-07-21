@@ -16,9 +16,12 @@ import java.util.Date;
 import java.util.List;
 
 public class EventMapper {
+    private EventMapper() {}
+
     public static EventDto toDto(Event event) {
         if (event == null)
             return null;
+
         return new EventDto(
                 event.getId(),
                 event.getName(),
@@ -38,6 +41,7 @@ public class EventMapper {
     public static EventNoIdDto toDtoNoId(Event event) {
         if (event == null)
             return null;
+
         LocalDate localDate = DateUtil.convertDateToLocalDate(event.getDate());
         return new EventNoIdDto(
                 event.getName(),
@@ -57,6 +61,7 @@ public class EventMapper {
     public static EventSummaryDto toSummaryDto(Event event) {
         if (event == null)
             return null;
+
         return new EventSummaryDto(
                 event.getId(),
                 event.getName(),
@@ -75,6 +80,7 @@ public class EventMapper {
     public static Event toEntity(EventNoIdDto dto, EventType eventType, EventOrganizer eventOrganizer, List<Activity> activities, List<Budget> budgets) {
         if (dto == null)
             return null;
+
         Date convertedDate = DateUtil.convertLocalDateToDate(dto.getDate());
         return new Event(
                 dto.getName(),
