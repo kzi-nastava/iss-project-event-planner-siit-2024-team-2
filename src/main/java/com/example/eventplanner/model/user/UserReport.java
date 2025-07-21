@@ -2,7 +2,10 @@ package com.example.eventplanner.model.user;
 
 import com.example.eventplanner.model.Entity;
 import jakarta.persistence.ManyToOne;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.util.Date;

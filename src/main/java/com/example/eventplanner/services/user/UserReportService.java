@@ -5,7 +5,6 @@ import com.example.eventplanner.dto.user.userReport.UserReportMapper;
 import com.example.eventplanner.dto.user.userReport.UserReportNoIdDto;
 import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.user.UserReport;
-import com.example.eventplanner.model.utils.ReviewStatus;
 import com.example.eventplanner.repositories.serviceproduct.ServiceProductRepository;
 import com.example.eventplanner.repositories.user.UserReportRepository;
 import com.example.eventplanner.repositories.user.UserRepository;

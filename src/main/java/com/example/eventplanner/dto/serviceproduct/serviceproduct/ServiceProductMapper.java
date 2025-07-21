@@ -1,7 +1,6 @@
 package com.example.eventplanner.dto.serviceproduct.serviceproduct;
 
 import com.example.eventplanner.dto.event.eventtype.EventTypeMapper;
-import com.example.eventplanner.dto.serviceproduct.serviceproductcategory.ServiceProductCategoryDto;
 import com.example.eventplanner.dto.serviceproduct.serviceproductcategory.ServiceProductCategoryMapper;
 import com.example.eventplanner.dto.user.user.UserMapper;
 import com.example.eventplanner.model.event.EventType;

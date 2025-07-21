@@ -4,7 +4,10 @@ import com.example.eventplanner.model.Entity;
 import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.utils.ReviewStatus;
 import jakarta.persistence.ManyToOne;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
 
 @Getter

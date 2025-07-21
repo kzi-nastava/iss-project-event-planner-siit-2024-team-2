@@ -1,12 +1,10 @@
 package com.example.eventplanner.services.serviceproduct;
 
-import java.util.*;
-
 import com.example.eventplanner.dto.serviceproduct.service.CreateServiceDto;
+import com.example.eventplanner.dto.serviceproduct.service.ServiceDto;
 import com.example.eventplanner.dto.serviceproduct.service.ServiceMapper;
 import com.example.eventplanner.model.event.EventType;
 import com.example.eventplanner.model.serviceproduct.Service;
-import com.example.eventplanner.dto.serviceproduct.service.ServiceDto;
 import com.example.eventplanner.model.serviceproduct.ServiceProductCategory;
 import com.example.eventplanner.model.user.ServiceProductProvider;
 import com.example.eventplanner.repositories.event.EventTypeRepository;
@@ -16,6 +14,11 @@ import com.example.eventplanner.repositories.user.ServiceProductProviderReposito
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 @org.springframework.stereotype.Service
 @RequiredArgsConstructor

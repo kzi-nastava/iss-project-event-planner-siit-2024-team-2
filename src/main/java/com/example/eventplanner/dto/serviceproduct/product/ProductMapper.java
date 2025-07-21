@@ -1,12 +1,8 @@
 package com.example.eventplanner.dto.serviceproduct.product;
 
-import com.example.eventplanner.dto.user.user.RegisterEventOrganizerDto;
-import com.example.eventplanner.dto.user.user.ServiceProductProviderDto;
 import com.example.eventplanner.dto.user.user.UserMapper;
 import com.example.eventplanner.model.serviceproduct.Product;
-import com.example.eventplanner.model.user.EventOrganizer;
 import com.example.eventplanner.model.user.ServiceProductProvider;
-import com.example.eventplanner.model.utils.UserRole;
 
 public class ProductMapper {
     public static ProductDto toDto(Product entity) {

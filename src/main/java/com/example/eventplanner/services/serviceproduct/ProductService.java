@@ -1,6 +1,5 @@
 package com.example.eventplanner.services.serviceproduct;
 
-import java.util.*;
 import com.example.eventplanner.dto.serviceproduct.product.CreateProductDto;
 import com.example.eventplanner.dto.serviceproduct.product.ProductDto;
 import com.example.eventplanner.dto.serviceproduct.product.ProductMapper;
@@ -10,6 +9,11 @@ import com.example.eventplanner.model.serviceproduct.Product;
 import com.example.eventplanner.model.serviceproduct.ServiceProductCategory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 
 
 @Service

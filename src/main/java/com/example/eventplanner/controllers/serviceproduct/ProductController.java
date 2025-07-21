@@ -2,13 +2,13 @@ package com.example.eventplanner.controllers.serviceproduct;
 
 import com.example.eventplanner.dto.serviceproduct.product.CreateProductDto;
 import com.example.eventplanner.dto.serviceproduct.product.ProductDto;
-import com.example.eventplanner.model.serviceproduct.Product;
 import com.example.eventplanner.model.serviceproduct.ServiceProductCategory;
 import com.example.eventplanner.services.serviceproduct.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;

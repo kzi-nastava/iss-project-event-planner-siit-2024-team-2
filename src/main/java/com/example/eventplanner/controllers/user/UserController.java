@@ -1,10 +1,9 @@
 
 package com.example.eventplanner.controllers.user;
 
-import com.example.eventplanner.dto.user.user.*;
-import com.example.eventplanner.dto.user.user.RegisterEventOrganizerDto;
-import com.example.eventplanner.dto.user.user.RegisterServiceProductProviderDto;
+import com.example.eventplanner.dto.user.user.CompanyInfoDto;
 import com.example.eventplanner.dto.user.user.RegisterUserDto;
+import com.example.eventplanner.dto.user.user.UserInfoDto;
 import com.example.eventplanner.dto.user.userReport.UserReportDto;
 import com.example.eventplanner.services.user.UserService;
 import lombok.RequiredArgsConstructor;

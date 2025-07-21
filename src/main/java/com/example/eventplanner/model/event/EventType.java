@@ -5,7 +5,10 @@ import com.example.eventplanner.model.serviceproduct.ServiceProduct;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.util.List;

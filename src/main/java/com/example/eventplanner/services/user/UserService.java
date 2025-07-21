@@ -1,35 +1,23 @@
 package com.example.eventplanner.services.user;
 
 import com.example.eventplanner.dto.auth.ResetPasswordDto;
-import com.example.eventplanner.dto.event.event.EventMapper;
 import com.example.eventplanner.dto.user.user.*;
-import com.example.eventplanner.dto.auth.LoginDto;
-import com.example.eventplanner.dto.user.user.RegisterUserDto;
-import com.example.eventplanner.dto.user.user.UserMapper;
-import com.example.eventplanner.dto.user.user.RegisterEventOrganizerDto;
-import com.example.eventplanner.dto.user.user.RegisterServiceProductProviderDto;
 import com.example.eventplanner.dto.user.userReport.UserReportDto;
-import com.example.eventplanner.model.Entity;
-import com.example.eventplanner.model.event.Event;
-import com.example.eventplanner.model.user.Admin;
-import com.example.eventplanner.model.user.EventOrganizer;
-import com.example.eventplanner.model.user.ServiceProductProvider;
 import com.example.eventplanner.model.user.BaseUser;
+import com.example.eventplanner.model.user.ServiceProductProvider;
 import com.example.eventplanner.model.utils.UserRole;
-import com.example.eventplanner.repositories.user.EventOrganizerRepository;
-import com.example.eventplanner.repositories.user.ServiceProductProviderRepository;
 import com.example.eventplanner.repositories.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

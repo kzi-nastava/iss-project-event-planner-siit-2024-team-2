@@ -1,9 +1,6 @@
 package com.example.eventplanner.dto.event.activity;
 
-import com.example.eventplanner.dto.event.event.EventDto;
 import com.example.eventplanner.model.event.Activity;
-import com.example.eventplanner.model.event.Budget;
-import com.example.eventplanner.model.event.Event;
 
 import java.util.Date;
 

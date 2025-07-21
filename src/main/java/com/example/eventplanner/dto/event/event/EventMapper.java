@@ -3,7 +3,6 @@ package com.example.eventplanner.dto.event.event;
 import com.example.eventplanner.dto.event.activity.ActivityMapper;
 import com.example.eventplanner.dto.event.budget.BudgetMapper;
 import com.example.eventplanner.dto.event.eventtype.EventTypeMapper;
-import com.example.eventplanner.dto.user.user.EventOrganizerMapper;
 import com.example.eventplanner.dto.user.user.UserMapper;
 import com.example.eventplanner.model.event.Activity;
 import com.example.eventplanner.model.event.Budget;
