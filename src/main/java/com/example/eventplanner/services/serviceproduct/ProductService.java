@@ -49,7 +49,8 @@ public class ProductService {
         ServiceProductCategory serviceProductCategory = serviceProductCategoryRepository.findById(createProductDto.getCategoryId()).orElseThrow();
         List<EventType> eventTypes = new ArrayList<>();
         for (long typeId: createProductDto.getAvailableEventTypesIds()) {
-            EventType eventType = eventTypeRepository.findById(typeId).orElse(null);
+            EventType eventType = eventTypeRepository.findById(typeId).orElseThrow(() ->
+                    new NoSuchElementException("EventType with ID " + typeId + " not found"));
             eventTypes.add(eventType);
         }
         Product product = ProductMapper.toEntity(createProductDto, serviceProductProvider, serviceProductCategory, eventTypes);
@@ -67,7 +68,8 @@ public class ProductService {
         ServiceProductCategory serviceProductCategory = serviceProductCategoryRepository.findById(createProductDto.getCategoryId()).orElseThrow();
         List<EventType> eventTypes = new ArrayList<>();
         for (long typeId: createProductDto.getAvailableEventTypesIds()) {
-            EventType eventType = eventTypeRepository.findById(typeId).orElse(null);
+            EventType eventType = eventTypeRepository.findById(typeId)
+                    .orElseThrow(() -> new NoSuchElementException("EventType with ID " + typeId + " not found"));
             eventTypes.add(eventType);
         }
         product.setServiceProductProvider(serviceProductProvider);
@@ -99,7 +101,7 @@ public class ProductService {
     public List<ProductDto> filter(Long categoryId, List<Long> eventTypeIds, Float minPrice, Float maxPrice, Boolean available) {
         //TODO optimize this
         return productRepository.findAll().stream()
-                .filter(product -> categoryId == null|| categoryId == product.getCategory().getId())
+                .filter(product -> categoryId == null || categoryId == product.getCategory().getId())
                 .filter(product -> eventTypeIds == null || eventTypeIds.isEmpty() || product.getAvailableEventTypes().stream().map(EventType::getId).anyMatch(eventTypeIds::contains))
                 .filter(product -> available == null || available == product.isAvailable())
                 .filter(product -> (minPrice == null || minPrice <= product.getPrice()) && (maxPrice == null || maxPrice >= product.getPrice() || maxPrice == 0))
