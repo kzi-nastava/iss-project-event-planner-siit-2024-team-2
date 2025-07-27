@@ -73,7 +73,7 @@ public class ProductController {
     }
 
     @GetMapping("/filter")
-    public ResponseEntity<Collection<ProductDto>> filterProducts(@RequestParam(value = "categories", required = false) Long category,
+    public ResponseEntity<Collection<ProductDto>> filterProducts(@RequestParam(value = "category", required = false) Long category,
                                                                  @RequestParam(value = "eventTypes", required = false) List<Long> eventTypes,
                                                                  @RequestParam(value = "minPrice", required = false) Float minPrice,
                                                                  @RequestParam(value = "maxPrice", required = false) Float maxPrice,
