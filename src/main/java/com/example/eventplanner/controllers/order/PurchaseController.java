@@ -17,7 +17,7 @@ public class PurchaseController {
     private final PurchaseService purchaseService;
 
     @GetMapping
-    public ResponseEntity<Collection<PurchaseDto>> getPurchases() {
+    public ResponseEntity<Collection<PurchaseDto>> getAllPurchases() {
         Collection<PurchaseDto> result = purchaseService.getAll();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

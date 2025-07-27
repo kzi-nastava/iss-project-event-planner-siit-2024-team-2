@@ -2,7 +2,6 @@ package com.example.eventplanner.services.serviceproduct;
 
 import com.example.eventplanner.dto.serviceproduct.pricelist.CreatePriceListDto;
 import com.example.eventplanner.dto.serviceproduct.pricelist.PriceListDto;
-import com.example.eventplanner.model.serviceproduct.ServiceProduct;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;

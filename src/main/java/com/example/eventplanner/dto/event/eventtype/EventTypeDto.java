@@ -12,8 +12,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EventTypeDto {
-    public long id;
-    public String name;
-    public String description;
-    public List<ServiceProduct> recommendedServiceProducts;
+    private long id;
+    private String name;
+    private String description;
+    private List<ServiceProduct> recommendedServiceProducts;
 }

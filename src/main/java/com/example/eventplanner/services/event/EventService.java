@@ -1,45 +1,32 @@
 package com.example.eventplanner.services.event;
 
-import com.example.eventplanner.dto.event.event.EventSummaryDto;
-import com.example.eventplanner.dto.order.booking.BookingDto;
-import com.example.eventplanner.dto.order.purchase.PurchaseDto;
-import com.example.eventplanner.model.event.Event;
-import com.example.eventplanner.model.order.Booking;
-import com.example.eventplanner.model.user.EventOrganizer;
-import com.example.eventplanner.repositories.user.EventOrganizerRepository;
-import com.example.eventplanner.repositories.user.UserRepository;
-import com.example.eventplanner.services.order.BookingService;
-import com.example.eventplanner.services.order.PurchaseService;
-import com.example.eventplanner.services.util.DateUtil;
-import lombok.Getter;
 import com.example.eventplanner.dto.event.activity.ActivityDto;
 import com.example.eventplanner.dto.event.activity.ActivityMapper;
 import com.example.eventplanner.dto.event.event.EventDto;
 import com.example.eventplanner.dto.event.event.EventMapper;
 import com.example.eventplanner.dto.event.event.EventNoIdDto;
 import com.example.eventplanner.dto.event.event.EventSummaryDto;
+import com.example.eventplanner.dto.order.booking.BookingDto;
+import com.example.eventplanner.dto.order.purchase.PurchaseDto;
 import com.example.eventplanner.model.event.Activity;
 import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.event.EventType;
-import com.example.eventplanner.model.order.Booking;
-import com.example.eventplanner.model.order.Purchase;
+import com.example.eventplanner.model.user.EventOrganizer;
 import com.example.eventplanner.repositories.event.EventRepository;
 import com.example.eventplanner.repositories.event.EventTypeRepository;
+import com.example.eventplanner.repositories.user.UserRepository;
 import com.example.eventplanner.services.order.BookingService;
 import com.example.eventplanner.services.order.PurchaseService;
+import com.example.eventplanner.services.util.DateUtil;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.type.descriptor.java.LocalDateTimeJavaType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.*;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -64,12 +51,13 @@ public class EventService {
     }
 
     public EventDto create(EventNoIdDto dto) {
-        EventType type = eventTypeRepository.findById(dto.getEventType()).orElseThrow();
-        EventOrganizer eventOrganizer = (EventOrganizer) userRepository.findById(dto.getEventOrganizer()).orElseThrow();
+        EventType type = eventTypeRepository.findById(dto.getEventTypeId()).orElseThrow();
+        EventOrganizer eventOrganizer = (EventOrganizer) userRepository.findById(dto.getEventOrganizerId()).orElseThrow();
         Event event = EventMapper.toEntity(dto, type, eventOrganizer, new ArrayList<>(), new ArrayList<>());
         Event savedEvent = eventRepository.save(event);
         return EventMapper.toDto(savedEvent);
     }
+
     public EventDto update(EventNoIdDto dto, long id) {
         Date convertedDate = DateUtil.convertLocalDateToDate(dto.getDate());
 
@@ -84,9 +72,10 @@ public class EventService {
                     event.setLatitude(dto.getLatitude());
                     event.setLongitude(dto.getLongitude());
                     event.setMaxAttendances(dto.getMaxAttendances());
-                    eventTypeRepository.findById(dto.getEventType()).ifPresent(event::setType);
+                    eventTypeRepository.findById(dto.getEventTypeId()).ifPresent(event::setType);
                     event.setActivities(new ArrayList<>());
                     event.setBudgets(new ArrayList<>());
+                    userRepository.findById(dto.getEventOrganizerId()).ifPresent(eo -> event.setEventOrganizer((EventOrganizer) eo));
                     Event updatedEvent = eventRepository.save(event);
                     return EventMapper.toDto(updatedEvent);
                 })
@@ -107,8 +96,8 @@ public class EventService {
                 .toList();
     }
 
-    public Page<EventDto> getAllFilteredPaginatedSorted(
-            int page, Integer size, Sort sort, String name, String description, List<Long> types,
+    public <T> Page<T> getAllFiltered(
+            Class<T> clazz, int page, Integer size, Sort sort, String name, String description, List<Long> types,
             Integer minMaxAttendances, Integer maxMaxAttendances, Boolean open,
             List<Double> latitudes, List<Double> longitudes, Double maxDistance,
             Long startDate, Long endDate) {
@@ -131,36 +120,15 @@ public class EventService {
         Long[] eventTypeIdsArray = types == null ?
                 new Long[0] :
                 types.toArray(new Long[0]);
-        return eventRepository.findAllFiltered(
+        Page<Event> events = eventRepository.findAllFiltered(
                 name, description, eventTypeIdsArray, minMaxAttendances, maxMaxAttendances, open,
                 latitudesArray, longitudesArray, maxDistance,
-                startDateTime, endDateTime, pageRequest
-        ).map(EventMapper::toDto);
-    }
-
-    private static boolean isEventNearAnyCity(Event event, List<Double> longitudes, List<Double> latitudes, double maxDistance) {
-        for (int i = 0; i < longitudes.size(); i++) {
-            double cityLongitude = longitudes.get(i);
-            double cityLatitude = latitudes.get(i);
-
-            double distance = haversine(event.getLatitude(), event.getLongitude(), cityLatitude, cityLongitude);
-
-            if (distance <= maxDistance) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static double haversine(double lat1, double lon1, double lat2, double lon2) {
-        final int R = 6371;
-        double latDistance = Math.toRadians(lat2 - lat1);
-        double lonDistance = Math.toRadians(lon2 - lon1);
-        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
-                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
-                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return R * c;
+                startDateTime, endDateTime, pageRequest);
+        if (clazz == EventDto.class)
+            return events.map(EventMapper::toDto).map(clazz::cast);
+        else
+            return events.map(EventMapper::toSummaryDto)
+                    .map(clazz::cast);
     }
 
     public boolean createAgenda(long id, List<ActivityDto> activityDtos) {
@@ -188,5 +156,12 @@ public class EventService {
                 .stream()
                 .filter(booking -> booking.getEvent().getId() == id)
                 .toList();
+    }
+
+    public List<Integer> getMaxAttendancesRange() {
+        List<Object[]> result = eventRepository.findMaxAttendancesRange();
+        Integer min = (Integer) result.get(0)[0];
+        Integer max = (Integer) result.get(0)[1];
+        return Arrays.asList(min, max);
     }
 }

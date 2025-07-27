@@ -4,18 +4,11 @@ import com.example.eventplanner.dto.event.activity.ActivityDto;
 import com.example.eventplanner.dto.event.budget.BudgetDto;
 import com.example.eventplanner.dto.event.eventtype.EventTypeDto;
 import com.example.eventplanner.dto.user.user.BaseUserDto;
-import com.example.eventplanner.dto.user.user.RegisterUserDto;
-import com.example.eventplanner.dto.user.user.UpdateEventOrganizerDto;
-import com.example.eventplanner.model.event.Activity;
-import com.example.eventplanner.model.event.Budget;
-import com.example.eventplanner.model.event.EventType;
-import com.example.eventplanner.model.utils.ReviewStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -27,7 +20,7 @@ public class EventDto {
     private String name;
     private String description;
     private EventTypeDto type;
-    private RegisterUserDto eventOrganizerDto;
+    private BaseUserDto eventOrganizerDto;
     private int maxAttendances;
     private boolean isOpen;
     private double longitude;

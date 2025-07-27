@@ -1,14 +1,15 @@
 package com.example.eventplanner.dto.user.user;
 
-import com.example.eventplanner.model.user.EventOrganizer;
 import com.example.eventplanner.model.user.ServiceProductProvider;
 import com.example.eventplanner.model.utils.UserRole;
 
 public class ServiceProductProviderMapper {
+    private ServiceProductProviderMapper() {}
+
     public static ServiceProductProvider toEntity(RegisterServiceProductProviderDto dto) {
-        if (dto == null) {
+        if (dto == null)
             return null;
-        }
+
         ServiceProductProvider entity = new ServiceProductProvider();
         entity.setId(dto.getId());
         entity.setActive(true);
@@ -25,9 +26,9 @@ public class ServiceProductProviderMapper {
     }
 
     public static UpdateServiceProductProviderDto toUpdateDto(ServiceProductProvider entity) {
-        if (entity == null) {
+        if (entity == null)
             return null;
-        }
+
         UpdateServiceProductProviderDto dto = new UpdateServiceProductProviderDto();
         dto.setFirstName(entity.getFirstName());
         dto.setLastName(entity.getLastName());
@@ -38,9 +39,9 @@ public class ServiceProductProviderMapper {
     }
 
     public static ServiceProductProvider toUpdateEntity(UpdateServiceProductProviderDto dto) {
-        if (dto == null) {
+        if (dto == null)
             return null;
-        }
+
         ServiceProductProvider entity = new ServiceProductProvider();
         entity.setFirstName(dto.getFirstName());
         entity.setLastName(dto.getLastName());
@@ -51,9 +52,9 @@ public class ServiceProductProviderMapper {
     }
 
     public static RegisterServiceProductProviderDto toDto(ServiceProductProvider entity) {
-        if (entity == null) {
+        if (entity == null)
             return null;
-        }
+        
         RegisterServiceProductProviderDto dto = new RegisterServiceProductProviderDto();
         dto.setId(entity.getId());
         dto.setPassword(entity.getPassword());

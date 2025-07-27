@@ -7,9 +7,12 @@ import com.example.eventplanner.model.serviceproduct.ServiceProductReview;
 import com.example.eventplanner.model.user.BaseUser;
 
 public class ServiceProductReviewMapper {
+    private ServiceProductReviewMapper() {}
+
     public static ServiceProductReviewDto toDto(ServiceProductReview serviceProductReview) {
         if (serviceProductReview == null)
             return null;
+
         return new ServiceProductReviewDto(
                 serviceProductReview.getId(),
                 serviceProductReview.getGrade(),
@@ -23,6 +26,7 @@ public class ServiceProductReviewMapper {
     public static ServiceProductReviewNoIdDto toDtoNoId(ServiceProductReview serviceProductReview) {
         if (serviceProductReview == null)
             return null;
+
         return new ServiceProductReviewNoIdDto(
                 serviceProductReview.getGrade(),
                 serviceProductReview.getComment(),
@@ -37,6 +41,7 @@ public class ServiceProductReviewMapper {
                                                 BaseUser user) {
         if (dto == null)
             return null;
+
         return new ServiceProductReview(
                 dto.getGrade(),
                 dto.getComment(),

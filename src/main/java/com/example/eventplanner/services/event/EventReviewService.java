@@ -1,25 +1,19 @@
 package com.example.eventplanner.services.event;
 
-import com.example.eventplanner.dto.event.event.EventMapper;
 import com.example.eventplanner.dto.event.eventreview.*;
-import com.example.eventplanner.model.Entity;
-import com.example.eventplanner.model.event.EventReview;
-import com.example.eventplanner.model.utils.ReviewStatus;
 import com.example.eventplanner.model.event.Event;
+import com.example.eventplanner.model.event.EventReview;
 import com.example.eventplanner.model.user.BaseUser;
+import com.example.eventplanner.model.utils.ReviewStatus;
 import com.example.eventplanner.repositories.event.EventRepository;
 import com.example.eventplanner.repositories.event.EventReviewRepository;
 import com.example.eventplanner.repositories.user.UserRepository;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @Service
 @Getter

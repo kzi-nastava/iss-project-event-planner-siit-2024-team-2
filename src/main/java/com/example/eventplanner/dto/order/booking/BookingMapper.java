@@ -9,9 +9,12 @@ import com.example.eventplanner.model.serviceproduct.Service;
 import java.util.Date;
 
 public class BookingMapper {
+    private BookingMapper() {}
+
     public static BookingDto toDto(Booking booking) {
         if (booking == null)
             return null;
+
         return new BookingDto(
                 booking.getId(),
                 EventMapper.toDto(booking.getEvent()),
@@ -25,6 +28,7 @@ public class BookingMapper {
     public static Booking toEntity(BookingNoIdDto dto, Event event, Service service) {
         if (dto == null)
             return null;
+
         return new Booking(
                 event,
                 service,

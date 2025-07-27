@@ -2,8 +2,14 @@ package com.example.eventplanner.model.user;
 
 import com.example.eventplanner.model.Entity;
 import com.example.eventplanner.model.utils.UserRole;
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Transient;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.util.List;

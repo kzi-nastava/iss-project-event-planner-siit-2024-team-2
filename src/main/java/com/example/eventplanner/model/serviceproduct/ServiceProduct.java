@@ -1,12 +1,16 @@
 package com.example.eventplanner.model.serviceproduct;
 
-import java.util.List;
 import com.example.eventplanner.model.Entity;
 import com.example.eventplanner.model.event.EventType;
 import com.example.eventplanner.model.user.ServiceProductProvider;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -25,7 +29,7 @@ public class ServiceProduct extends Entity {
     private String name;
     private String description;
     @ElementCollection
-    @CollectionTable(name = "user_images", joinColumns = @JoinColumn(name = "user_id"))
+    @CollectionTable(name = "serviceproduct_image", joinColumns = @JoinColumn(name = "serviceproduct_id"))
     @Column(name = "image_path")
     private List<String> images;
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})

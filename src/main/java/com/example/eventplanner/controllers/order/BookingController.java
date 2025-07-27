@@ -17,7 +17,7 @@ public class BookingController {
     private final BookingService bookingService;
 
     @GetMapping
-    public ResponseEntity<Collection<BookingDto>> getBookings() {
+    public ResponseEntity<Collection<BookingDto>> getAllBookings() {
         Collection<BookingDto> result = bookingService.getAll();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
