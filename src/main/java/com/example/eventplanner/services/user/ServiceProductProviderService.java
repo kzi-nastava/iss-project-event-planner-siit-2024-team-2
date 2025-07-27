@@ -63,6 +63,6 @@ public class ServiceProductProviderService {
 
     public ServiceProductProvider findByUsername(String username) {
         return serviceProductProviderRepository.findByEmail(username)
-                .orElseThrow(() -> new NoSuchElementException("EventType with username " + username + " not found"));
+                .orElseThrow(() -> new NoSuchElementException("User with username " + username + " not found"));
     }
 }
