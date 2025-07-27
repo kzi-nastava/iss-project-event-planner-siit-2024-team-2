@@ -1,10 +1,9 @@
 package com.example.eventplanner.controllers.serviceproduct;
 
+import com.example.eventplanner.controllers.utils.AuthUtil;
 import com.example.eventplanner.dto.serviceproduct.product.CreateProductDto;
 import com.example.eventplanner.dto.serviceproduct.product.ProductDetailsDto;
 import com.example.eventplanner.dto.serviceproduct.product.ProductDto;
-import com.example.eventplanner.model.serviceproduct.Product;
-import com.example.eventplanner.model.serviceproduct.ServiceProductCategory;
 import com.example.eventplanner.model.user.ServiceProductProvider;
 import com.example.eventplanner.services.serviceproduct.ProductService;
 import com.example.eventplanner.services.user.ServiceProductProviderService;
@@ -23,7 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductController {
     private final ProductService productService;
-    private final ServiceProductProviderService serviceProductProviderService;
+    private final AuthUtil authUtil;
 
     @GetMapping()
     public ResponseEntity<Collection<ProductDto>> getAllProducts() {
@@ -31,13 +30,10 @@ public class ProductController {
     }
     @GetMapping("/mine")
     public ResponseEntity<Collection<ProductDto>> getProviderProducts() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-        ServiceProductProvider provider = serviceProductProviderService.findByUserUsername(username);
+        ServiceProductProvider provider = authUtil.getAuthenticatedServiceProductProvider();
         if (provider == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-
         List<ProductDto> products = productService.getAllByProviderId(provider.getId());
         return ResponseEntity.ok(products);
     }
@@ -80,12 +76,12 @@ public class ProductController {
     }
 
     @GetMapping("/filter")
-    public ResponseEntity<Collection<ProductDto>> filterProducts(@RequestParam(value = "categories", required = false) List<Long> categories,
+    public ResponseEntity<Collection<ProductDto>> filterProducts(@RequestParam(value = "categories", required = false) Long category,
                                                                  @RequestParam(value = "eventTypes", required = false) List<Long> eventTypes,
                                                                  @RequestParam(value = "minPrice", required = false) Float minPrice,
                                                                  @RequestParam(value = "maxPrice", required = false) Float maxPrice,
                                                                  @RequestParam(value = "available", required = false) Boolean available) {
-
-        return ResponseEntity.ok(productService.filter(categories, eventTypes, minPrice, maxPrice, available));
+        List<ProductDto> productDtos = productService.filter(category, eventTypes, minPrice, maxPrice, available);
+        return ResponseEntity.ok(productDtos);
     }
 }

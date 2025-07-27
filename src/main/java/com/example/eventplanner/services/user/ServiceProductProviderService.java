@@ -1,7 +1,6 @@
 package com.example.eventplanner.services.user;
 
 import com.example.eventplanner.dto.user.user.*;
-import com.example.eventplanner.model.user.EventOrganizer;
 import com.example.eventplanner.model.user.ServiceProductProvider;
 import com.example.eventplanner.model.utils.UserRole;
 import com.example.eventplanner.repositories.user.ServiceProductProviderRepository;
@@ -58,7 +57,7 @@ public class ServiceProductProviderService {
                 }).orElse(null);
     }
 
-    public ServiceProductProvider findByUserUsername(String username) {
-        return serviceProductProviderRepository.findByEmail(username);
+    public ServiceProductProvider findByUsername(String username) {
+        return serviceProductProviderRepository.findByEmail(username).orElse(null);
     }
 }

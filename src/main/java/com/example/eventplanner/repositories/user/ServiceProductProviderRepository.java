@@ -7,5 +7,5 @@ import java.util.Optional;
 public interface ServiceProductProviderRepository extends JpaRepository<ServiceProductProvider, Long> {
     boolean existsByEmail(String email);
 
-    ServiceProductProvider findByEmail(String username);
+    Optional<ServiceProductProvider> findByEmail(String username);
 }

@@ -54,4 +54,8 @@ public class EventOrganizerService {
                     return EventOrganizerMapper.toUpdateDto(eventOrganizerRepository.save(eventOrganizer));
                 }).orElse(null);
     }
+
+    public EventOrganizer findByUsername(String username) {
+        return eventOrganizerRepository.findByEmail(username).orElse(null);
+    }
 }

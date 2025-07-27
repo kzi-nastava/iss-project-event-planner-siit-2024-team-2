@@ -96,13 +96,13 @@ public class ProductService {
                 .toList();
     }
 
-    public Collection<ProductDto> filter(List<Long> categoryIds, List<Long> eventTypeIds, Float minPrice, Float maxPrice, Boolean available) {
+    public List<ProductDto> filter(Long categoryId, List<Long> eventTypeIds, Float minPrice, Float maxPrice, Boolean available) {
         //TODO optimize this
         return productRepository.findAll().stream()
-                .filter(product -> categoryIds.isEmpty() || categoryIds.contains(product.getCategory().getId()))
-                .filter(product -> eventTypeIds.isEmpty() || product.getAvailableEventTypes().stream().map(EventType::getId).anyMatch(eventTypeIds::contains))
+                .filter(product -> categoryId == null|| categoryId == product.getCategory().getId())
+                .filter(product -> eventTypeIds == null || eventTypeIds.isEmpty() || product.getAvailableEventTypes().stream().map(EventType::getId).anyMatch(eventTypeIds::contains))
                 .filter(product -> available == null || available == product.isAvailable())
-                .filter(product -> (minPrice == null || minPrice <= product.getPrice()) && (maxPrice == null || maxPrice >= product.getPrice()))
+                .filter(product -> (minPrice == null || minPrice <= product.getPrice()) && (maxPrice == null || maxPrice >= product.getPrice() || maxPrice == 0))
                 .map(ProductMapper::toDto).toList();
     }
 
