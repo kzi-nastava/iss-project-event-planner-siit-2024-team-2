@@ -12,13 +12,14 @@ import java.util.List;
 
 @Repository
 public interface ServiceRepository extends JpaRepository<Service, Long> {
-    @Query("SELECT s FROM Service s " +
-            "WHERE s.active = true " +
-            "AND (s.name LIKE %:name%)")
-    Page<Service> searchByName(@Param("name") String name, Pageable pageable);
+//    @Query("SELECT s FROM Service s " +
+//            "WHERE s.active = true " +
+//            "AND (:name LIKE '' OR s.name LIKE %:name%)")
+//    Page<Service> searchByName(@Param("name") String name, Pageable pageable);
 
     @Query("SELECT s FROM Service s " +
             "WHERE s.active = true " +
+            "AND (:name IS NULL OR LOWER(s.name) LIKE LOWER(CONCAT('%', :name, '%')))" +
             "AND (:categories IS NULL OR s.category.name IN :categories) " +
             "AND (:minPrice IS NULL OR :minPrice <= s.price)" +
             "AND (:maxPrice IS NULL OR :maxPrice >= s.price)" +
@@ -27,7 +28,8 @@ public interface ServiceRepository extends JpaRepository<Service, Long> {
             "   SELECT 1 " +
             "   FROM s.availableEventTypes type" +
             "   WHERE type.id in :typeIds ))")
-    Page<Service> findAllFiltered(@Param("minPrice") Float minPrice,
+    Page<Service> findAllFiltered(@Param("name") String name,
+                                  @Param("minPrice") Float minPrice,
                                   @Param("maxPrice") Float maxPrice,
                                   @Param("available") Boolean available,
                                   @Param("categories") List<String> categories,

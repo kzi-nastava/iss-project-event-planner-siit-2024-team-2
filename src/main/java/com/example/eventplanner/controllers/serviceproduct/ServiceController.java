@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collection;
 import java.util.List;
 
 @RestController
@@ -19,8 +18,15 @@ public class ServiceController {
     private final ServiceService serviceService;
 
     @GetMapping()
-    public ResponseEntity<Collection<ServiceDto>> getAllServices() {
-        return ResponseEntity.ok(serviceService.getAll());
+    public ResponseEntity<Page<ServiceDto>> getAll(@RequestParam(defaultValue = "0") int page,
+                                                   @RequestParam(required = false) Integer size,
+                                                   @RequestParam(defaultValue = "") String name,
+                                                   @RequestParam(required = false) List<String> categories,
+                                                   @RequestParam(required = false) Float minPrice,
+                                                   @RequestParam(required = false) Float maxPrice,
+                                                   @RequestParam(required = false) Boolean available,
+                                                   @RequestParam(required = false) List<Long> availableEventTypeIds) {
+        return ResponseEntity.ok(serviceService.filter(page, size, name, minPrice, maxPrice, available, categories, availableEventTypeIds));
     }
 
     @GetMapping(value = "/{id}")
@@ -51,24 +57,5 @@ public class ServiceController {
         return success
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.notFound().build();
-    }
-
-    @GetMapping("/search")
-    public ResponseEntity<Page<ServiceDto>> searchServicesByName(@RequestParam(defaultValue = "0") int page,
-                                                                       @RequestParam(required = false) Integer size,
-                                                                       @RequestParam(required = false) String name) {
-        Page<ServiceDto> serviceDtos = serviceService.searchByName(page, size, name);
-        return ResponseEntity.ok(serviceDtos);
-    }
-
-    @GetMapping("/filter")
-    public ResponseEntity<Page<ServiceDto>> filterServices(@RequestParam(defaultValue = "0") int page,
-                                                                 @RequestParam(required = false) Integer size,
-                                                                 @RequestParam(required = false) List<String> categories,
-                                                                 @RequestParam(required = false) Float minPrice,
-                                                                 @RequestParam(required = false) Float maxPrice,
-                                                                 @RequestParam(required = false) Boolean available,
-                                                                 @RequestParam(required = false) List<Long> availableEventTypeIds) {
-        return ResponseEntity.ok(serviceService.filter(page, size, minPrice, maxPrice, available, categories, availableEventTypeIds));
     }
 }
