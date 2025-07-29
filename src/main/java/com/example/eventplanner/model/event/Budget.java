@@ -19,6 +19,6 @@ import org.hibernate.annotations.SQLRestriction;
 public class Budget extends Entity {
     private double plannedSpending;
     private double currentSpent = 0;
-    @ManyToOne(cascade={CascadeType.ALL})
+    @ManyToOne
     private ServiceProductCategory serviceProductCategory;
 }

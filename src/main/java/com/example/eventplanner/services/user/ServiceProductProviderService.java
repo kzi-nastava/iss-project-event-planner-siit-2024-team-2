@@ -9,6 +9,8 @@ import com.example.eventplanner.repositories.user.ServiceProductProviderReposito
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.NoSuchElementException;
+
 @Service
 @RequiredArgsConstructor
 public class ServiceProductProviderService {
@@ -57,5 +59,10 @@ public class ServiceProductProviderService {
                     serviceProductProvider.setCompanyDescription(serviceProductProviderDto.getCompanyDescription());
                     return ServiceProductProviderMapper.toUpdateDto(serviceProductProviderRepository.save(serviceProductProvider));
                 }).orElse(null);
+    }
+
+    public ServiceProductProvider findByUsername(String username) {
+        return serviceProductProviderRepository.findByEmail(username)
+                .orElseThrow(() -> new NoSuchElementException("User with username " + username + " not found"));
     }
 }

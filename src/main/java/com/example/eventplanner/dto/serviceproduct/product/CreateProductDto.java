@@ -19,4 +19,6 @@ public class CreateProductDto {
     private List<Long> availableEventTypesIds;
     private Long categoryId;
     private boolean available;
+    private boolean visible;
+    private long serviceProductProviderId;
 }

@@ -1,64 +1,92 @@
 package com.example.eventplanner.services.serviceproduct;
 
+import java.util.*;
 import com.example.eventplanner.dto.serviceproduct.product.CreateProductDto;
+import com.example.eventplanner.dto.serviceproduct.product.ProductDetailsDto;
 import com.example.eventplanner.dto.serviceproduct.product.ProductDto;
 import com.example.eventplanner.dto.serviceproduct.product.ProductMapper;
-import com.example.eventplanner.model.Entity;
 import com.example.eventplanner.model.event.EventType;
 import com.example.eventplanner.model.serviceproduct.Product;
 import com.example.eventplanner.model.serviceproduct.ServiceProductCategory;
+import com.example.eventplanner.model.user.ServiceProductProvider;
+import com.example.eventplanner.repositories.event.EventTypeRepository;
+import com.example.eventplanner.repositories.serviceproduct.ProductRepository;
+import com.example.eventplanner.repositories.serviceproduct.ServiceProductCategoryRepository;
+import com.example.eventplanner.repositories.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-
 
 @Service
 @RequiredArgsConstructor
 public class ProductService {
-    private long idCounter = 0;
-    private final HashMap<Long, Product> products = new HashMap<>();
+    private final ProductRepository productRepository;
+    private final EventTypeRepository eventTypeRepository;
+    private final ServiceProductCategoryRepository serviceProductCategoryRepository;
+    private final UserRepository userRepository;
+
+
 
     public Collection<ProductDto> getAll() {
-        return products.values().stream().filter(Entity::isActive).map(ProductMapper::toDto).toList();
+        return productRepository.findAll()
+                .stream()
+                .map(ProductMapper::toDto)
+                .toList();
     }
 
-    public ProductDto getById(Long id) {
-        Product product = products.get(id);
-        if (product != null && product.isActive())
-            return ProductMapper.toDto(product);
+    public ProductDetailsDto getById(Long id) {
+        Product product = productRepository.findById(id).orElse(null);
+        if (product != null)
+            return ProductMapper.toDetailsDto(product);
         return null;
     }
 
     public ProductDto create(CreateProductDto createProductDto) {
-        Product product = ProductMapper.toEntity(createProductDto);
-        product.setId(++idCounter);
+        ServiceProductProvider serviceProductProvider = (ServiceProductProvider) userRepository.findById(createProductDto.getServiceProductProviderId()).orElseThrow();
+        ServiceProductCategory serviceProductCategory = serviceProductCategoryRepository.findById(createProductDto.getCategoryId()).orElseThrow();
+        List<EventType> eventTypes = new ArrayList<>();
+        for (long typeId: createProductDto.getAvailableEventTypesIds()) {
+            EventType eventType = eventTypeRepository.findById(typeId).orElseThrow(() ->
+                    new NoSuchElementException("EventType with ID " + typeId + " not found"));
+            eventTypes.add(eventType);
+        }
+        Product product = ProductMapper.toEntity(createProductDto, serviceProductProvider, serviceProductCategory, eventTypes);
         product.setActive(true);
-        products.put(product.getId(), product);
+        productRepository.save(product);
         return ProductMapper.toDto(product);
     }
 
     public ProductDto update(Long id, CreateProductDto createProductDto) {
-        if (this.getById(id) == null) {
+        Product product = productRepository.findById(id).orElse(null);
+        if (product == null) {
             return null;
-        }                                                   // get spp from its repo
-        Product product = ProductMapper.toEntity(getById(id), null);
+        }
+        ServiceProductProvider serviceProductProvider = (ServiceProductProvider) userRepository.findById(createProductDto.getServiceProductProviderId()).orElseThrow();
+        ServiceProductCategory serviceProductCategory = serviceProductCategoryRepository.findById(createProductDto.getCategoryId()).orElseThrow();
+        List<EventType> eventTypes = new ArrayList<>();
+        for (long typeId: createProductDto.getAvailableEventTypesIds()) {
+            EventType eventType = eventTypeRepository.findById(typeId)
+                    .orElseThrow(() -> new NoSuchElementException("EventType with ID " + typeId + " not found"));
+            eventTypes.add(eventType);
+        }
+        product.setServiceProductProvider(serviceProductProvider);
+        product.setCategory(serviceProductCategory);
+        product.setAvailableEventTypes(eventTypes);
         product.setName(createProductDto.getName());
         product.setPrice(createProductDto.getPrice());
         product.setAvailable(createProductDto.isAvailable());
         product.setDescription(createProductDto.getDescription());
         product.setActive(true);
+        productRepository.save(product);
         return ProductMapper.toDto(product);
     }
 
     public boolean delete(Long id) {
-        if (this.getById(id) == null) {
+        if (!productRepository.existsById(id))
             return false;
-        }
-        products.get(id).setActive(false);
+        productRepository.deleteById(id);
         return true;
     }
 
@@ -69,18 +97,21 @@ public class ProductService {
                 .toList();
     }
 
-    public Collection<ProductDto> filter(List<ServiceProductCategory> categories, List<String> eventTypes, Float minPrice, Float maxPrice, Boolean available) {
-        List<String> categoryNames = new ArrayList<>();
-        if (categories != null) {
-            for (ServiceProductCategory category : categories)
-                categoryNames.add(category.getName());
-        }
-
-        return products.values().stream()
-                .filter(product -> categoryNames.isEmpty() || categoryNames.contains(product.getCategory().getName()))
-                .filter(product -> eventTypes == null || product.getAvailableEventTypes().stream().map(EventType::getName).anyMatch(eventTypes::contains))
+    public List<ProductDto> filter(Long categoryId, List<Long> eventTypeIds, Float minPrice, Float maxPrice, Boolean available) {
+        //TODO optimize this
+        return productRepository.findAll().stream()
+                .filter(product -> categoryId == null || categoryId == product.getCategory().getId())
+                .filter(product -> eventTypeIds == null || eventTypeIds.isEmpty() || product.getAvailableEventTypes().stream().map(EventType::getId).anyMatch(eventTypeIds::contains))
                 .filter(product -> available == null || available == product.isAvailable())
-                .filter(product -> (minPrice == null || minPrice <= product.getPrice()) && (maxPrice == null || maxPrice >= product.getPrice()))
+                .filter(product -> (minPrice == null || minPrice <= product.getPrice()) && (maxPrice == null || maxPrice >= product.getPrice() || maxPrice == 0))
                 .map(ProductMapper::toDto).toList();
+    }
+
+    public List<ProductDto> getAllByProviderId(long id) {
+        return productRepository
+                .findByServiceProductProviderId(id)
+                .stream()
+                .map(ProductMapper::toDto)
+                .toList();
     }
 }

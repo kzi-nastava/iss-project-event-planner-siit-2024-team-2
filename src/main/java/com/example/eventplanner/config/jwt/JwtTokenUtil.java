@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
@@ -12,9 +13,7 @@ import java.util.Date;
 @Component
 public class JwtTokenUtil implements Serializable {
     private static final long serialVersionUID = -2550185165626007488L;
-    public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
-
-    private final long EXPIRATION_TIME = 1000 * 60; // 1 minute
+    private final long EXPIRATION_TIME = 1000 * 60 * 60 * 24; // 1 day
     @Value("${jwt.secret}")
     private String SECRET_KEY;
 
@@ -49,8 +48,10 @@ public class JwtTokenUtil implements Serializable {
     }
 
     // Validate the token
-    public boolean validateToken(String token, String username) {
-        return (username.equals(extractUsername(token)) && !isTokenExpired(token));
+    public boolean validateToken(String token, UserDetails userDetails) {
+        final String username = extractUsername(token);
+        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
+
 }
 
