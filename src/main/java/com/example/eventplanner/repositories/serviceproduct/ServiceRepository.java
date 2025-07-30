@@ -12,10 +12,10 @@ import java.util.List;
 
 @Repository
 public interface ServiceRepository extends JpaRepository<Service, Long> {
-//    @Query("SELECT s FROM Service s " +
-//            "WHERE s.active = true " +
-//            "AND (:name LIKE '' OR s.name LIKE %:name%)")
-//    Page<Service> searchByName(@Param("name") String name, Pageable pageable);
+    @Query("SELECT s FROM Service s " +
+            "WHERE s.active = true " +
+            "AND LOWER(s.name) LIKE LOWER(CONCAT('%', :name, '%'))")
+    Page<Service> searchByName(@Param("name") String name, Pageable pageable);
 
     @Query("SELECT s FROM Service s " +
             "WHERE s.active = true " +

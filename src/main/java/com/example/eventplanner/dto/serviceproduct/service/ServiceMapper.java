@@ -7,6 +7,7 @@ import com.example.eventplanner.model.event.EventType;
 import com.example.eventplanner.model.serviceproduct.Service;
 import com.example.eventplanner.model.serviceproduct.ServiceProductCategory;
 import com.example.eventplanner.model.user.ServiceProductProvider;
+import com.example.eventplanner.services.serviceproduct.ImageService;
 
 import java.util.List;
 
@@ -22,7 +23,8 @@ public class ServiceMapper {
                 ServiceProductCategoryMapper.toDto(service.getCategory()),
                 service.isAvailable(), service.isVisible(),
                 service.getPrice(), service.getDiscount(),
-                service.getName(), service.getDescription(), service.getImages(),
+                service.getName(), service.getDescription(),
+                service.getImages().stream().map(ImageService::encodePath).toList(),
                 service.getAvailableEventTypes().stream().map(EventTypeMapper::toDto).toList(),
                 ServiceProductProviderMapper.toDto(service.getServiceProductProvider()),
                 service.getSpecifies(), service.getDuration(),
