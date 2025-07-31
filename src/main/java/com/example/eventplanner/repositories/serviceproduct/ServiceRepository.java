@@ -35,4 +35,9 @@ public interface ServiceRepository extends JpaRepository<Service, Long> {
                                   @Param("categories") List<String> categories,
                                   @Param("typeIds") List<Long> availableEventTypeIds,
                                   Pageable pageable);
+
+    @Query("SELECT s FROM Service s " +
+            "WHERE s.active = true " +
+            "AND (:SPP_Id = s.serviceProductProvider.id)")
+    List<Service> getAllBySPP_Id(@Param("SPP_Id") Long SPP_Id);
 }

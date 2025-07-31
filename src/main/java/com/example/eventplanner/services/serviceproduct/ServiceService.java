@@ -1,6 +1,7 @@
 package com.example.eventplanner.services.serviceproduct;
 
 import com.example.eventplanner.dto.serviceproduct.service.CreateServiceDto;
+import com.example.eventplanner.dto.serviceproduct.service.ServiceCardDto;
 import com.example.eventplanner.dto.serviceproduct.service.ServiceDto;
 import com.example.eventplanner.dto.serviceproduct.service.ServiceMapper;
 import com.example.eventplanner.model.event.EventType;
@@ -33,6 +34,13 @@ public class ServiceService {
 		return serviceRepository.findAll()
 				.stream()
 				.map(ServiceMapper::toDto)
+				.toList();
+	}
+
+	public Collection<ServiceCardDto> getAllBySPP_Id(Long sppId) {
+		return serviceRepository.getAllBySPP_Id(sppId)
+				.stream()
+				.map(ServiceMapper::toCardDto)
 				.toList();
 	}
 	

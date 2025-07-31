@@ -1,6 +1,7 @@
 package com.example.eventplanner.controllers.serviceproduct;
 
 import com.example.eventplanner.dto.serviceproduct.service.CreateServiceDto;
+import com.example.eventplanner.dto.serviceproduct.service.ServiceCardDto;
 import com.example.eventplanner.dto.serviceproduct.service.ServiceDto;
 import com.example.eventplanner.services.serviceproduct.ServiceService;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
 import java.util.List;
 
 @RestController
@@ -17,7 +19,7 @@ import java.util.List;
 public class ServiceController {
     private final ServiceService serviceService;
 
-    @GetMapping()
+    @GetMapping("/all")
     public ResponseEntity<Page<ServiceDto>> getAll(@RequestParam(defaultValue = "0") int page,
                                                    @RequestParam(required = false) Integer size,
                                                    @RequestParam(defaultValue = "") String name,
@@ -27,6 +29,11 @@ public class ServiceController {
                                                    @RequestParam(required = false) Boolean available,
                                                    @RequestParam(required = false) List<Long> availableEventTypeIds) {
         return ResponseEntity.ok(serviceService.filter(page, size, name, minPrice, maxPrice, available, categories, availableEventTypeIds));
+    }
+
+    @GetMapping()
+    public ResponseEntity<Collection<ServiceCardDto>> getAllBySPP_Id(@RequestParam(defaultValue = "0") Long sppId ) {
+        return ResponseEntity.ok(serviceService.getAllBySPP_Id(sppId));
     }
 
     @GetMapping(value = "/{id}")

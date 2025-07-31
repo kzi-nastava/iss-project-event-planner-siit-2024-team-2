@@ -33,6 +33,17 @@ public class ServiceMapper {
                 service.isAutomaticReserved());
     }
 
+    public static ServiceCardDto toCardDto(Service service) {
+        if (service == null)
+            return null;
+
+        return new ServiceCardDto(
+                service.getId(),
+                service.getPrice(), service.getDiscount(),
+                service.getName(), service.getDescription(),
+                ImageService.encodePath(service.getImages().get(0)));
+    }
+
     public static Service toEntity(CreateServiceDto dto,
                                    List<EventType> availableEventTypes,
                                    ServiceProductCategory serviceProductCategory,
