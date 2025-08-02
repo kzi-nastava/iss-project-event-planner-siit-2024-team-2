@@ -27,8 +27,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "AND (:open IS NULL OR e.open = :open) " +
             "AND (e.date >= CAST(:startDate as timestamp)) " +
             "AND (e.date <= CAST(:endDate as timestamp)) "
-//          + "AND (:maxDistance = 0 " +
-//            "       OR any_location_within_distance(:latitudes, :longitudes, :maxDistance, e.latitude, e.longitude))"
+          + "AND (:maxDistance = 0 " +
+            "       OR any_location_within_distance(:latitudes, :longitudes, :maxDistance, e.latitude, e.longitude))"
             , nativeQuery = true)
     Page<Event> findAllFiltered(
             @Param("name") String name,
@@ -37,9 +37,9 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             @Param("minMaxAttendances") Integer minMaxAttendances,
             @Param("maxMaxAttendances") Integer maxMaxAttendances,
             @Param("open") Boolean open,
-//            @Param("latitudes") Double[] latitudes,
-//            @Param("longitudes") Double[] longitudes,
-//            @Param("maxDistance") double maxDistance,
+            @Param("latitudes") Double[] latitudes,
+            @Param("longitudes") Double[] longitudes,
+            @Param("maxDistance") double maxDistance,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate,
             Pageable pageable
