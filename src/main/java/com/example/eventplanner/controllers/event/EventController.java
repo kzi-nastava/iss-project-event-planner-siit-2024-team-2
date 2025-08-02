@@ -1,11 +1,13 @@
 package com.example.eventplanner.controllers.event;
 
+import com.example.eventplanner.controllers.utils.AuthUtil;
 import com.example.eventplanner.dto.event.activity.ActivityDto;
 import com.example.eventplanner.dto.event.event.EventDto;
 import com.example.eventplanner.dto.event.event.EventNoIdDto;
 import com.example.eventplanner.dto.event.event.EventSummaryDto;
 import com.example.eventplanner.dto.order.booking.BookingDto;
 import com.example.eventplanner.dto.order.purchase.PurchaseDto;
+import com.example.eventplanner.model.user.EventOrganizer;
 import com.example.eventplanner.services.event.EventService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,6 +24,7 @@ import java.util.List;
 @RequiredArgsConstructor()
 public class EventController {
     private final EventService eventService;
+    private final AuthUtil authUtil;
     
     @GetMapping
     public ResponseEntity<Page<EventDto>> getAllEvents(
@@ -83,6 +86,11 @@ public class EventController {
 
     @PostMapping
     public ResponseEntity<EventDto> createEvent(@RequestBody EventNoIdDto dto) {
+        EventOrganizer organizer = authUtil.getAuthenticatedEventOrganizer();
+        if (organizer == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        dto.setEventOrganizerId(organizer.getId());
         EventDto result = eventService.create(dto);
         return new ResponseEntity<>(result, HttpStatus.CREATED);
     }

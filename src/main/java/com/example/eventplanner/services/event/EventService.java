@@ -122,7 +122,8 @@ public class EventService {
                 types.toArray(new Long[0]);
         Page<Event> events = eventRepository.findAllFiltered(
                 name, description, eventTypeIdsArray, minMaxAttendances, maxMaxAttendances, open,
-                latitudesArray, longitudesArray, maxDistance,
+                latitudesArray, longitudesArray,
+                maxDistance,
                 startDateTime, endDateTime, pageRequest);
         if (clazz == EventDto.class)
             return events.map(EventMapper::toDto).map(clazz::cast);
