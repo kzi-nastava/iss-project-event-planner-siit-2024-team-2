@@ -2,6 +2,7 @@ package com.example.eventplanner.controllers.event;
 
 import com.example.eventplanner.controllers.utils.AuthUtil;
 import com.example.eventplanner.dto.event.activity.ActivityDto;
+import com.example.eventplanner.dto.event.activity.ActivityIdDto;
 import com.example.eventplanner.dto.event.event.EventDto;
 import com.example.eventplanner.dto.event.event.EventNoIdDto;
 import com.example.eventplanner.dto.event.event.EventSummaryDto;
@@ -119,10 +120,42 @@ public class EventController {
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @PostMapping("/{id}/create-agenda")
+    @PostMapping("/{id}/agenda")
     public ResponseEntity<List<ActivityDto>> createAgenda(@PathVariable long id, @RequestBody List<ActivityDto> activities) {
         boolean success = eventService.createAgenda(id, activities);
         return success
+                ? ResponseEntity.ok(activities)
+                : ResponseEntity.badRequest().build();
+    }
+
+    @PostMapping("/{id}/agenda/activity")
+    public ResponseEntity<ActivityDto> addActivity(@PathVariable long id, @RequestBody ActivityDto activity) {
+        boolean success = eventService.addActivity(id, activity);
+        return success
+                ? ResponseEntity.ok(activity)
+                : ResponseEntity.badRequest().build();
+    }
+
+    @PutMapping("/{id}/agenda/activity/{activityId}")
+    public ResponseEntity<ActivityDto> updateActivity(@PathVariable long id, @PathVariable long activityId, @RequestBody ActivityDto activity) {
+        boolean success = eventService.updateActivity(id, activityId, activity);
+        return success
+                ? ResponseEntity.ok(activity)
+                : ResponseEntity.badRequest().build();
+    }
+
+    @DeleteMapping("/{id}/agenda/activity/{activityId}")
+    public ResponseEntity deleteActivity(@PathVariable long id, @PathVariable long activityId) {
+        boolean success = eventService.deleteActivity(id, activityId);
+        return success
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.badRequest().build();
+    }
+
+    @GetMapping("/{id}/agenda")
+    public ResponseEntity<List<ActivityIdDto>> getAgenda(@PathVariable long id) {
+        List<ActivityIdDto> activities = eventService.getAgenda(id);
+        return activities != null
                 ? ResponseEntity.ok(activities)
                 : ResponseEntity.badRequest().build();
     }

@@ -1,6 +1,7 @@
 package com.example.eventplanner.services.event;
 
 import com.example.eventplanner.dto.event.activity.ActivityDto;
+import com.example.eventplanner.dto.event.activity.ActivityIdDto;
 import com.example.eventplanner.dto.event.activity.ActivityMapper;
 import com.example.eventplanner.dto.event.event.EventDto;
 import com.example.eventplanner.dto.event.event.EventMapper;
@@ -165,4 +166,52 @@ public class EventService {
         Integer max = (Integer) result.get(0)[1];
         return Arrays.asList(min, max);
     }
+
+    public boolean addActivity(long id, ActivityDto activity) {
+        Event event = eventRepository.findById(id).orElse(null);
+        if (event == null) return false;
+        event.getActivities().add(ActivityMapper.toEntity(activity));
+        eventRepository.save(event);
+        return true;
+    }
+
+    public List<ActivityIdDto> getAgenda(long id) {
+        Event event = eventRepository.findById(id).orElse(null);
+        if (event == null) return null;
+        return event.getActivities().stream().map(ActivityMapper::toIdDto).sorted(Comparator.comparing(ActivityIdDto::getActivityStart)).toList();
+    }
+
+    public boolean updateActivity(long eventId, long activityId, ActivityDto dto) {
+        Event event = eventRepository.findById(eventId).orElse(null);
+        if (event == null) return false;
+
+        Optional<Activity> optionalActivity = event.getActivities().stream()
+                .filter(a -> a.getId() == activityId)
+                .findFirst();
+
+        if (optionalActivity.isEmpty()) return false;
+
+        Activity activity = optionalActivity.get();
+        activity.setName(dto.getName());
+        activity.setActivityStart(dto.getActivityStart());
+        activity.setActivityEnd(dto.getActivityEnd());
+        activity.setDescription(dto.getDescription());
+        activity.setLocation(dto.getLocation());
+
+        eventRepository.save(event);
+        return true;
+    }
+
+
+    public boolean deleteActivity(long eventId, long activityId) {
+        Event event = eventRepository.findById(eventId).orElse(null);
+        if (event == null) return false;
+
+        boolean removed = event.getActivities().removeIf(a -> a.getId() == activityId);
+        if (removed) {
+            eventRepository.save(event);
+        }
+        return removed;
+    }
+
 }

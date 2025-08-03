@@ -12,8 +12,22 @@ public class ActivityMapper {
 
         return new ActivityDto(
                 activity.getName(),
-                activity.getActivityStart().getTime(),
-                activity.getActivityEnd().getTime(),
+                activity.getActivityStart(),
+                activity.getActivityEnd(),
+                activity.getDescription(),
+                activity.getLocation()
+        );
+    }
+
+    public static ActivityIdDto toIdDto(Activity activity) {
+        if (activity == null)
+            return null;
+
+        return new ActivityIdDto(
+                activity.getId(),
+                activity.getName(),
+                activity.getActivityStart(),
+                activity.getActivityEnd(),
                 activity.getDescription(),
                 activity.getLocation()
         );
@@ -24,8 +38,8 @@ public class ActivityMapper {
 
         Activity activity = new Activity(
                 dto.getName(),
-                new Date(dto.getActivityStart()),
-                new Date(dto.getActivityEnd()),
+                dto.getActivityStart(),
+                dto.getActivityEnd(),
                 dto.getDescription(),
                 dto.getLocation());
         activity.setActive(true);
