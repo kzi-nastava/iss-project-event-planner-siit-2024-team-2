@@ -145,11 +145,11 @@ public class EventController {
     }
 
     @DeleteMapping("/{id}/agenda/activity/{activityId}")
-    public ResponseEntity deleteActivity(@PathVariable long id, @PathVariable long activityId) {
+    public ResponseEntity<Void> deleteActivity(@PathVariable long id, @PathVariable long activityId) {
         boolean success = eventService.deleteActivity(id, activityId);
         return success
                 ? ResponseEntity.noContent().build()
-                : ResponseEntity.badRequest().build();
+                : ResponseEntity.notFound().build();
     }
 
     @GetMapping("/{id}/agenda")
@@ -157,7 +157,7 @@ public class EventController {
         List<ActivityIdDto> activities = eventService.getAgenda(id);
         return activities != null
                 ? ResponseEntity.ok(activities)
-                : ResponseEntity.badRequest().build();
+                : ResponseEntity.notFound().build();
     }
 
     @GetMapping(value = "/{id}/purchases")
