@@ -170,6 +170,7 @@ public class EventService {
     public boolean addActivity(long id, ActivityDto activity) {
         Event event = eventRepository.findById(id).orElse(null);
         if (event == null) return false;
+        if (!isTimeValid(event.getActivities(), activity.getActivityStart(), activity.getActivityEnd(), null)) return false;
         event.getActivities().add(ActivityMapper.toEntity(activity));
         eventRepository.save(event);
         return true;
@@ -184,6 +185,8 @@ public class EventService {
     public boolean updateActivity(long eventId, long activityId, ActivityDto dto) {
         Event event = eventRepository.findById(eventId).orElse(null);
         if (event == null) return false;
+
+        if (!isTimeValid(event.getActivities(), dto.getActivityStart(), dto.getActivityEnd(), activityId)) return false;
 
         Optional<Activity> optionalActivity = event.getActivities().stream()
                 .filter(a -> a.getId() == activityId)
@@ -202,7 +205,6 @@ public class EventService {
         return true;
     }
 
-
     public boolean deleteActivity(long eventId, long activityId) {
         Event event = eventRepository.findById(eventId).orElse(null);
         if (event == null) return false;
@@ -212,6 +214,25 @@ public class EventService {
             eventRepository.save(event);
         }
         return removed;
+    }
+
+    private boolean isTimeValid(List<Activity> activities, long start, long end, Long activityId) {
+        if (start >= end) return false;
+
+        for (Activity activity : activities) {
+            if (activityId != null && activity.getId() == activityId) continue;
+
+            long existingStart = activity.getActivityStart();
+            long existingEnd = activity.getActivityEnd();
+
+            boolean overlaps = (start < existingEnd && end > existingStart) ||
+                    (existingStart < end && existingEnd > start) ||
+                    (start == existingStart && end == existingEnd);
+
+            if (overlaps) return false;
+        }
+
+        return true;
     }
 
 }
