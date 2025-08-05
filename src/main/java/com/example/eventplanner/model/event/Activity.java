@@ -1,6 +1,7 @@
 package com.example.eventplanner.model.event;
 
 import com.example.eventplanner.model.Entity;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
