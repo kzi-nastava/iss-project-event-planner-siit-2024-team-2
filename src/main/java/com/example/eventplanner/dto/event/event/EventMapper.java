@@ -42,7 +42,6 @@ public class EventMapper {
         if (event == null)
             return null;
 
-        LocalDate localDate = DateUtil.convertDateToLocalDate(event.getDate());
         return new EventNoIdDto(
                 event.getName(),
                 event.getDescription(),
@@ -52,7 +51,7 @@ public class EventMapper {
                 event.isOpen(),
                 event.getLongitude(),
                 event.getLatitude(),
-                localDate,
+                event.getDate(),
                 event.getActivities().stream().map(Activity::getId).toList(),
                 event.getBudgets().stream().map(Budget::getId).toList()
         );
@@ -81,7 +80,6 @@ public class EventMapper {
         if (dto == null)
             return null;
 
-        Date convertedDate = DateUtil.convertLocalDateToDate(dto.getDate());
         return new Event(
                 dto.getName(),
                 dto.getDescription(),
@@ -91,7 +89,7 @@ public class EventMapper {
                 dto.isOpen(),
                 dto.getLongitude(),
                 dto.getLatitude(),
-                convertedDate,
+                dto.getDate(),
                 activities,
                 budgets);
     }

@@ -56,18 +56,17 @@ public class EventService {
         EventType type = eventTypeRepository.findById(dto.getEventTypeId()).orElseThrow();
         EventOrganizer eventOrganizer = (EventOrganizer) userRepository.findById(dto.getEventOrganizerId()).orElseThrow();
         Event event = EventMapper.toEntity(dto, type, eventOrganizer, new ArrayList<>(), new ArrayList<>());
-        Event savedEvent = eventRepository.save(event);
-        return EventMapper.toDto(savedEvent);
+        eventRepository.save(event);
+        return EventMapper.toDto(event);
     }
 
     public EventDto update(EventNoIdDto dto, long id) {
-        Date convertedDate = DateUtil.convertLocalDateToDate(dto.getDate());
 
         return eventRepository.findById(id)
                 .map(event -> {
                     event.setId(id);
                     event.setActive(true);
-                    event.setDate(convertedDate);
+                    event.setDate(dto.getDate());
                     event.setDescription(dto.getDescription());
                     event.setName(dto.getName());
                     event.setOpen(dto.isOpen());
