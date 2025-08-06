@@ -226,7 +226,7 @@ class EventServiceTest {
         when(eventRepository.findById(1L)).thenReturn(Optional.of(event));
 
         List<ActivityTestCase> testCases = List.of(
-                new ActivityTestCase(6, 5, false, "Start bigger than end"),
+                new ActivityTestCase(6, 5, false, "Start after end"),
                 new ActivityTestCase(5, 9, true, "Before"),
                 new ActivityTestCase(21, 25, true, "After"),
                 new ActivityTestCase(10, 20, false, "Exact overlap"),

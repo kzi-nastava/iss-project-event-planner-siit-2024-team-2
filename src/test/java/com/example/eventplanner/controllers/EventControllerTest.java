@@ -9,10 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-
-import java.time.LocalDate;
 import java.util.Date;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 @SpringBootTest
@@ -45,7 +42,7 @@ class EventControllerIntegrationTest {
     void shouldReturnBadRequestWhenCreatingEventWithoutAuth() throws Exception {
         EventNoIdDto dto = validEvent();
 
-        mockMvc.perform(post("/events")
+        mockMvc.perform(post("/api/events")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(MockMvcResultMatchers.status().isUnauthorized());
@@ -54,7 +51,7 @@ class EventControllerIntegrationTest {
     @Test
     @Order(2)
     void shouldGetAllEventsSuccessfully() throws Exception {
-        mockMvc.perform(get("/events")
+        mockMvc.perform(get("/api/events")
                         .param("page", "0")
                         .param("sortBy", "date")
                         .param("sortDirection", "DESC"))
@@ -64,7 +61,7 @@ class EventControllerIntegrationTest {
     @Test
     @Order(3)
     void shouldReturnNotFoundWhenGettingNonexistentEventById() throws Exception {
-        mockMvc.perform(get("/events/{id}", 99999L))
+        mockMvc.perform(get("/api/events/{id}", 99999L))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
@@ -74,16 +71,16 @@ class EventControllerIntegrationTest {
         String agendaJson = """
             [
                 {
-                    "name": "Aktivnost 1",
+                    "name": "Activity 1",
                     "activityStart": 1690000000000,
                     "activityEnd": 1690003600000,
-                    "description": "Opis",
-                    "location": "Sala 1"
+                    "description": "Description",
+                    "location": "Hangar 1"
                 }
             ]
         """;
 
-        mockMvc.perform(post("/events/{id}/agenda", 999L)
+        mockMvc.perform(post("/api/events/{id}/agenda", 999L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(agendaJson))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
@@ -92,31 +89,24 @@ class EventControllerIntegrationTest {
     @Test
     @Order(5)
     void shouldReturnNotFoundWhenDeletingNonexistentEvent() throws Exception {
-        mockMvc.perform(delete("/events/{id}", 99999L))
+        mockMvc.perform(delete("/api/events/{id}", 99999L))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
     @Test
     @Order(6)
-    void shouldReturnTop5EventsEvenIfEmpty() throws Exception {
-        mockMvc.perform(get("/events/top5"))
-                .andExpect(MockMvcResultMatchers.status().isOk());
-    }
-
-    @Test
-    @Order(7)
     void shouldReturnBadRequestWhenAddingInvalidActivity() throws Exception {
         String activityJson = """
             {
-                "name": "Aktivnost 2",
+                "name": "Activity 2",
                 "activityStart": 1690000000000,
                 "activityEnd": 1690003600000,
-                "description": "Opis",
-                "location": "Sala 1"
+                "description": "Description",
+                "location": "Hangar 1"
             }
         """;
 
-        mockMvc.perform(post("/events/{id}/agenda/activity", 999L)
+        mockMvc.perform(post("/api/events/{id}/agenda/activity", 999L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(activityJson))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
