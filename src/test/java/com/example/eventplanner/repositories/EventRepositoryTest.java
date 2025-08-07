@@ -14,7 +14,7 @@ import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 @DataJpaTest
 public class EventRepositoryTest {
 
@@ -28,7 +28,7 @@ public class EventRepositoryTest {
         eventRepository.deleteAll();
 
         event = new Event();
-        event.setName("Test Event");
+        event.setName("Test Event 123");
         event.setDate(new Date(System.currentTimeMillis() + 86400000));
 
         Activity a1 = new Activity();

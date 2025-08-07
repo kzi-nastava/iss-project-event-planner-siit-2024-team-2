@@ -11,13 +11,13 @@ import com.example.eventplanner.repositories.event.EventRepository;
 import com.example.eventplanner.repositories.event.EventTypeRepository;
 import com.example.eventplanner.repositories.user.UserRepository;
 import com.example.eventplanner.services.event.EventService;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
-import java.time.LocalDate;
+
+import javax.management.BadAttributeValueExpException;
 import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -72,16 +72,34 @@ class EventServiceTest {
     }
 
     @Test
-    void create_ShouldReturnEventDto_WhenValidInput() {
+    void create_ShouldReturnEventDto_WhenValidInput() throws Exception {
         when(eventTypeRepository.findById(1L)).thenReturn(Optional.of(eventType));
         when(userRepository.findById(2L)).thenReturn(Optional.of(organizer));
         when(eventRepository.save(any(Event.class))).thenReturn(event);
+        EventDto result;
 
-        EventDto result = eventService.create(eventDto);
+        try {
+            result = eventService.create(eventDto);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
 
         assertNotNull(result);
         assertEquals("Test", result.getName());
         verify(eventRepository).save(any(Event.class));
+    }
+
+    @Test
+    void create_ShouldReturnNull_WhenInvalidInput() {
+
+        EventDto result;
+        assertThrows(Exception.class, () -> eventService.create(new EventNoIdDto()));
+        try {
+            result = eventService.create(new EventNoIdDto());
+        } catch (Exception ignored) {
+            result = null;
+        }
+        assertNull(result);
     }
 
     @Test
@@ -152,6 +170,7 @@ class EventServiceTest {
         ActivityDto dto = new ActivityDto();
         dto.setActivityStart(15L);
         dto.setActivityEnd(25L);
+        dto.setName("Activity1");
 
         Activity existing = new Activity();
         existing.setActivityStart(10L);
@@ -215,6 +234,33 @@ class EventServiceTest {
     }
 
     @Test
+    void addActivity_ShouldFail_WhenEmptyName() {
+        ActivityDto dto = new ActivityDto();
+        dto.setActivityStart(10);
+        dto.setActivityEnd(10);
+        boolean result = eventService.addActivity(1L, dto);
+        assertFalse(result, "Failed: Added activity with name");
+    }
+
+    @Test
+    void addActivity_ShouldFail_WhenEmptyStart() {
+        ActivityDto dto = new ActivityDto();
+        dto.setName("Test");
+        dto.setActivityEnd(10);
+        boolean result = eventService.addActivity(1L, dto);
+        assertFalse(result, "Failed: Added activity with empty timestamp");
+    }
+
+    @Test
+    void addActivity_ShouldFail_WhenEmptyEnd() {
+        ActivityDto dto = new ActivityDto();
+        dto.setName("Test");
+        dto.setActivityStart(10);
+        boolean result = eventService.addActivity(1L, dto);
+        assertFalse(result, "Failed: Added activity with empty timestamp");
+    }
+
+    @Test
     void addActivity_EdgeCases_TimeOverlap() {
         Activity existing = new Activity();
         existing.setActivityStart(10);
@@ -244,6 +290,7 @@ class EventServiceTest {
             ActivityDto dto = new ActivityDto();
             dto.setActivityStart(testCase.start);
             dto.setActivityEnd(testCase.end);
+            dto.setName("Activity");
             boolean result = eventService.addActivity(1L, dto);
             assertEquals(testCase.expected, result, "Failed: " + testCase.description);
         }
