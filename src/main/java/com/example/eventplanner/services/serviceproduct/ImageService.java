@@ -5,11 +5,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Base64;
 
 @Service
@@ -50,6 +54,16 @@ public class ImageService {
             return null;
         return absolutePath;
     }
+
+    public String uploadImage(MultipartFile file) throws IOException {
+        Path uploadPath = Paths.get(System.getProperty("user.dir"), UPLOADS_DIR);
+        String filename = file.getOriginalFilename();
+
+        Path targetPath = uploadPath.resolve(filename);
+        Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+        return encodePath(filename);
+    }
+
     public static String encodePath(String imagePath) {
         if (imagePath == null || imagePath.isEmpty())
             return null;
