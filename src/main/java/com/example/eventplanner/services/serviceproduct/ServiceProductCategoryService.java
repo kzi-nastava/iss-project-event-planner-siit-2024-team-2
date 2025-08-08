@@ -22,8 +22,14 @@ public class ServiceProductCategoryService {
                 .toList();
     }
 
-    public ServiceProductCategoryDto getById(long id) {
+    public ServiceProductCategoryDto getById(Long id) {
         return serviceProductCategoryRepository.findById(id)
+                .map(ServiceProductCategoryMapper::toDto)
+                .orElse(null);
+    }
+
+    public ServiceProductCategoryDto getByName(String name) {
+        return serviceProductCategoryRepository.findByName(name)
                 .map(ServiceProductCategoryMapper::toDto)
                 .orElse(null);
     }

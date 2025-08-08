@@ -23,7 +23,7 @@ public class ServiceMapper {
                 ServiceProductCategoryMapper.toDto(service.getCategory()),
                 service.isAvailable(), service.isVisible(),
                 service.getPrice(), service.getDiscount(),
-                service.getName(), service.getDescription(),
+                service.getName(), service.getDescription(), service.getImages(),
                 service.getImages().stream().map(ImageService::encodePath).toList(),
                 service.getAvailableEventTypes().stream().map(EventTypeMapper::toDto).toList(),
                 ServiceProductProviderMapper.toDto(service.getServiceProductProvider()),
