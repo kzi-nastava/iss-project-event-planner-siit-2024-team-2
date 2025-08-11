@@ -9,11 +9,14 @@ import com.example.eventplanner.dto.event.event.EventSummaryDto;
 import com.example.eventplanner.dto.order.booking.BookingDto;
 import com.example.eventplanner.dto.order.purchase.PurchaseDto;
 import com.example.eventplanner.model.user.EventOrganizer;
+import com.example.eventplanner.services.event.EventReportService;
 import com.example.eventplanner.services.event.EventService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +29,8 @@ import java.util.List;
 public class EventController {
     private final EventService eventService;
     private final AuthUtil authUtil;
-    
+    private final EventReportService eventReportService;
+
     @GetMapping
     public ResponseEntity<Page<EventDto>> getAllEvents(
             @RequestParam(defaultValue = "0") int page,
@@ -118,6 +122,15 @@ public class EventController {
         return result != null ?
                 new ResponseEntity<>(result, HttpStatus.OK) :
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @GetMapping("/{id}/pdf")
+    public ResponseEntity<byte[]> getEventPdf(@PathVariable Long id) throws Exception {
+        byte[] pdf = eventReportService.generateEventPdf (id);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=event_" + id + ".pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdf);
     }
 
     @PostMapping("/{id}/agenda")
