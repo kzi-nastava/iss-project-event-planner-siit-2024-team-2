@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
@@ -38,6 +40,17 @@ public class EventReportService {
             document.add(new Paragraph("Max Attendances: " + event.getMaxAttendances()));
             document.add(new Paragraph("Open: " + (event.isOpen() ? "Yes" : "No")));
             document.add(new Paragraph("Date: " + event.getDate().toString().split(" ")[0]));
+            String googleMapsUrl = "https://www.google.com/maps/search/?api=1&query="
+                    + event.getLatitude() + "," + event.getLongitude();
+
+            Anchor eventLocationLink = new Anchor(
+                    "Click the link"
+            );
+            eventLocationLink.setReference(googleMapsUrl);
+
+            Paragraph locationParagraph = new Paragraph("Location: ");
+            locationParagraph.add(eventLocationLink);
+            document.add(locationParagraph);
 
             document.add(new Paragraph("\nActivities:"));
 
@@ -55,7 +68,11 @@ public class EventReportService {
                 table.addCell(a.getName());
                 table.addCell(formatMillisToTime(a.getActivityStart()) + " - " + formatMillisToTime(a.getActivityEnd()));
                 table.addCell(a.getDescription());
-                table.addCell(a.getLocation());
+                //table.addCell(a.getLocation());
+                Anchor locationLink = new Anchor(a.getLocation());
+                locationLink.setReference("https://www.google.com/maps/search/?api=1&query=" +
+                        URLEncoder.encode(a.getLocation(), StandardCharsets.UTF_8));
+                table.addCell(locationLink);
             }
 
             document.add(table);
