@@ -39,7 +39,10 @@ public class AuthController {
 
         String token = jwtTokenUtil.generateToken(authenticatedUser.getEmail());
 
-        return new LoginResponseDto(authenticatedUser.getId(), authenticatedUser.getEmail(), token);
+        return new LoginResponseDto(authenticatedUser.getId(),
+                authenticatedUser.getEmail(),
+                token,
+                authenticatedUser.getUserRole());
     }
 
     @PostMapping("/signup")
