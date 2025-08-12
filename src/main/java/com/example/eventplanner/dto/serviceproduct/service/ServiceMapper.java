@@ -7,6 +7,7 @@ import com.example.eventplanner.model.event.EventType;
 import com.example.eventplanner.model.serviceproduct.Service;
 import com.example.eventplanner.model.serviceproduct.ServiceProductCategory;
 import com.example.eventplanner.model.user.ServiceProductProvider;
+import com.example.eventplanner.services.serviceproduct.ImageService;
 
 import java.util.List;
 
@@ -23,12 +24,24 @@ public class ServiceMapper {
                 service.isAvailable(), service.isVisible(),
                 service.getPrice(), service.getDiscount(),
                 service.getName(), service.getDescription(), service.getImages(),
+                service.getImages().stream().map(ImageService::encodePath).toList(),
                 service.getAvailableEventTypes().stream().map(EventTypeMapper::toDto).toList(),
                 ServiceProductProviderMapper.toDto(service.getServiceProductProvider()),
                 service.getSpecifies(), service.getDuration(),
                 service.getMinEngagementDuration(), service.getMaxEngagementDuration(),
                 service.getReservationDaysDeadline(), service.getCancellationDaysDeadline(),
                 service.isAutomaticReserved());
+    }
+
+    public static ServiceCardDto toCardDto(Service service) {
+        if (service == null)
+            return null;
+
+        return new ServiceCardDto(
+                service.getId(),
+                service.getPrice(), service.getDiscount(),
+                service.getName(), service.getDescription(),
+                ImageService.encodePath(service.getImages().get(0)));
     }
 
     public static Service toEntity(CreateServiceDto dto,

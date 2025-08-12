@@ -24,6 +24,7 @@ public class ServiceDto {
     private String name;
     private String description;
     private List<String> images;
+    private List<String> imageEncodedNames;
     private List<EventTypeDto> availableEventTypes;
     private RegisterServiceProductProviderDto serviceProductProvider;
 

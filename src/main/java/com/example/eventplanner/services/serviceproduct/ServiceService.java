@@ -1,6 +1,7 @@
 package com.example.eventplanner.services.serviceproduct;
 
 import com.example.eventplanner.dto.serviceproduct.service.CreateServiceDto;
+import com.example.eventplanner.dto.serviceproduct.service.ServiceCardDto;
 import com.example.eventplanner.dto.serviceproduct.service.ServiceDto;
 import com.example.eventplanner.dto.serviceproduct.service.ServiceMapper;
 import com.example.eventplanner.model.event.EventType;
@@ -33,6 +34,13 @@ public class ServiceService {
 		return serviceRepository.findAll()
 				.stream()
 				.map(ServiceMapper::toDto)
+				.toList();
+	}
+
+	public Collection<ServiceCardDto> getAllBySPP_Id(Long sppId) {
+		return serviceRepository.getAllBySPP_Id(sppId)
+				.stream()
+				.map(ServiceMapper::toCardDto)
 				.toList();
 	}
 	
@@ -92,16 +100,10 @@ public class ServiceService {
 		return availableEventTypes;
 	}
 
-	public Page<ServiceDto> searchByName(int page, Integer size, String name) {
-		PageRequest pageRequest = PageRequest.of(page, size != null ? size : 10);
- 		return serviceRepository.searchByName(name, pageRequest)
-				.map(ServiceMapper::toDto);
-	}
-
-	public Page<ServiceDto> filter(int page, Integer size, Float minPrice, Float maxPrice, Boolean available,
+	public Page<ServiceDto> filter(int page, Integer size, String name, Float minPrice, Float maxPrice, Boolean available,
 										 List<String> categories, List<Long> availableEventTypeIds) {
 		PageRequest pageRequest = PageRequest.of(page, size != null ? size : 10);
-		return serviceRepository.findAllFiltered(minPrice, maxPrice, available, categories, availableEventTypeIds, pageRequest)
+		return serviceRepository.findAllFiltered(name, minPrice, maxPrice, available, categories, availableEventTypeIds, pageRequest)
 				.map(ServiceMapper::toDto);
 	}
 }
