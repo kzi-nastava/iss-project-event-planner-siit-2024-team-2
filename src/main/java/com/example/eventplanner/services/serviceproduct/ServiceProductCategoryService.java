@@ -46,6 +46,7 @@ public class ServiceProductCategoryService {
         ServiceProductCategoryDto updatedDto = new ServiceProductCategoryDto();
         updatedDto.setId(id);
         updatedDto.setName(dto.getName());
+        updatedDto.setDescription(dto.getDescription());
         serviceProductCategoryRepository.save(ServiceProductCategoryMapper.toEntity(updatedDto));
         return updatedDto;
     }
