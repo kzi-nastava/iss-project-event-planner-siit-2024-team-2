@@ -26,4 +26,5 @@ public class EventNoIdDto {
     private LocalDate date;
     private List<Long> activityIds;
     private List<Long> budgetIds;
+    private List<String> invitationEmails;
 }

@@ -7,15 +7,18 @@ import com.example.eventplanner.dto.event.event.EventDto;
 import com.example.eventplanner.dto.event.event.EventMapper;
 import com.example.eventplanner.dto.event.event.EventNoIdDto;
 import com.example.eventplanner.dto.event.event.EventSummaryDto;
+import com.example.eventplanner.dto.event.invitation.InvitationDto;
 import com.example.eventplanner.dto.order.booking.BookingDto;
 import com.example.eventplanner.dto.order.purchase.PurchaseDto;
 import com.example.eventplanner.model.Entity;
 import com.example.eventplanner.model.event.Activity;
 import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.event.EventType;
+import com.example.eventplanner.model.event.Invitation;
 import com.example.eventplanner.model.user.EventOrganizer;
 import com.example.eventplanner.repositories.event.EventRepository;
 import com.example.eventplanner.repositories.event.EventTypeRepository;
+import com.example.eventplanner.repositories.event.InvitationRepository;
 import com.example.eventplanner.repositories.user.UserRepository;
 import com.example.eventplanner.services.order.BookingService;
 import com.example.eventplanner.services.order.PurchaseService;
@@ -39,6 +42,9 @@ public class EventService {
     private final PurchaseService purchaseService;
     private final BookingService bookingService;
     private final UserRepository userRepository;
+    private final InvitationRepository invitationRepository;
+    private final InvitationService invitationService;
+
     public List<EventDto> getAll() {
         return eventRepository.findAll()
                 .stream()
@@ -55,9 +61,13 @@ public class EventService {
     public EventDto create(EventNoIdDto dto) {
         EventType type = eventTypeRepository.findById(dto.getEventTypeId()).orElseThrow();
         EventOrganizer eventOrganizer = (EventOrganizer) userRepository.findById(dto.getEventOrganizerId()).orElseThrow();
-        Event event = EventMapper.toEntity(dto, type, eventOrganizer, new ArrayList<>(), new ArrayList<>());
-        Event savedEvent = eventRepository.save(event);
-        return EventMapper.toDto(savedEvent);
+        Event event = EventMapper.toEntity(dto, type, eventOrganizer, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        List<Invitation> invitations = dto.getInvitationEmails()
+                .stream()
+                .map(email -> new Invitation(event, email))
+                .toList();
+        event.setInvitations(invitations);
+        return EventMapper.toDto(eventRepository.save(event));
     }
 
     public EventDto update(EventNoIdDto dto, long id) {
