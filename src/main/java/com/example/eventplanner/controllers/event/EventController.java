@@ -11,6 +11,7 @@ import com.example.eventplanner.dto.order.purchase.PurchaseDto;
 import com.example.eventplanner.model.user.EventOrganizer;
 import com.example.eventplanner.services.event.EventReportService;
 import com.example.eventplanner.services.event.EventService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
@@ -90,7 +91,7 @@ public class EventController {
     }
 
     @PostMapping
-    public ResponseEntity<EventDto> createEvent(@RequestBody EventNoIdDto dto) {
+    public ResponseEntity<EventDto> createEvent(@Valid @RequestBody EventNoIdDto dto) {
         EventOrganizer organizer = authUtil.getAuthenticatedEventOrganizer();
         if (organizer == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -101,7 +102,7 @@ public class EventController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<EventDto> updateEvent(@PathVariable("id") Long id, @RequestBody EventNoIdDto dto) {
+    public ResponseEntity<EventDto> updateEvent(@Valid @PathVariable("id") Long id, @RequestBody EventNoIdDto dto) {
         EventDto result = eventService.update(dto, id);
         return result != null ?
                 new ResponseEntity<>(result, HttpStatus.OK) :

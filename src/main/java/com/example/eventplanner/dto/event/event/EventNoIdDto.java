@@ -1,6 +1,7 @@
 package com.example.eventplanner.dto.event.event;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,5 +27,5 @@ public class EventNoIdDto {
     private LocalDate date;
     private List<Long> activityIds;
     private List<Long> budgetIds;
-    private List<String> invitationEmails;
+    private List<@Email String> invitationEmails;
 }

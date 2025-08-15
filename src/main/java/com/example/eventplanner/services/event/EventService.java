@@ -42,8 +42,6 @@ public class EventService {
     private final PurchaseService purchaseService;
     private final BookingService bookingService;
     private final UserRepository userRepository;
-    private final InvitationRepository invitationRepository;
-    private final InvitationService invitationService;
 
     public List<EventDto> getAll() {
         return eventRepository.findAll()
@@ -88,6 +86,11 @@ public class EventService {
                     event.setActivities(new ArrayList<>());
                     event.setBudgets(new ArrayList<>());
                     userRepository.findById(dto.getEventOrganizerId()).ifPresent(eo -> event.setEventOrganizer((EventOrganizer) eo));
+                    List<Invitation> invitations = dto.getInvitationEmails()
+                            .stream()
+                            .map(email -> new Invitation(event, email)) //created inside map so invitation can reference event
+                            .toList();
+                    event.setInvitations(invitations);
                     Event updatedEvent = eventRepository.save(event);
                     return EventMapper.toDto(updatedEvent);
                 })
