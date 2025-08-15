@@ -15,6 +15,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Base64;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -47,8 +48,6 @@ public class ImageService {
 
         Path uploadsDir = Paths.get(System.getProperty("user.dir")).resolve(UPLOADS_DIR);
         Path absolutePath = uploadsDir.resolve(normalizedPath).normalize();
-        System.out.println(absolutePath);
-        System.out.println(uploadsDir);
 
         if (!absolutePath.startsWith(uploadsDir))
             return null;
@@ -57,7 +56,7 @@ public class ImageService {
 
     public String uploadImage(MultipartFile file) throws IOException {
         Path uploadPath = Paths.get(System.getProperty("user.dir"), UPLOADS_DIR);
-        String filename = file.getOriginalFilename();
+        String filename = UUID.randomUUID() + "_" + file.getOriginalFilename() ;
 
         Path targetPath = uploadPath.resolve(filename);
         Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
