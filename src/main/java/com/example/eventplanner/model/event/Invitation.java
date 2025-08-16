@@ -22,8 +22,6 @@ public class Invitation extends Entity {
     @JoinColumn(name = "event_id")
     private Event event;
     private String email;
-    private boolean registeredUser;
-    private boolean accepted;
     private String token;
 
     public Invitation(Event event, String email) {

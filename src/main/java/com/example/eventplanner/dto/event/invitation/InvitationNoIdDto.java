@@ -13,7 +13,5 @@ import lombok.Setter;
 public class InvitationNoIdDto {
     private EventDto eventDto;
     private String email;
-    private boolean registeredUser;
-    private boolean accepted;
     private String token;
 }

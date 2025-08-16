@@ -14,7 +14,5 @@ public class InvitationDto {
     private long id;
     private EventDto event;
     private String email;
-    private boolean registeredUser;
-    private boolean accepted;
     private String token;
 }

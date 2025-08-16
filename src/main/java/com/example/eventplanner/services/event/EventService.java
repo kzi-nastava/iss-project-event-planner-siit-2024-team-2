@@ -7,7 +7,6 @@ import com.example.eventplanner.dto.event.event.EventDto;
 import com.example.eventplanner.dto.event.event.EventMapper;
 import com.example.eventplanner.dto.event.event.EventNoIdDto;
 import com.example.eventplanner.dto.event.event.EventSummaryDto;
-import com.example.eventplanner.dto.event.invitation.InvitationDto;
 import com.example.eventplanner.dto.order.booking.BookingDto;
 import com.example.eventplanner.dto.order.purchase.PurchaseDto;
 import com.example.eventplanner.model.Entity;
@@ -18,7 +17,6 @@ import com.example.eventplanner.model.event.Invitation;
 import com.example.eventplanner.model.user.EventOrganizer;
 import com.example.eventplanner.repositories.event.EventRepository;
 import com.example.eventplanner.repositories.event.EventTypeRepository;
-import com.example.eventplanner.repositories.event.InvitationRepository;
 import com.example.eventplanner.repositories.user.UserRepository;
 import com.example.eventplanner.services.order.BookingService;
 import com.example.eventplanner.services.order.PurchaseService;
@@ -32,6 +30,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -83,14 +82,16 @@ public class EventService {
                     event.setLongitude(dto.getLongitude());
                     event.setMaxAttendances(dto.getMaxAttendances());
                     eventTypeRepository.findById(dto.getEventTypeId()).ifPresent(event::setType);
-                    event.setActivities(new ArrayList<>());
-                    event.setBudgets(new ArrayList<>());
                     userRepository.findById(dto.getEventOrganizerId()).ifPresent(eo -> event.setEventOrganizer((EventOrganizer) eo));
-                    List<Invitation> invitations = dto.getInvitationEmails()
+                    Map<String, Invitation> existingInvitations = event.getInvitations()
                             .stream()
-                            .map(email -> new Invitation(event, email)) //created inside map so invitation can reference event
+                            .collect(Collectors.toMap(Invitation::getEmail, invitation -> invitation));
+                    List<Invitation> newInvitations = dto.getInvitationEmails()
+                            .stream()
+                            .filter(email -> !existingInvitations.containsKey(email))
+                            .map(email -> new Invitation(event, email))
                             .toList();
-                    event.setInvitations(invitations);
+                    event.getInvitations().addAll(newInvitations);
                     Event updatedEvent = eventRepository.save(event);
                     return EventMapper.toDto(updatedEvent);
                 })

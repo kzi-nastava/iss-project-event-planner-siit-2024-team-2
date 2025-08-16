@@ -7,7 +7,6 @@ import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.event.Invitation;
 import com.example.eventplanner.repositories.event.EventRepository;
 import com.example.eventplanner.repositories.event.InvitationRepository;
-import com.example.eventplanner.repositories.serviceproduct.ServiceRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -57,8 +56,6 @@ public class InvitationService {
 
         invitation.setEvent(event);
         invitation.setEmail(dto.getEmail());
-        invitation.setRegisteredUser(dto.isRegisteredUser());
-        invitation.setAccepted(dto.isAccepted());
         invitation.setToken(dto.getToken());
 
         return InvitationMapper.toDto(invitationRepository.save(invitation));
