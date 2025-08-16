@@ -25,7 +25,7 @@ public class WebSocketController {
     // Else, it behaves like a broadcast message (sent to all)
     // REST endpoint
     @CrossOrigin(origins = "http://localhost:4200")
-    @RequestMapping(value="/sendMessageRest", method = RequestMethod.POST)
+    @RequestMapping(value="/send-message-rest", method = RequestMethod.POST)
     public ResponseEntity<?> sendMessage(@RequestBody Map<String, String> message) {
         if (message.containsKey("message")) {
             if (message.containsKey("toId") && message.get("toId") != null && !message.get("toId").equals("")) {
