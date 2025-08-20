@@ -151,8 +151,8 @@ public class UserService implements UserDetailsService {
         return companyInfoDto;
     }
 
-    public BaseUser findByUsername(String username) {
-        return userRepository.findByEmail(username).orElse(null);
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
     }
 }
 

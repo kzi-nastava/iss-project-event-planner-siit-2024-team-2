@@ -41,6 +41,7 @@ public class EventService {
     private final PurchaseService purchaseService;
     private final BookingService bookingService;
     private final UserRepository userRepository;
+    private final InvitationService invitationService;
 
     public List<EventDto> getAll() {
         return eventRepository.findAll()
@@ -63,6 +64,7 @@ public class EventService {
                 .stream()
                 .map(email -> new Invitation(event, email))
                 .toList();
+        invitationService.sendInvitations(invitations);
         event.setInvitations(invitations);
         return EventMapper.toDto(eventRepository.save(event));
     }
@@ -91,6 +93,7 @@ public class EventService {
                             .filter(email -> !existingInvitations.containsKey(email))
                             .map(email -> new Invitation(event, email))
                             .toList();
+                    invitationService.sendInvitations(newInvitations);
                     event.getInvitations().addAll(newInvitations);
                     Event updatedEvent = eventRepository.save(event);
                     return EventMapper.toDto(updatedEvent);

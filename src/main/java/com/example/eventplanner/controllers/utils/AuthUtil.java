@@ -42,7 +42,7 @@ public class AuthUtil {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         try {
-            BaseUser user = userService.findByUsername(username);
+            BaseUser user = userService.getUserByEmail(username);
             return user != null ? user.getId() : null;
         } catch (Exception e) {
             return null;
