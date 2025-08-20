@@ -39,26 +39,5 @@ public class WebSocketController {
     public MessageDto broadcastNotification(MessageDto message) {
         webSocketService.trySend(message);
         return message;
-//        Map<String, String> messageConverted = parseMessage(message);
-
-//        if (messageConverted != null && hasKey(messageConverted, "message"))
-//            webSocketService.trySend(messageConverted);
-
-//        return messageConverted;
     }
-
-//    @SuppressWarnings("unchecked")
-//    private Map<String, String> parseMessage(String message) {
-//        ObjectMapper mapper = new ObjectMapper();
-//        Map<String, String> retVal;
-//
-//        try {
-//            retVal = mapper.readValue(message, Map.class); // JSON string parsing
-//        } catch (IOException e) {
-//            retVal = null;
-//        }
-//
-//        return retVal;
-//    }
-
 }
