@@ -30,7 +30,6 @@ public class WebSocketService {
                 this.simpMessagingTemplate.convertAndSend(destination + "/" + message.getFromId(), message);
         } else
             this.simpMessagingTemplate.convertAndSend(destination, message);
-        System.out.println(destination);
         return true;
     }
 }
