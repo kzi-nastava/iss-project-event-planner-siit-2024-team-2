@@ -23,8 +23,16 @@ public class ServiceProductCategoryController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ServiceProductCategoryDto> getServiceProductCategoryByName(@PathVariable long id) {
+    public ResponseEntity<ServiceProductCategoryDto> getServiceProductCategoryById(@PathVariable("id") Long id) {
         ServiceProductCategoryDto dto = serviceProductCategoryService.getById(id);
+        return dto != null ?
+                new ResponseEntity<>(dto, HttpStatus.OK) :
+                new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @GetMapping(value = "/name/{name}")
+    public ResponseEntity<ServiceProductCategoryDto> getServiceProductCategoryByName(@PathVariable("name") String name) {
+        ServiceProductCategoryDto dto = serviceProductCategoryService.getByName(name);
         return dto != null ?
                 new ResponseEntity<>(dto, HttpStatus.OK) :
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
