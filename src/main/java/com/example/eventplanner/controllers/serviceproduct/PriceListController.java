@@ -3,6 +3,8 @@ package com.example.eventplanner.controllers.serviceproduct;
 import com.example.eventplanner.dto.serviceproduct.pricelist.PriceListDto;
 import com.example.eventplanner.services.serviceproduct.PriceListService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,5 +32,14 @@ public class PriceListController {
         return updatedPriceListDto != null ?
                 ResponseEntity.ok(updatedPriceListDto) :
                 ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/{id}/pdf")
+    public ResponseEntity<byte[]> getPdf(@PathVariable Long id) throws Exception {
+        byte[] pdf = priceListService.generatePdf (id);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=price_list_" + id + ".pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdf);
     }
 }
