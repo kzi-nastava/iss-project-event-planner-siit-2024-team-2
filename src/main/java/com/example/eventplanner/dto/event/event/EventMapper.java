@@ -72,8 +72,12 @@ public class EventMapper {
                 event.getLongitude(),
                 event.getLatitude(),
                 event.getDate().getTime(),
-                event.getEventOrganizer().getFirstName() + " " + event.getEventOrganizer().getLastName(),
-                event.getEventOrganizer().getEmail()
+                event.getEventOrganizer() != null
+                        ? event.getEventOrganizer().getFirstName() + " " + event.getEventOrganizer().getLastName()
+                        : "",
+                event.getEventOrganizer() != null
+                        ? event.getEventOrganizer().getEmail()
+                        : ""
         );
     }
 
