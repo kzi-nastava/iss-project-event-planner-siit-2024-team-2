@@ -150,5 +150,9 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
         return companyInfoDto;
     }
+
+    public BaseUser findByUsername(String username) {
+        return userRepository.findByEmail(username).orElse(null);
+    }
 }
 
