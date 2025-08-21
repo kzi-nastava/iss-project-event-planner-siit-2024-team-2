@@ -1,9 +1,11 @@
 package com.example.eventplanner.controllers;
 
+import com.example.eventplanner.controllers.event.EventController;
 import com.example.eventplanner.dto.event.activity.ActivityDto;
 import com.example.eventplanner.model.event.Activity;
 import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.repositories.event.EventRepository;
+import com.example.eventplanner.repositories.event.EventReviewRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -11,9 +13,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import static org.mockito.ArgumentMatchers.any;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -21,6 +26,9 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -36,19 +44,16 @@ class ActivityControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Autowired
+    @MockBean
     private EventRepository eventRepository;
-
     private Long eventId;
 
     @BeforeEach
     void setup() {
-        eventRepository.deleteAll();
-
         Event event = new Event();
+        event.setId(1L);
         event.setName("Test Event");
         event.setDate(new Date(System.currentTimeMillis() + 86400000));
-        event = eventRepository.save(event);
         eventId = event.getId();
 
         Activity existing = new Activity();
@@ -58,7 +63,10 @@ class ActivityControllerTest {
         List<Activity> activityList = new ArrayList<>();
         activityList.add(existing);
         event.setActivities(activityList);
-        eventRepository.save(event);
+        when(eventRepository.findById(1L)).thenReturn(Optional.of(event));
+
+        when(eventRepository.save(any(Event.class))).thenAnswer(inv -> inv.getArgument(0));
+        eventId = 1L;
     }
 
     private long time(String hhmm) {
