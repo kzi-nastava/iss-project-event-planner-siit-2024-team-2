@@ -12,7 +12,9 @@ import lombok.Setter;
 @AllArgsConstructor
 public class InvitationDto {
     private long id;
-    private EventDto event;
+    private EventDto eventDto;
     private String email;
     private String token;
+    private boolean accepted;
+    private boolean needsRegistration;
 }

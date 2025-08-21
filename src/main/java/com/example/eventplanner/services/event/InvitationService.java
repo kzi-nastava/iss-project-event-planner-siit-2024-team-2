@@ -63,18 +63,17 @@ public class InvitationService {
         if (invitation == null)
             return null;
 
-        Event event = eventRepository.getReferenceById(dto.getEventDto().getId());
+        Event event = eventRepository.getReferenceById(dto.getEventId());
 
         invitation.setEvent(event);
         invitation.setEmail(dto.getEmail());
-        invitation.setToken(dto.getToken());
 
         return InvitationMapper.toDto(invitationRepository.save(invitation));
     }
 
     public void sendInvitations(List<Invitation> invitations) {
         for (Invitation invitation : invitations) {
-            boolean isRegistered = userService.existsByEmail(invitation.getEmail());
+            boolean isRegistered = !invitation.isNeedsRegistration();
             String inviteLink = frontendUrl + "/accept-invitation?token=" + invitation.getToken();
             String body = EmailFormatUtil.formatInviteEmail(
                     EventMapper.toSummaryDto(invitation.getEvent()),
@@ -86,5 +85,13 @@ public class InvitationService {
                     "Event Planner - Invitation to event",
                     body).withHtml(true));
         }
+    }
+
+    public InvitationDto acceptInvitation(String token) {
+        Invitation invitation = invitationRepository.findByToken(token).orElse(null);
+        if (invitation == null)
+            return null;
+        invitation.setAccepted(true);
+        return InvitationMapper.toDto(invitationRepository.save(invitation));
     }
 }

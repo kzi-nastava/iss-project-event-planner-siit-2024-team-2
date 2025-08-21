@@ -37,4 +37,12 @@ public class InvitationController {
                 new ResponseEntity<>(result, HttpStatus.OK) :
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+
+    @PostMapping(value = "/{token}/accept")
+    public ResponseEntity<InvitationDto> acceptInvitation(@PathVariable("token") String token) {
+        InvitationDto result = invitationService.acceptInvitation(token);
+        return result != null ?
+                new ResponseEntity<>(result, HttpStatus.OK) :
+                new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
 }

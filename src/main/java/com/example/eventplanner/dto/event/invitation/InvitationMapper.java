@@ -15,7 +15,9 @@ public class InvitationMapper {
                 invitation.getId(),
                 EventMapper.toDto(invitation.getEvent()),
                 invitation.getEmail(),
-                invitation.getToken()
+                invitation.getToken(),
+                invitation.isAccepted(),
+                invitation.isNeedsRegistration()
         );
     }
 
@@ -25,8 +27,7 @@ public class InvitationMapper {
 
         return new Invitation(
                 event,
-                dto.getEmail(),
-                dto.getToken()
+                dto.getEmail()
         );
     }
 }

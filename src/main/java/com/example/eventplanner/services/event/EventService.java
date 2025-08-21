@@ -20,6 +20,7 @@ import com.example.eventplanner.repositories.event.EventTypeRepository;
 import com.example.eventplanner.repositories.user.UserRepository;
 import com.example.eventplanner.services.order.BookingService;
 import com.example.eventplanner.services.order.PurchaseService;
+import com.example.eventplanner.services.user.UserService;
 import com.example.eventplanner.services.util.DateUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -42,6 +43,7 @@ public class EventService {
     private final BookingService bookingService;
     private final UserRepository userRepository;
     private final InvitationService invitationService;
+    private final UserService userService;
 
     public List<EventDto> getAll() {
         return eventRepository.findAll()
@@ -62,7 +64,7 @@ public class EventService {
         Event event = EventMapper.toEntity(dto, type, eventOrganizer, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         List<Invitation> invitations = dto.getInvitationEmails()
                 .stream()
-                .map(email -> new Invitation(event, email))
+                .map(email -> new Invitation(event, email, userService.existsByEmail(email)))
                 .toList();
         invitationService.sendInvitations(invitations);
         event.setInvitations(invitations);

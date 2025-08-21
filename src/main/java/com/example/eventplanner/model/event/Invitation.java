@@ -23,11 +23,19 @@ public class Invitation extends Entity {
     private Event event;
     private String email;
     private String token;
+    private boolean accepted;
+    private boolean needsRegistration;
 
     public Invitation(Event event, String email) {
+        this(event, email, false);
+    }
+
+    public Invitation(Event event, String email, boolean needsRegistration) {
         super();
         this.event = event;
         this.email = email;
         this.token = UUID.randomUUID().toString();
+        this.accepted = false;
+        this.needsRegistration = needsRegistration;
     }
 }

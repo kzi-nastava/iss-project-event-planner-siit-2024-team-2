@@ -11,7 +11,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class InvitationNoIdDto {
-    private EventDto eventDto;
+    private long eventId;
     private String email;
-    private String token;
 }
