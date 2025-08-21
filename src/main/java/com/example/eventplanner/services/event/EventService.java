@@ -1,5 +1,6 @@
 package com.example.eventplanner.services.event;
 
+import com.example.eventplanner.dto.communication.notification.NotificationNoIdDto;
 import com.example.eventplanner.dto.event.activity.ActivityDto;
 import com.example.eventplanner.dto.event.activity.ActivityIdDto;
 import com.example.eventplanner.dto.event.activity.ActivityMapper;
@@ -20,6 +21,7 @@ import com.example.eventplanner.model.utils.AttendanceResult;
 import com.example.eventplanner.repositories.event.EventRepository;
 import com.example.eventplanner.repositories.event.EventTypeRepository;
 import com.example.eventplanner.repositories.user.UserRepository;
+import com.example.eventplanner.services.communication.NotificationService;
 import com.example.eventplanner.services.order.BookingService;
 import com.example.eventplanner.services.order.PurchaseService;
 import com.example.eventplanner.services.user.UserService;
@@ -48,6 +50,7 @@ public class EventService {
     private final UserRepository userRepository;
     private final InvitationService invitationService;
     private final UserService userService;
+    private final NotificationService notificationService;
 
     public List<EventDto> getAll() {
         return eventRepository.findAll()
@@ -102,14 +105,19 @@ public class EventService {
                     invitationService.sendInvitations(newInvitations);
                     event.getInvitations().addAll(newInvitations);
                     Event updatedEvent = eventRepository.save(event);
+                    sendUpdateNotifications(updatedEvent);
                     return EventMapper.toDto(updatedEvent);
                 })
                 .orElse(null);
     }
 
     public boolean delete(long id) {
-        if (!eventRepository.existsById(id))
+        Event event = eventRepository.findById(id).orElse(null);
+        if (event == null)
             return false;
+        sendEventNotifications(event, "Event deleted", "Event " + event.getName() + " has been deleted");
+        event.getAttendees().forEach(attendee -> attendee.getAttendingEvents().remove(event));
+        userRepository.saveAll(event.getAttendees());
         eventRepository.deleteById(id);
         return true;
     }
@@ -164,6 +172,7 @@ public class EventService {
                             .map(ActivityMapper::toEntity)
                             .toList();
                     event.setActivities(activities);
+                    sendUpdateNotifications(event, "Event" + event.getName() + "had its agenda updated");
                     eventRepository.save(event);
                     return true;
                 })
@@ -196,6 +205,7 @@ public class EventService {
         if (event == null) return false;
         if (!isTimeValid(event.getActivities(), activity.getActivityStart(), activity.getActivityEnd(), null)) return false;
         event.getActivities().add(ActivityMapper.toEntity(activity));
+        sendUpdateNotifications(event, "Event" + event.getName() + "had its agenda updated");
         eventRepository.save(event);
         return true;
     }
@@ -231,6 +241,8 @@ public class EventService {
         activity.setDescription(dto.getDescription());
         activity.setLocation(dto.getLocation());
 
+        sendUpdateNotifications(event, "Event" + event.getName() + "had its agenda updated");
+
         eventRepository.save(event);
         return true;
     }
@@ -242,6 +254,7 @@ public class EventService {
         if (activity != null) {
             activity.setActive(false);
         }
+        sendUpdateNotifications(event, "Event" + event.getName() + "had its agenda updated");
         eventRepository.save(event);
         return activity != null;
     }
@@ -299,5 +312,20 @@ public class EventService {
         userRepository.save(user);
 
         return AttendanceResult.SUCCESS;
+    }
+
+    private void sendUpdateNotifications(Event event) {
+        sendUpdateNotifications(event, "Event " + event.getName() + " has been updated");
+    }
+    private void sendUpdateNotifications(Event event, String message) {
+        sendEventNotifications(event, "Event updated", message);
+    }
+    private void sendEventNotifications(Event event, String title, String message) {
+        event.getAttendees().forEach(attendee ->
+                notificationService.sendNotification(new NotificationNoIdDto(
+                        title,
+                        message,
+                        attendee.getId()
+                )));
     }
 }
