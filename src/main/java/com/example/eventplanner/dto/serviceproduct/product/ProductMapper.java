@@ -8,6 +8,7 @@ import com.example.eventplanner.model.serviceproduct.Product;
 import com.example.eventplanner.model.serviceproduct.ServiceProductCategory;
 
 import com.example.eventplanner.model.user.ServiceProductProvider;
+import com.example.eventplanner.services.serviceproduct.ImageService;
 
 import java.util.List;
 
@@ -26,6 +27,8 @@ public class ProductMapper {
         dto.setPrice(entity.getPrice());
         dto.setDiscount(entity.getDiscount());
         dto.setServiceProductProvider(UserMapper.toServiceProductProviderDto(entity.getServiceProductProvider()));
+        dto.setImages(entity.getImages());
+        dto.setImageEncodedNames(entity.getImages().stream().map(ImageService::encodePath).toList());
         return dto;
     }
 
@@ -42,6 +45,8 @@ public class ProductMapper {
         dto.setServiceProductProvider(UserMapper.toServiceProductProviderDto(entity.getServiceProductProvider()));
         dto.setServiceProductCategoryDto(ServiceProductCategoryMapper.toDto(entity.getCategory()));
         dto.setEventTypes(entity.getAvailableEventTypes().stream().map(EventTypeMapper::toDto).toList());
+        dto.setImages(entity.getImages());
+        dto.setImageEncodedNames(entity.getImages().stream().map(ImageService::encodePath).toList());
         return dto;
     }
 
@@ -56,6 +61,7 @@ public class ProductMapper {
         entity.setPrice(dto.getPrice());
         entity.setDiscount(dto.getDiscount());
         entity.setServiceProductProvider(spp);
+        entity.setImages(dto.getImages());
         return entity;
     }
 
@@ -88,6 +94,7 @@ public class ProductMapper {
         entity.setServiceProductProvider(serviceProductProvider);
         entity.setCategory(serviceProductCategory);
         entity.setAvailableEventTypes(eventTypeList);
+        entity.setImages(dto.getImages());
         return entity;
     }
 }

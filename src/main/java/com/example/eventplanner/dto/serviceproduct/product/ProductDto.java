@@ -20,4 +20,6 @@ public class ProductDto {
     private double discount;
     private String name;
     private String description;
+    private List<String> images;
+    private List<String> imageEncodedNames;
 }

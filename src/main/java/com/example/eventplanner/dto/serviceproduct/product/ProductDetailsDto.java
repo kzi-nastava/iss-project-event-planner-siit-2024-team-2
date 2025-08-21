@@ -22,4 +22,6 @@ public class ProductDetailsDto {
     private String description;
     private ServiceProductCategoryDto serviceProductCategoryDto;
     private List<EventTypeDto> eventTypes;
+    private List<String> images;
+    private List<String> imageEncodedNames;
 }
