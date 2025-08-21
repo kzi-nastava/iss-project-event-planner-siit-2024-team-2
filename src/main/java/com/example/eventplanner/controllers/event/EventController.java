@@ -8,6 +8,7 @@ import com.example.eventplanner.dto.event.event.EventNoIdDto;
 import com.example.eventplanner.dto.event.event.EventSummaryDto;
 import com.example.eventplanner.dto.order.booking.BookingDto;
 import com.example.eventplanner.dto.order.purchase.PurchaseDto;
+import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.user.EventOrganizer;
 import com.example.eventplanner.services.event.EventReportService;
 import com.example.eventplanner.services.event.EventService;
@@ -196,5 +197,35 @@ public class EventController {
         return result != null ?
                 new ResponseEntity<>(result, HttpStatus.OK) :
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @PostMapping("/{id}/attend")
+    public ResponseEntity<String> attendEvent(@PathVariable long id) {
+        BaseUser user = authUtil.getAuthenticatedUser();
+        if (user == null)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+        HttpStatus result = eventService.attend(id, user);
+
+        if (result == HttpStatus.CONFLICT)
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Event is full");
+        else if (result == HttpStatus.NOT_FOUND)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Event not found");
+        else
+            return ResponseEntity.status(result).build();
+    }
+
+    @DeleteMapping("/{id}/attend")
+    public ResponseEntity<String> removeEventAttendance(@PathVariable long id) {
+        BaseUser user = authUtil.getAuthenticatedUser();
+        if (user == null)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+        HttpStatus result = eventService.removeAttendance(id, user);
+
+        if (result == HttpStatus.NOT_FOUND)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Event not found");
+        else
+            return ResponseEntity.status(result).build();
     }
 }

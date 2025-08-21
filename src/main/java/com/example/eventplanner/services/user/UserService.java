@@ -1,6 +1,8 @@
 package com.example.eventplanner.services.user;
 
 import com.example.eventplanner.dto.auth.ResetPasswordDto;
+import com.example.eventplanner.dto.event.event.EventDto;
+import com.example.eventplanner.dto.event.event.EventMapper;
 import com.example.eventplanner.dto.user.user.*;
 import com.example.eventplanner.dto.user.userreport.UserReportDto;
 import com.example.eventplanner.model.user.BaseUser;
@@ -15,6 +17,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -153,6 +156,15 @@ public class UserService implements UserDetailsService {
 
     public boolean existsByEmail(String email) {
         return userRepository.existsByEmail(email);
+    }
+
+    public List<EventDto> getAttendingEvents(long id) {
+        return userRepository.findById(id)
+                .map(BaseUser::getAttendingEvents)
+                .map(events -> events.stream()
+                        .map(EventMapper::toDto)
+                        .toList())
+                .orElse(new ArrayList<>());
     }
 }
 

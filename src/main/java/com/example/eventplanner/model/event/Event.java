@@ -1,6 +1,7 @@
 package com.example.eventplanner.model.event;
 
 import com.example.eventplanner.model.Entity;
+import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.user.EventOrganizer;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -38,4 +39,6 @@ public class Event extends Entity {
     private List<Budget> budgets;
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Invitation> invitations = new ArrayList<>();
+    @ManyToMany(mappedBy = "attendingEvents")
+    private List<BaseUser> attendees;
 }

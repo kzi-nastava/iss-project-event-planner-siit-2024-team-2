@@ -6,10 +6,12 @@ import com.example.eventplanner.dto.event.eventtype.EventTypeMapper;
 import com.example.eventplanner.dto.event.invitation.InvitationMapper;
 import com.example.eventplanner.dto.user.user.UserMapper;
 import com.example.eventplanner.model.event.*;
+import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.user.EventOrganizer;
 import com.example.eventplanner.services.util.DateUtil;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -81,8 +83,13 @@ public class EventMapper {
         );
     }
 
-    public static Event toEntity(EventNoIdDto dto, EventType eventType, EventOrganizer eventOrganizer,
-                                 List<Activity> activities, List<Budget> budgets, List<Invitation> invitations) {
+    public static Event toEntity(EventNoIdDto dto,
+                                 EventType eventType,
+                                 EventOrganizer eventOrganizer,
+                                 List<Activity> activities,
+                                 List<Budget> budgets,
+                                 List<Invitation> invitations,
+                                 List<BaseUser> attendees) {
         if (dto == null)
             return null;
 
@@ -99,8 +106,13 @@ public class EventMapper {
                 convertedDate,
                 activities,
                 budgets,
-                invitations
+                invitations,
+                attendees
         );
+    }
+
+    public static Event toEntity(EventNoIdDto dto, EventType eventType, EventOrganizer eventOrganizer) {
+        return toEntity(dto, eventType, eventOrganizer, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
     }
 
 }

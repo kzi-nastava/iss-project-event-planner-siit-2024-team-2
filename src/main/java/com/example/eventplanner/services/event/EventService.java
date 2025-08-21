@@ -14,6 +14,7 @@ import com.example.eventplanner.model.event.Activity;
 import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.event.EventType;
 import com.example.eventplanner.model.event.Invitation;
+import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.user.EventOrganizer;
 import com.example.eventplanner.repositories.event.EventRepository;
 import com.example.eventplanner.repositories.event.EventTypeRepository;
@@ -26,7 +27,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -61,7 +64,7 @@ public class EventService {
     public EventDto create(EventNoIdDto dto) {
         EventType type = eventTypeRepository.findById(dto.getEventTypeId()).orElseThrow();
         EventOrganizer eventOrganizer = (EventOrganizer) userRepository.findById(dto.getEventOrganizerId()).orElseThrow();
-        Event event = EventMapper.toEntity(dto, type, eventOrganizer, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        Event event = EventMapper.toEntity(dto, type, eventOrganizer);
         List<Invitation> invitations = dto.getInvitationEmails()
                 .stream()
                 .map(email -> new Invitation(event, email, userService.existsByEmail(email)))
@@ -259,4 +262,41 @@ public class EventService {
         return true;
     }
 
+    @Transactional
+    public HttpStatus attend(long id, BaseUser user) {
+        Event event = eventRepository.findById(id).orElse(null);
+        if (event == null)
+            return HttpStatus.NOT_FOUND;
+
+        if (event.getAttendees().contains(user))
+            return HttpStatus.OK;
+
+        if (event.getAttendees().size() >= event.getMaxAttendances())
+            return HttpStatus.CONFLICT;
+
+        event.getAttendees().add(user);
+        user.getAttendingEvents().add(event);
+
+        eventRepository.save(event);
+        userRepository.save(user);
+
+        return HttpStatus.OK;
+    }
+
+    @Transactional
+    public HttpStatus removeAttendance(long id, BaseUser user) {
+        Event event = eventRepository.findById(id).orElse(null);
+        if (event == null)
+            return HttpStatus.NOT_FOUND;
+
+        boolean wasAttending = event.getAttendees().remove(user);
+        if (!wasAttending) // No need to save as the user wasn't attending the event
+            return HttpStatus.OK;
+        user.getAttendingEvents().remove(event);
+
+        eventRepository.save(event);
+        userRepository.save(user);
+
+        return HttpStatus.OK;
+    }
 }
