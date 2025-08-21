@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -30,17 +31,17 @@ public class ImageService {
             default -> MediaType.IMAGE_JPEG;
         };
     }
-    public StatusPair getImageStream(String path) {
+    public StatusPair<InputStream> getImageStream(String path) {
         String decodedPath = new String(Base64.getDecoder().decode(path));
         // TODO: Add authorization
         Path imagePath = sanitizePath(decodedPath);
         if (imagePath == null)
-            return new StatusPair(null, HttpStatus.FORBIDDEN);
+            return new StatusPair<>(null, HttpStatus.BAD_REQUEST);
         try {
-            return new StatusPair(new FileInputStream(imagePath.toFile()), HttpStatus.OK);
+            return new StatusPair<>(new FileInputStream(imagePath.toFile()), HttpStatus.OK);
         }
         catch (FileNotFoundException e) {
-            return new StatusPair(null, HttpStatus.NOT_FOUND);
+            return new StatusPair<>(null, HttpStatus.NOT_FOUND);
         }
     }
     private Path sanitizePath(String decodedPath)  {

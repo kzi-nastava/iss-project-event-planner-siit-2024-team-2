@@ -24,7 +24,7 @@ public class ImageController {
     @GetMapping("/{path}")
     public ResponseEntity<InputStreamResource> getImage(@PathVariable("path") String path) {
         MediaType contentType = imageService.getMediaType(path);
-        StatusPair sp = imageService.getImageStream(path);
+        StatusPair<InputStream> sp = imageService.getImageStream(path);
         if (sp.getStatus() != HttpStatus.OK)
             return new ResponseEntity<>(sp.getStatus());
         if (sp.getValue() == null)

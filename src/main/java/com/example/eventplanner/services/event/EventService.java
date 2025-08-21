@@ -16,6 +16,7 @@ import com.example.eventplanner.model.event.EventType;
 import com.example.eventplanner.model.event.Invitation;
 import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.user.EventOrganizer;
+import com.example.eventplanner.model.utils.AttendanceResult;
 import com.example.eventplanner.repositories.event.EventRepository;
 import com.example.eventplanner.repositories.event.EventTypeRepository;
 import com.example.eventplanner.repositories.user.UserRepository;
@@ -263,16 +264,16 @@ public class EventService {
     }
 
     @Transactional
-    public HttpStatus attend(long id, BaseUser user) {
+    public AttendanceResult attend(long id, BaseUser user) {
         Event event = eventRepository.findById(id).orElse(null);
         if (event == null)
-            return HttpStatus.NOT_FOUND;
+            return AttendanceResult.NOT_FOUND;
 
         if (event.getAttendees().contains(user))
-            return HttpStatus.OK;
+            return AttendanceResult.SUCCESS;
 
         if (event.getAttendees().size() >= event.getMaxAttendances())
-            return HttpStatus.CONFLICT;
+            return AttendanceResult.FULL;
 
         event.getAttendees().add(user);
         user.getAttendingEvents().add(event);
@@ -280,23 +281,23 @@ public class EventService {
         eventRepository.save(event);
         userRepository.save(user);
 
-        return HttpStatus.OK;
+        return AttendanceResult.SUCCESS;
     }
 
     @Transactional
-    public HttpStatus removeAttendance(long id, BaseUser user) {
+    public AttendanceResult removeAttendance(long id, BaseUser user) {
         Event event = eventRepository.findById(id).orElse(null);
         if (event == null)
-            return HttpStatus.NOT_FOUND;
+            return AttendanceResult.NOT_FOUND;
 
         boolean wasAttending = event.getAttendees().remove(user);
         if (!wasAttending) // No need to save as the user wasn't attending the event
-            return HttpStatus.OK;
+            return AttendanceResult.SUCCESS;
         user.getAttendingEvents().remove(event);
 
         eventRepository.save(event);
         userRepository.save(user);
 
-        return HttpStatus.OK;
+        return AttendanceResult.SUCCESS;
     }
 }
