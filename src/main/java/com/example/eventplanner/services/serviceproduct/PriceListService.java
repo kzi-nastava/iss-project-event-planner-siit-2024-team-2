@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayOutputStream;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +37,8 @@ public class PriceListService {
     }
 
     public byte[] generatePdf(long id) {
-        Collection<PriceListDto> priceList = getBySppId(id).isEmpty() ? Collections.emptyList() : getBySppId(id);
+        Collection<PriceListDto> priceList = Optional.ofNullable(getBySppId(id))
+                .orElse(Collections.emptyList());
         try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             Document document = new Document();
             PdfWriter.getInstance(document, out);

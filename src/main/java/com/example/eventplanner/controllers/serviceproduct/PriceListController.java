@@ -35,7 +35,7 @@ public class PriceListController {
     }
 
     @GetMapping("/{id}/pdf")
-    public ResponseEntity<byte[]> getPdf(@PathVariable Long id) throws Exception {
+    public ResponseEntity<byte[]> getPdf(@PathVariable Long id) {
         byte[] pdf = priceListService.generatePdf (id);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=price_list_" + id + ".pdf")
