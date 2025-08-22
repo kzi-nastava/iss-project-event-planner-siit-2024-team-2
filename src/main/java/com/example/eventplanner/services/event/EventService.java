@@ -172,7 +172,7 @@ public class EventService {
                             .map(ActivityMapper::toEntity)
                             .toList();
                     event.setActivities(activities);
-                    sendUpdateNotifications(event, "Event" + event.getName() + "had its agenda updated");
+                    sendUpdateNotifications(event, "Event " + event.getName() + " had its agenda updated");
                     eventRepository.save(event);
                     return true;
                 })
@@ -205,7 +205,7 @@ public class EventService {
         if (event == null) return false;
         if (!isTimeValid(event.getActivities(), activity.getActivityStart(), activity.getActivityEnd(), null)) return false;
         event.getActivities().add(ActivityMapper.toEntity(activity));
-        sendUpdateNotifications(event, "Event" + event.getName() + "had its agenda updated");
+        sendUpdateNotifications(event, "Event " + event.getName() + " had its agenda updated");
         eventRepository.save(event);
         return true;
     }
@@ -241,7 +241,7 @@ public class EventService {
         activity.setDescription(dto.getDescription());
         activity.setLocation(dto.getLocation());
 
-        sendUpdateNotifications(event, "Event" + event.getName() + "had its agenda updated");
+        sendUpdateNotifications(event, "Event " + event.getName() + " had its agenda updated");
 
         eventRepository.save(event);
         return true;
@@ -254,7 +254,7 @@ public class EventService {
         if (activity != null) {
             activity.setActive(false);
         }
-        sendUpdateNotifications(event, "Event" + event.getName() + "had its agenda updated");
+        sendUpdateNotifications(event, "Event " + event.getName() + " had its agenda updated");
         eventRepository.save(event);
         return activity != null;
     }
