@@ -20,12 +20,14 @@ import com.example.eventplanner.repositories.user.UserRepository;
 import com.example.eventplanner.services.order.BookingService;
 import com.example.eventplanner.services.order.PurchaseService;
 import com.example.eventplanner.services.util.DateUtil;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import javax.management.BadAttributeValueExpException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -52,22 +54,22 @@ public class EventService {
                 .orElse(null);
     }
 
-    public EventDto create(EventNoIdDto dto) {
+    public EventDto create(EventNoIdDto dto) throws Exception {
+        if (dto.getDate() == null || dto.getName().isEmpty()) throw new BadAttributeValueExpException("Date or name empty");
         EventType type = eventTypeRepository.findById(dto.getEventTypeId()).orElseThrow();
         EventOrganizer eventOrganizer = (EventOrganizer) userRepository.findById(dto.getEventOrganizerId()).orElseThrow();
         Event event = EventMapper.toEntity(dto, type, eventOrganizer, new ArrayList<>(), new ArrayList<>());
-        Event savedEvent = eventRepository.save(event);
-        return EventMapper.toDto(savedEvent);
+        eventRepository.save(event);
+        return EventMapper.toDto(event);
     }
 
     public EventDto update(EventNoIdDto dto, long id) {
-        Date convertedDate = DateUtil.convertLocalDateToDate(dto.getDate());
 
         return eventRepository.findById(id)
                 .map(event -> {
                     event.setId(id);
                     event.setActive(true);
-                    event.setDate(convertedDate);
+                    event.setDate(dto.getDate());
                     event.setDescription(dto.getDescription());
                     event.setName(dto.getName());
                     event.setOpen(dto.isOpen());
@@ -171,6 +173,7 @@ public class EventService {
     public boolean addActivity(long id, ActivityDto activity) {
         Event event = eventRepository.findById(id).orElse(null);
         if (event == null) return false;
+        if (activity.getName().isEmpty()) return false;
         if (!isTimeValid(event.getActivities(), activity.getActivityStart(), activity.getActivityEnd(), null)) return false;
         event.getActivities().add(ActivityMapper.toEntity(activity));
         eventRepository.save(event);
@@ -193,13 +196,13 @@ public class EventService {
         Event event = eventRepository.findById(eventId).orElse(null);
         if (event == null) return false;
 
-        if (!isTimeValid(event.getActivities(), dto.getActivityStart(), dto.getActivityEnd(), activityId)) return false;
-
         Optional<Activity> optionalActivity = event.getActivities().stream()
                 .filter(a -> a.getId() == activityId)
                 .findFirst();
 
         if (optionalActivity.isEmpty()) return false;
+        if (dto.getName().isEmpty()) return false;
+        if (!isTimeValid(event.getActivities(), dto.getActivityStart(), dto.getActivityEnd(), activityId)) return false;
 
         Activity activity = optionalActivity.get();
         activity.setName(dto.getName());
