@@ -1,5 +1,6 @@
 package com.example.eventplanner.services.event;
 
+import com.example.eventplanner.controllers.utils.AuthUtil;
 import com.example.eventplanner.dto.communication.notification.NotificationNoIdDto;
 import com.example.eventplanner.dto.event.activity.ActivityDto;
 import com.example.eventplanner.dto.event.activity.ActivityIdDto;
@@ -18,6 +19,7 @@ import com.example.eventplanner.model.event.Invitation;
 import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.user.EventOrganizer;
 import com.example.eventplanner.model.utils.AttendanceResult;
+import com.example.eventplanner.model.utils.UserRole;
 import com.example.eventplanner.repositories.event.EventRepository;
 import com.example.eventplanner.repositories.event.EventTypeRepository;
 import com.example.eventplanner.repositories.user.UserRepository;
@@ -26,6 +28,7 @@ import com.example.eventplanner.services.order.BookingService;
 import com.example.eventplanner.services.order.PurchaseService;
 import com.example.eventplanner.services.user.UserService;
 import com.example.eventplanner.services.util.DateUtil;
+import com.example.eventplanner.utils.StatusPair;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -51,6 +54,7 @@ public class EventService {
     private final InvitationService invitationService;
     private final UserService userService;
     private final NotificationService notificationService;
+    private final AuthUtil authUtil;
 
     public List<EventDto> getAll() {
         return eventRepository.findAll()
@@ -59,10 +63,25 @@ public class EventService {
                 .toList();
     }
 
-    public EventDto getById(long id) {
-        return eventRepository.findById(id)
-                .map(EventMapper::toDto)
-                .orElse(null);
+    public StatusPair<EventDto> getById(long id) {
+        Event event = eventRepository.findById(id).orElse(null);
+        if (event == null)
+            return new StatusPair<>(null, HttpStatus.NOT_FOUND);
+        if (!event.isOpen()) {
+            BaseUser user = authUtil.getAuthenticatedUser();
+            if (user == null)
+                return new StatusPair<>(null, HttpStatus.UNAUTHORIZED);
+            if (user.getUserRole() == UserRole.EVENT_ORGANIZER &&
+                    event.getEventOrganizer().getId() == user.getId())
+                return new StatusPair<>(EventMapper.toDto(event), HttpStatus.OK);
+            if (user.getUserRole() != UserRole.ADMIN &&
+                    event.getInvitations()
+                            .stream()
+                            .noneMatch(invitation -> invitation.isAccepted()
+                                    && invitation.getEmail().equals(user.getEmail())))
+                return new StatusPair<>(null, HttpStatus.FORBIDDEN);
+        }
+        return new StatusPair<>(EventMapper.toDto(event), HttpStatus.OK);
     }
 
     public EventDto create(EventNoIdDto dto) {
