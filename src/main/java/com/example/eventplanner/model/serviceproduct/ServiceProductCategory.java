@@ -15,4 +15,5 @@ import org.hibernate.annotations.SQLRestriction;
 @jakarta.persistence.Entity
 public class ServiceProductCategory extends Entity {
     private String name;
+    private String description;
 }
