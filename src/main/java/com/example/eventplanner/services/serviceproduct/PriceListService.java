@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Collection;
+import java.util.Collections;
 
 @Service
 @RequiredArgsConstructor
@@ -35,7 +36,7 @@ public class PriceListService {
     }
 
     public byte[] generatePdf(long id) {
-        Collection<PriceListDto> priceList = getBySppId(id);
+        Collection<PriceListDto> priceList = getBySppId(id).isEmpty() ? Collections.emptyList() : getBySppId(id);
         try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             Document document = new Document();
             PdfWriter.getInstance(document, out);
@@ -62,10 +63,10 @@ public class PriceListService {
             int i = 1;
             for (PriceListDto sp : priceList) {
                 table.addCell(String.valueOf(i++));
-                table.addCell(sp.getName());
-                table.addCell(sp.getPrice().toString());
-                table.addCell(sp.getDiscount().toString());
-                table.addCell(sp.getTotal().toString());
+                table.addCell(sp.getName() != null ? sp.getName() : "");
+                table.addCell(String.valueOf(sp.getPrice()));
+                table.addCell(String.valueOf(sp.getDiscount()));
+                table.addCell(String.valueOf(sp.getTotal()));
             }
 
             document.add(table);
