@@ -18,7 +18,6 @@ import com.example.eventplanner.model.event.EventType;
 import com.example.eventplanner.model.event.Invitation;
 import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.user.EventOrganizer;
-import com.example.eventplanner.model.utils.AttendanceResult;
 import com.example.eventplanner.model.utils.UserRole;
 import com.example.eventplanner.repositories.event.EventRepository;
 import com.example.eventplanner.repositories.event.EventTypeRepository;
@@ -119,7 +118,7 @@ public class EventService {
                     List<Invitation> newInvitations = dto.getInvitationEmails()
                             .stream()
                             .filter(email -> !existingInvitations.containsKey(email))
-                            .map(email -> new Invitation(event, email))
+                            .map(email -> new Invitation(event, email, userService.existsByEmail(email)))
                             .toList();
                     invitationService.sendInvitations(newInvitations);
                     event.getInvitations().addAll(newInvitations);
@@ -293,44 +292,6 @@ public class EventService {
         }
 
         return true;
-    }
-
-    @Transactional
-    public AttendanceResult attend(long id, BaseUser user) {
-        Event event = eventRepository.findById(id).orElse(null);
-        if (event == null)
-            return AttendanceResult.NOT_FOUND;
-
-        if (event.getAttendees().contains(user))
-            return AttendanceResult.SUCCESS;
-
-        if (event.getAttendees().size() >= event.getMaxAttendances())
-            return AttendanceResult.FULL;
-
-        event.getAttendees().add(user);
-        user.getAttendingEvents().add(event);
-
-        eventRepository.save(event);
-        userRepository.save(user);
-
-        return AttendanceResult.SUCCESS;
-    }
-
-    @Transactional
-    public AttendanceResult removeAttendance(long id, BaseUser user) {
-        Event event = eventRepository.findById(id).orElse(null);
-        if (event == null)
-            return AttendanceResult.NOT_FOUND;
-
-        boolean wasAttending = event.getAttendees().remove(user);
-        if (!wasAttending) // No need to save as the user wasn't attending the event
-            return AttendanceResult.SUCCESS;
-        user.getAttendingEvents().remove(event);
-
-        eventRepository.save(event);
-        userRepository.save(user);
-
-        return AttendanceResult.SUCCESS;
     }
 
     private void sendUpdateNotifications(Event event) {

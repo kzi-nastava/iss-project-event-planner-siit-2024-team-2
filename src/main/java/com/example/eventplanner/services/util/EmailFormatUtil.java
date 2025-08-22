@@ -13,7 +13,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 public class EmailFormatUtil {
-    public static String formatInviteEmail(EventSummaryDto eventSummary, String inviteLink, boolean isRegistered) {
+    public static String formatInviteEmail(EventSummaryDto eventSummary, String inviteLink, boolean requiresRegistration) {
 
         ClassPathResource resource = new ClassPathResource("templates/invitation_email.html");
         String html;
@@ -34,7 +34,7 @@ public class EmailFormatUtil {
                 .replace("{{mapUrl}}", mapUrl)
                 .replace("{{eventDescription}}", eventSummary.getDescription())
                 .replace("{{inviteLink}}", inviteLink)
-                .replace("{{unregisteredHintDisplay}}", isRegistered ? "none" : "block");
+                .replace("{{unregisteredHintDisplay}}", requiresRegistration ? "block" : "none");
         return html;
     }
 }

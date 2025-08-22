@@ -17,7 +17,7 @@ public class InvitationMapper {
                 invitation.getEmail(),
                 invitation.getToken(),
                 invitation.isAccepted(),
-                invitation.isNeedsRegistration()
+                invitation.isQuickRegistration()
         );
     }
 

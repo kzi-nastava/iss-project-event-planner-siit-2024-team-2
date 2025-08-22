@@ -24,18 +24,18 @@ public class Invitation extends Entity {
     private String email;
     private String token;
     private boolean accepted;
-    private boolean needsRegistration;
+    private boolean quickRegistration;
 
     public Invitation(Event event, String email) {
         this(event, email, false);
     }
 
-    public Invitation(Event event, String email, boolean needsRegistration) {
+    public Invitation(Event event, String email, boolean quickRegistration) {
         super();
         this.event = event;
         this.email = email;
         this.token = UUID.randomUUID().toString();
         this.accepted = false;
-        this.needsRegistration = needsRegistration;
+        this.quickRegistration = quickRegistration;
     }
 }

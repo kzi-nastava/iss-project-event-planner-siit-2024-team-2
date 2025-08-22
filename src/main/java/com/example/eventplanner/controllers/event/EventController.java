@@ -11,6 +11,7 @@ import com.example.eventplanner.dto.order.purchase.PurchaseDto;
 import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.user.EventOrganizer;
 import com.example.eventplanner.model.utils.AttendanceResult;
+import com.example.eventplanner.services.event.EventAttendanceService;
 import com.example.eventplanner.services.event.EventReportService;
 import com.example.eventplanner.services.event.EventService;
 import com.example.eventplanner.utils.StatusPair;
@@ -34,6 +35,7 @@ public class EventController {
     private final EventService eventService;
     private final AuthUtil authUtil;
     private final EventReportService eventReportService;
+    private final EventAttendanceService eventAttendanceService;
 
     @GetMapping
     public ResponseEntity<Page<EventDto>> getAllEvents(
@@ -207,7 +209,7 @@ public class EventController {
         if (user == null)
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
-        AttendanceResult result = eventService.attend(id, user);
+        AttendanceResult result = eventAttendanceService.attendEvent(id, user);
 
         if (result == AttendanceResult.FULL)
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Event is full");
@@ -223,7 +225,7 @@ public class EventController {
         if (user == null)
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
-        AttendanceResult result = eventService.removeAttendance(id, user);
+        AttendanceResult result = eventAttendanceService.removeEventAttendance(id, user);
 
         if (result == AttendanceResult.NOT_FOUND)
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Event not found");

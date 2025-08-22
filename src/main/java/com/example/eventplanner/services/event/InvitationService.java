@@ -34,7 +34,7 @@ public class InvitationService {
     private final EmailService emailService;
     private final UserService userService;
     private final AuthUtil authUtil;
-    private final EventService eventService;
+    private final EventAttendanceService eventAttendanceService;
 
     @Value("${frontend.url}")
     private String frontendUrl;
@@ -80,12 +80,11 @@ public class InvitationService {
 
     public void sendInvitations(List<Invitation> invitations) {
         for (Invitation invitation : invitations) {
-            boolean isRegistered = !invitation.isNeedsRegistration();
             String inviteLink = frontendUrl + "/accept-invitation?token=" + invitation.getToken();
             String body = EmailFormatUtil.formatInviteEmail(
                     EventMapper.toSummaryDto(invitation.getEvent()),
                     inviteLink,
-                    isRegistered);
+                    invitation.isQuickRegistration());
 
             emailService.sendMimeMessage(new EmailDetails(
                     invitation.getEmail(),
@@ -102,12 +101,14 @@ public class InvitationService {
         if (invitation.isAccepted()) // The invitation has already been accepted
             return new StatusPair<>(InvitationMapper.toDto(invitation), HttpStatus.OK);
 
-        if (invitation.isNeedsRegistration()) { // User doesn't exist, create an account for them
+
+        if (userService.existsByEmail(invitation.getEmail())) { // User exists, but isn't logged in
+             invitation.setQuickRegistration(true);
             // TODO: Quick registration
         } else if (user != null) { // User is logged in, add them to the event
             if (!user.getEmail().equals(invitation.getEmail()))
                 return new StatusPair<>(null, HttpStatus.FORBIDDEN);
-            AttendanceResult result = eventService.attend(invitation.getEvent().getId(), user);
+            AttendanceResult result = eventAttendanceService.attendEvent(invitation.getEvent().getId(), user);
             if (result == AttendanceResult.FULL)
                 return new StatusPair<>(null, HttpStatus.CONFLICT);
         } else { // User exists, but isn't logged in
