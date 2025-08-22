@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.util.UUID;
@@ -23,7 +24,9 @@ public class Invitation extends Entity {
     private Event event;
     private String email;
     private String token;
+    @ColumnDefault("false")
     private boolean accepted;
+    @ColumnDefault("false")
     private boolean quickRegistration;
 
     public Invitation(Event event, String email) {
