@@ -16,5 +16,5 @@ public class InvitationDto {
     private String email;
     private String token;
     private boolean accepted;
-    private boolean needsRegistration;
+    private boolean quickRegistration;
 }

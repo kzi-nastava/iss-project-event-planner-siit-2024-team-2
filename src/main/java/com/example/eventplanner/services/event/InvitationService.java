@@ -98,21 +98,21 @@ public class InvitationService {
         Invitation invitation = invitationRepository.findByToken(token).orElse(null);
         if (invitation == null)
             return new StatusPair<>(null, HttpStatus.NOT_FOUND);
-        if (invitation.isAccepted()) // The invitation has already been accepted
-            return new StatusPair<>(InvitationMapper.toDto(invitation), HttpStatus.OK);
 
-
-        if (userService.existsByEmail(invitation.getEmail())) { // User exists, but isn't logged in
-             invitation.setQuickRegistration(true);
+        if (!userService.existsByEmail(invitation.getEmail())) { // User doesn't exist, create an account for them
+            invitation.setQuickRegistration(true);
             // TODO: Quick registration
-        } else if (user != null) { // User is logged in, add them to the event
+        } else {
+            invitation.setQuickRegistration(false);
+            if (user == null) // User exists, but isn't logged in
+                return new StatusPair<>(null, HttpStatus.UNAUTHORIZED);
+
+            // User is logged in, add them to the event
             if (!user.getEmail().equals(invitation.getEmail()))
                 return new StatusPair<>(null, HttpStatus.FORBIDDEN);
             AttendanceResult result = eventAttendanceService.attendEvent(invitation.getEvent().getId(), user);
             if (result == AttendanceResult.FULL)
                 return new StatusPair<>(null, HttpStatus.CONFLICT);
-        } else { // User exists, but isn't logged in
-            return new StatusPair<>(null, HttpStatus.UNAUTHORIZED);
         }
 
         invitation.setAccepted(true);
