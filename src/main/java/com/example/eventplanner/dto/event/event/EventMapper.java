@@ -3,15 +3,15 @@ package com.example.eventplanner.dto.event.event;
 import com.example.eventplanner.dto.event.activity.ActivityMapper;
 import com.example.eventplanner.dto.event.budget.BudgetMapper;
 import com.example.eventplanner.dto.event.eventtype.EventTypeMapper;
+import com.example.eventplanner.dto.event.invitation.InvitationMapper;
 import com.example.eventplanner.dto.user.user.UserMapper;
-import com.example.eventplanner.model.event.Activity;
-import com.example.eventplanner.model.event.Budget;
-import com.example.eventplanner.model.event.Event;
-import com.example.eventplanner.model.event.EventType;
+import com.example.eventplanner.model.event.*;
+import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.user.EventOrganizer;
 import com.example.eventplanner.services.util.DateUtil;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -34,7 +34,8 @@ public class EventMapper {
                 event.getLatitude(),
                 event.getDate().getTime(),
                 event.getActivities().stream().map(ActivityMapper::toDto).toList(),
-                event.getBudgets().stream().map(BudgetMapper::toDto).toList()
+                event.getBudgets().stream().map(BudgetMapper::toDto).toList(),
+                event.getInvitations().stream().map(Invitation::getEmail).toList()
         );
     }
 
@@ -53,7 +54,8 @@ public class EventMapper {
                 event.getLatitude(),
                 event.getDate(),
                 event.getActivities().stream().map(Activity::getId).toList(),
-                event.getBudgets().stream().map(Budget::getId).toList()
+                event.getBudgets().stream().map(Budget::getId).toList(),
+                event.getInvitations().stream().map(Invitation::getEmail).toList()
         );
     }
 
@@ -80,7 +82,13 @@ public class EventMapper {
         );
     }
 
-    public static Event toEntity(EventNoIdDto dto, EventType eventType, EventOrganizer eventOrganizer, List<Activity> activities, List<Budget> budgets) {
+    public static Event toEntity(EventNoIdDto dto,
+                                 EventType eventType,
+                                 EventOrganizer eventOrganizer,
+                                 List<Activity> activities,
+                                 List<Budget> budgets,
+                                 List<Invitation> invitations,
+                                 List<BaseUser> attendees) {
         if (dto == null)
             return null;
 
@@ -95,7 +103,14 @@ public class EventMapper {
                 dto.getLatitude(),
                 dto.getDate(),
                 activities,
-                budgets);
+                budgets,
+                invitations,
+                attendees
+        );
+    }
+
+    public static Event toEntity(EventNoIdDto dto, EventType eventType, EventOrganizer eventOrganizer) {
+        return toEntity(dto, eventType, eventOrganizer, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
     }
 
 }

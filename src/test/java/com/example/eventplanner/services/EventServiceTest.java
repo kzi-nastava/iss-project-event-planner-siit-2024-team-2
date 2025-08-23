@@ -11,6 +11,8 @@ import com.example.eventplanner.repositories.event.EventRepository;
 import com.example.eventplanner.repositories.event.EventTypeRepository;
 import com.example.eventplanner.repositories.user.UserRepository;
 import com.example.eventplanner.services.event.EventService;
+import com.example.eventplanner.services.event.InvitationService;
+import com.example.eventplanner.utils.StatusPair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,6 +39,9 @@ class EventServiceTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private InvitationService invitationService;
+
     private EventNoIdDto eventDto;
     private EventType eventType;
     private EventOrganizer organizer;
@@ -54,6 +59,7 @@ class EventServiceTest {
         eventDto.setOpen(true);
         eventDto.setEventTypeId(1L);
         eventDto.setEventOrganizerId(2L);
+        eventDto.setInvitationEmails(new ArrayList<>());
 
         eventType = new EventType();
         eventType.setId(1L);
@@ -69,6 +75,8 @@ class EventServiceTest {
         event.setActivities(new ArrayList<>());
         event.setBudgets(new ArrayList<>());
         event.setEventOrganizer(organizer);
+        event.setOpen(true);
+        event.setAttendees(new ArrayList<>());
     }
 
     @Test
@@ -113,7 +121,7 @@ class EventServiceTest {
     void getById_ShouldReturnDto_WhenFound() {
         when(eventRepository.findById(10L)).thenReturn(Optional.of(event));
 
-        EventDto result = eventService.getById(10L);
+        EventDto result = eventService.getById(10L).getValue();
 
         assertNotNull(result);
         assertEquals("Test", result.getName());
@@ -123,12 +131,12 @@ class EventServiceTest {
     void getById_ShouldReturnNull_WhenNotFound() {
         when(eventRepository.findById(99L)).thenReturn(Optional.empty());
 
-        assertNull(eventService.getById(99L));
+        assertNull(eventService.getById(99L).getValue());
     }
 
     @Test
     void delete_ShouldReturnTrue_WhenExists() {
-        when(eventRepository.existsById(10L)).thenReturn(true);
+        when(eventRepository.findById(10L)).thenReturn(Optional.of(event));
 
         boolean result = eventService.delete(10L);
 
@@ -138,7 +146,7 @@ class EventServiceTest {
 
     @Test
     void delete_ShouldReturnFalse_WhenNotExists() {
-        when(eventRepository.existsById(99L)).thenReturn(false);
+        when(eventRepository.findById(99L)).thenReturn(Optional.empty());
 
         boolean result = eventService.delete(99L);
 

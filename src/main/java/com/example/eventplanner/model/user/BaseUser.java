@@ -1,11 +1,9 @@
 package com.example.eventplanner.model.user;
 
 import com.example.eventplanner.model.Entity;
+import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.utils.UserRole;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Transient;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,4 +31,9 @@ public class BaseUser extends Entity {
     private List<BaseUser> blockedUsers;
     @Transient
     private String jwt;
+    @ManyToMany
+    @JoinTable(name = "event_attendances",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "event_id"))
+    private List<Event> attendingEvents;
 }

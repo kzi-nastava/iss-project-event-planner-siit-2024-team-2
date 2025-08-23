@@ -1,5 +1,7 @@
 package com.example.eventplanner.services.event;
 
+import com.example.eventplanner.controllers.utils.AuthUtil;
+import com.example.eventplanner.dto.communication.notification.NotificationNoIdDto;
 import com.example.eventplanner.dto.event.activity.ActivityDto;
 import com.example.eventplanner.dto.event.activity.ActivityIdDto;
 import com.example.eventplanner.dto.event.activity.ActivityMapper;
@@ -13,24 +15,32 @@ import com.example.eventplanner.model.Entity;
 import com.example.eventplanner.model.event.Activity;
 import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.event.EventType;
+import com.example.eventplanner.model.event.Invitation;
+import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.user.EventOrganizer;
+import com.example.eventplanner.model.utils.UserRole;
 import com.example.eventplanner.repositories.event.EventRepository;
 import com.example.eventplanner.repositories.event.EventTypeRepository;
 import com.example.eventplanner.repositories.user.UserRepository;
+import com.example.eventplanner.services.communication.NotificationService;
 import com.example.eventplanner.services.order.BookingService;
 import com.example.eventplanner.services.order.PurchaseService;
+import com.example.eventplanner.services.user.UserService;
 import com.example.eventplanner.services.util.DateUtil;
+import com.example.eventplanner.utils.StatusPair;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.management.BadAttributeValueExpException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -41,6 +51,11 @@ public class EventService {
     private final PurchaseService purchaseService;
     private final BookingService bookingService;
     private final UserRepository userRepository;
+    private final InvitationService invitationService;
+    private final UserService userService;
+    private final NotificationService notificationService;
+    private final AuthUtil authUtil;
+
     public List<EventDto> getAll() {
         return eventRepository.findAll()
                 .stream()
@@ -48,19 +63,39 @@ public class EventService {
                 .toList();
     }
 
-    public EventDto getById(long id) {
-        return eventRepository.findById(id)
-                .map(EventMapper::toDto)
-                .orElse(null);
+    public StatusPair<EventDto> getById(long id) {
+        Event event = eventRepository.findById(id).orElse(null);
+        if (event == null)
+            return new StatusPair<>(null, HttpStatus.NOT_FOUND);
+        if (!event.isOpen()) {
+            BaseUser user = authUtil.getAuthenticatedUser();
+            if (user == null)
+                return new StatusPair<>(null, HttpStatus.UNAUTHORIZED);
+            if (user.getUserRole() == UserRole.EVENT_ORGANIZER &&
+                    event.getEventOrganizer().getId() == user.getId())
+                return new StatusPair<>(EventMapper.toDto(event), HttpStatus.OK);
+            if (user.getUserRole() != UserRole.ADMIN &&
+                    event.getInvitations()
+                            .stream()
+                            .noneMatch(invitation -> invitation.isAccepted()
+                                    && invitation.getEmail().equals(user.getEmail())))
+                return new StatusPair<>(null, HttpStatus.FORBIDDEN);
+        }
+        return new StatusPair<>(EventMapper.toDto(event), HttpStatus.OK);
     }
 
     public EventDto create(EventNoIdDto dto) throws Exception {
         if (dto.getDate() == null || dto.getName().isEmpty()) throw new BadAttributeValueExpException("Date or name empty");
         EventType type = eventTypeRepository.findById(dto.getEventTypeId()).orElseThrow();
         EventOrganizer eventOrganizer = (EventOrganizer) userRepository.findById(dto.getEventOrganizerId()).orElseThrow();
-        Event event = EventMapper.toEntity(dto, type, eventOrganizer, new ArrayList<>(), new ArrayList<>());
-        eventRepository.save(event);
-        return EventMapper.toDto(event);
+        Event event = EventMapper.toEntity(dto, type, eventOrganizer);
+        List<Invitation> invitations = dto.getInvitationEmails()
+                .stream()
+                .map(email -> new Invitation(event, email, userService.existsByEmail(email)))
+                .toList();
+        invitationService.sendInvitations(invitations);
+        event.setInvitations(invitations);
+        return EventMapper.toDto(eventRepository.save(event));
     }
 
     public EventDto update(EventNoIdDto dto, long id) {
@@ -77,18 +112,31 @@ public class EventService {
                     event.setLongitude(dto.getLongitude());
                     event.setMaxAttendances(dto.getMaxAttendances());
                     eventTypeRepository.findById(dto.getEventTypeId()).ifPresent(event::setType);
-                    event.setActivities(new ArrayList<>());
-                    event.setBudgets(new ArrayList<>());
                     userRepository.findById(dto.getEventOrganizerId()).ifPresent(eo -> event.setEventOrganizer((EventOrganizer) eo));
+                    Map<String, Invitation> existingInvitations = event.getInvitations()
+                            .stream()
+                            .collect(Collectors.toMap(Invitation::getEmail, invitation -> invitation));
+                    List<Invitation> newInvitations = dto.getInvitationEmails()
+                            .stream()
+                            .filter(email -> !existingInvitations.containsKey(email))
+                            .map(email -> new Invitation(event, email, userService.existsByEmail(email)))
+                            .toList();
+                    invitationService.sendInvitations(newInvitations);
+                    event.getInvitations().addAll(newInvitations);
                     Event updatedEvent = eventRepository.save(event);
+                    sendUpdateNotifications(updatedEvent);
                     return EventMapper.toDto(updatedEvent);
                 })
                 .orElse(null);
     }
 
     public boolean delete(long id) {
-        if (!eventRepository.existsById(id))
+        Event event = eventRepository.findById(id).orElse(null);
+        if (event == null)
             return false;
+        sendEventNotifications(event, "Event deleted", "Event " + event.getName() + " has been deleted");
+        event.getAttendees().forEach(attendee -> attendee.getAttendingEvents().remove(event));
+        userRepository.saveAll(event.getAttendees());
         eventRepository.deleteById(id);
         return true;
     }
@@ -143,6 +191,7 @@ public class EventService {
                             .map(ActivityMapper::toEntity)
                             .toList();
                     event.setActivities(activities);
+                    sendUpdateNotifications(event, "Event " + event.getName() + " had its agenda updated");
                     eventRepository.save(event);
                     return true;
                 })
@@ -176,6 +225,7 @@ public class EventService {
         if (activity.getName().isEmpty()) return false;
         if (!isTimeValid(event.getActivities(), activity.getActivityStart(), activity.getActivityEnd(), null)) return false;
         event.getActivities().add(ActivityMapper.toEntity(activity));
+        sendUpdateNotifications(event, "Event " + event.getName() + " had its agenda updated");
         eventRepository.save(event);
         return true;
     }
@@ -211,6 +261,8 @@ public class EventService {
         activity.setDescription(dto.getDescription());
         activity.setLocation(dto.getLocation());
 
+        sendUpdateNotifications(event, "Event " + event.getName() + " had its agenda updated");
+
         eventRepository.save(event);
         return true;
     }
@@ -222,6 +274,7 @@ public class EventService {
         if (activity != null) {
             activity.setActive(false);
         }
+        sendUpdateNotifications(event, "Event " + event.getName() + " had its agenda updated");
         eventRepository.save(event);
         return activity != null;
     }
@@ -243,4 +296,19 @@ public class EventService {
         return true;
     }
 
+    private void sendUpdateNotifications(Event event) {
+        sendUpdateNotifications(event, "Event " + event.getName() + " has been updated");
+    }
+    private void sendUpdateNotifications(Event event, String message) {
+        sendEventNotifications(event, "Event updated", message);
+    }
+    private void sendEventNotifications(Event event, String title, String message) {
+        if (event.getAttendees() == null) return;
+        event.getAttendees().forEach(attendee ->
+                notificationService.sendNotification(new NotificationNoIdDto(
+                        title,
+                        message,
+                        attendee.getId()
+                )));
+    }
 }

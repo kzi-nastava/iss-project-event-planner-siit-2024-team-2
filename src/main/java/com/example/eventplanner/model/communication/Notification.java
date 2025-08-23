@@ -8,10 +8,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.time.Instant;
-import java.util.Date;
 
 @Getter
 @Setter
@@ -24,7 +24,9 @@ public class Notification extends Entity {
     @Column(columnDefinition = "TEXT")
     private String message;
     private Instant sentAt;
+    @ColumnDefault("false")
     private boolean seen;
+    @ColumnDefault("false")
     private boolean dismissed;
     @ManyToOne
     private BaseUser user;

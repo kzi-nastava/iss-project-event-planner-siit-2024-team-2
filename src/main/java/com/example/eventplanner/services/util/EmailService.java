@@ -4,13 +4,13 @@ import com.example.eventplanner.dto.util.EmailDetails;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.util.ByteArrayDataSource;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -25,6 +25,7 @@ public class EmailService {
      * Sends a simple email with the given details. Not capable of sending attachments, HTML content or sender name.
      * @param emailDetails The details of the email
      */
+    @Async
     public void sendSimpleMessage(EmailDetails emailDetails) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(senderMail);
@@ -37,11 +38,12 @@ public class EmailService {
     /**
      * Sends a MIME email with the given details. Email can contain attachments and HTML content.
      * Attachments can either be files from the file system, or binary file data.
+     * Fails silently.
      *
      * @param emailDetails The details of the email
-     * @return Empty string if successful, otherwise error message
      */
-    public String sendMimeMessage(EmailDetails emailDetails) {
+    @Async
+    public void sendMimeMessage(EmailDetails emailDetails) {
         MimeMessage mimeMessage = emailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper;
 
@@ -59,7 +61,7 @@ public class EmailService {
                         mimeMessageHelper.addAttachment(file.getFilename(), file);
                 }
             } else if (emailDetails.getAttachmentsBinary() != null && emailDetails.getAttachmentNames() != null
-                && emailDetails.getAttachmentsBinary().length == emailDetails.getAttachmentNames().length) {
+                    && emailDetails.getAttachmentsBinary().length == emailDetails.getAttachmentNames().length) {
                 for (int i = 0; i < emailDetails.getAttachmentsBinary().length; i++) {
                     ByteArrayDataSource attachment = new ByteArrayDataSource(
                             emailDetails.getAttachmentsBinary()[i], "application/octet-stream");
@@ -67,12 +69,9 @@ public class EmailService {
                 }
             }
             emailSender.send(mimeMessage);
-            return "";
         }
-
         catch (MessagingException | UnsupportedEncodingException e) {
-            System.out.println("Error while sending mail: " + e.getMessage());
-            return "Error while sending mail: " + e.getMessage();
+            return; // Simplifies async execution, can be changed to throw exception
         }
     }
 }
