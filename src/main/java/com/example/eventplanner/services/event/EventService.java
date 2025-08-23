@@ -303,6 +303,7 @@ public class EventService {
         sendEventNotifications(event, "Event updated", message);
     }
     private void sendEventNotifications(Event event, String title, String message) {
+        if (event.getAttendees() == null) return;
         event.getAttendees().forEach(attendee ->
                 notificationService.sendNotification(new NotificationNoIdDto(
                         title,
