@@ -1,8 +1,14 @@
 package com.example.eventplanner.dto.event.budget;
 
+import com.example.eventplanner.dto.order.booking.BookingMapper;
+import com.example.eventplanner.dto.order.purchase.PurchaseMapper;
 import com.example.eventplanner.dto.serviceproduct.serviceproductcategory.ServiceProductCategoryMapper;
 import com.example.eventplanner.model.event.Budget;
+import com.example.eventplanner.model.order.Booking;
+import com.example.eventplanner.model.order.Purchase;
 import com.example.eventplanner.model.serviceproduct.ServiceProductCategory;
+
+import java.util.List;
 
 public class BudgetMapper {
     private BudgetMapper() {}
@@ -11,18 +17,23 @@ public class BudgetMapper {
         if (budget == null)
             return null;
 
-        return new BudgetDto(budget.getId(), budget.getPlannedSpending(), budget.getCurrentSpent(),
-                ServiceProductCategoryMapper.toDto(budget.getServiceProductCategory()));
+        return new BudgetDto(budget.getId(), budget.getName(), budget.getPlannedSpending(), budget.getCurrentSpent(),
+                ServiceProductCategoryMapper.toDto(budget.getServiceProductCategory()),
+                budget.getBookings().stream().map(BookingMapper::toDto).toList(),
+                budget.getPurchases().stream().map(PurchaseMapper::toDto).toList());
     }
 
-    public static Budget toEntity(BudgetNoIdDto budgetDto, ServiceProductCategory category) {
+    public static Budget toEntity(BudgetNoIdDto budgetDto, ServiceProductCategory category,
+                                  List<Booking> bookings, List<Purchase> purchases) {
         if (budgetDto == null)
             return null;
 
-        Budget budget = new Budget();
-        budget.setPlannedSpending(budgetDto.getPlannedSpending());
-        budget.setCurrentSpent(budgetDto.getCurrentSpent());
-        budget.setServiceProductCategory(category);
-        return budget;
+        return new Budget(
+                budgetDto.getName(),
+                budgetDto.getPlannedSpending(),
+                budgetDto.getCurrentSpent(),
+                category,
+                bookings,
+                purchases);
     }
 }
