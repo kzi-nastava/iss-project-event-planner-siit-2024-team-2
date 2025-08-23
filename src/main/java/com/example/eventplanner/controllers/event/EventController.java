@@ -102,8 +102,12 @@ public class EventController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         dto.setEventOrganizerId(organizer.getId());
-        EventDto result = eventService.create(dto);
-        return new ResponseEntity<>(result, HttpStatus.CREATED);
+        try {
+            EventDto result = eventService.create(dto);
+            return new ResponseEntity<>(result, HttpStatus.CREATED);
+        } catch(Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PutMapping(value = "/{id}")

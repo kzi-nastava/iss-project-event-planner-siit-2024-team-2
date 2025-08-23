@@ -6,8 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -24,7 +23,7 @@ public class EventNoIdDto {
     private double longitude;
     private double latitude;
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate date;
+    private Date date;
     private List<Long> activityIds;
     private List<Long> budgetIds;
     private List<@Email String> invitationEmails;
