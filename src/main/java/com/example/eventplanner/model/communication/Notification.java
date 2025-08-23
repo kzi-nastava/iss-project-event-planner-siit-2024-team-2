@@ -12,7 +12,6 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.time.Instant;
-import java.util.Date;
 
 @Getter
 @Setter

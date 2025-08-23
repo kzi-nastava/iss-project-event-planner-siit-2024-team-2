@@ -6,11 +6,6 @@ import org.springframework.core.io.ClassPathResource;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
 
 public class EmailFormatUtil {
     public static String formatInviteEmail(EventSummaryDto eventSummary, String inviteLink, boolean requiresRegistration) {
