@@ -2,9 +2,7 @@ package com.example.eventplanner.model.event;
 
 import com.example.eventplanner.model.Entity;
 import com.example.eventplanner.model.serviceproduct.ServiceProduct;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,7 +22,13 @@ public class EventType extends Entity {
     private String description;
     @ManyToMany(cascade = CascadeType.ALL, mappedBy = "availableEventTypes")
     private List<ServiceProduct> serviceProducts;
-    @OneToMany(cascade = {CascadeType.ALL})
+    @ManyToMany(cascade = {CascadeType.ALL})
+    @JoinTable(
+            name = "eventtype_serviceproduct",
+            joinColumns = @JoinColumn(name = "eventtype_id"),
+            inverseJoinColumns = @JoinColumn(name = "recommendedserviceproducts_id"),
+            uniqueConstraints = @UniqueConstraint(columnNames = {"eventtype_id", "recommendedserviceproducts_id"})
+    )
     private List<ServiceProduct> recommendedServiceProducts;
     public EventType(String name, List<ServiceProduct> recommendedServiceProducts) {
         this.name = name;

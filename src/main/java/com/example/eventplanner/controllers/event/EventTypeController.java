@@ -1,9 +1,12 @@
 package com.example.eventplanner.controllers.event;
 
+import com.example.eventplanner.dto.event.event.EventDto;
 import com.example.eventplanner.dto.event.eventtype.CreateEventTypeDto;
 import com.example.eventplanner.dto.event.eventtype.EventTypeDto;
 import com.example.eventplanner.services.event.EventTypeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,6 +24,17 @@ public class EventTypeController {
         return ResponseEntity.ok(eventTypeService.getAll());
     }
 
+    @GetMapping("/paginated")
+    public ResponseEntity<Page<EventTypeDto>> getAllEvents(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) Integer size,
+            @RequestParam(defaultValue = "") String name,
+            @RequestParam(defaultValue = "") String description) {
+        Page<EventTypeDto> result = eventTypeService.getAllFiltered(
+                page, size, name, description);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<EventTypeDto> getEventTypeById(@PathVariable long id){
         EventTypeDto eventTypeDto = eventTypeService.getById(id);
@@ -31,10 +45,11 @@ public class EventTypeController {
 
     @PostMapping()
     public ResponseEntity<EventTypeDto> createEventType(@RequestBody CreateEventTypeDto eventTypeDto) {
-        return new ResponseEntity<>(eventTypeService.create(eventTypeDto), HttpStatus.CREATED);
+        EventTypeDto dto = eventTypeService.create(eventTypeDto);
+        return new ResponseEntity<>(dto, HttpStatus.CREATED);
     }
     @PutMapping("/{id}")
-    public ResponseEntity<EventTypeDto> updateEventType(@PathVariable long id, @RequestBody EventTypeDto eventTypeDto){
+    public ResponseEntity<EventTypeDto> updateEventType(@PathVariable long id, @RequestBody CreateEventTypeDto eventTypeDto){
         EventTypeDto eventTypeDto1 = eventTypeService.update(eventTypeDto, id);
         return eventTypeDto1 != null ?
                 ResponseEntity.ok(eventTypeDto1) :
