@@ -15,5 +15,5 @@ import java.util.List;
 public class CreateEventTypeDto {
     public String name;
     public String description;
-    public List<ServiceProduct> recommendedServiceProducts;
+    public List<Long> recommendedServiceProducts;
 }

@@ -8,9 +8,14 @@ import com.example.eventplanner.dto.event.event.EventNoIdDto;
 import com.example.eventplanner.dto.event.event.EventSummaryDto;
 import com.example.eventplanner.dto.order.booking.BookingDto;
 import com.example.eventplanner.dto.order.purchase.PurchaseDto;
+import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.user.EventOrganizer;
+import com.example.eventplanner.model.utils.AttendanceResult;
+import com.example.eventplanner.services.event.EventAttendanceService;
 import com.example.eventplanner.services.event.EventReportService;
 import com.example.eventplanner.services.event.EventService;
+import com.example.eventplanner.utils.StatusPair;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
@@ -30,6 +35,7 @@ public class EventController {
     private final EventService eventService;
     private final AuthUtil authUtil;
     private final EventReportService eventReportService;
+    private final EventAttendanceService eventAttendanceService;
 
     @GetMapping
     public ResponseEntity<Page<EventDto>> getAllEvents(
@@ -83,25 +89,29 @@ public class EventController {
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<EventDto> getEventById(@PathVariable("id") Long id) {
-        EventDto result = eventService.getById(id);
-        return result != null ?
-                new ResponseEntity<>(result, HttpStatus.OK) :
-                new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        StatusPair<EventDto> result = eventService.getById(id);
+        return result.getStatus() == HttpStatus.OK ?
+                new ResponseEntity<>(result.getValue(), HttpStatus.OK) :
+                new ResponseEntity<>(result.getStatus());
     }
 
     @PostMapping
-    public ResponseEntity<EventDto> createEvent(@RequestBody EventNoIdDto dto) {
+    public ResponseEntity<EventDto> createEvent(@Valid @RequestBody EventNoIdDto dto) {
         EventOrganizer organizer = authUtil.getAuthenticatedEventOrganizer();
         if (organizer == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         dto.setEventOrganizerId(organizer.getId());
-        EventDto result = eventService.create(dto);
-        return new ResponseEntity<>(result, HttpStatus.CREATED);
+        try {
+            EventDto result = eventService.create(dto);
+            return new ResponseEntity<>(result, HttpStatus.CREATED);
+        } catch(Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<EventDto> updateEvent(@PathVariable("id") Long id, @RequestBody EventNoIdDto dto) {
+    public ResponseEntity<EventDto> updateEvent(@Valid @PathVariable("id") Long id, @RequestBody EventNoIdDto dto) {
         EventDto result = eventService.update(dto, id);
         return result != null ?
                 new ResponseEntity<>(result, HttpStatus.OK) :
@@ -195,5 +205,35 @@ public class EventController {
         return result != null ?
                 new ResponseEntity<>(result, HttpStatus.OK) :
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @PostMapping("/{id}/attend")
+    public ResponseEntity<String> attendEvent(@PathVariable long id) {
+        BaseUser user = authUtil.getAuthenticatedUser();
+        if (user == null)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+        AttendanceResult result = eventAttendanceService.attendEvent(id, user);
+
+        if (result == AttendanceResult.FULL)
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Event is full");
+        else if (result == AttendanceResult.NOT_FOUND)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Event not found");
+        else
+            return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{id}/attend")
+    public ResponseEntity<String> removeEventAttendance(@PathVariable long id) {
+        BaseUser user = authUtil.getAuthenticatedUser();
+        if (user == null)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+        AttendanceResult result = eventAttendanceService.removeEventAttendance(id, user);
+
+        if (result == AttendanceResult.NOT_FOUND)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Event not found");
+        else
+            return ResponseEntity.ok().build();
     }
 }

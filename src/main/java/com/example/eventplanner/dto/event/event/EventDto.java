@@ -3,6 +3,7 @@ package com.example.eventplanner.dto.event.event;
 import com.example.eventplanner.dto.event.activity.ActivityDto;
 import com.example.eventplanner.dto.event.budget.BudgetDto;
 import com.example.eventplanner.dto.event.eventtype.EventTypeDto;
+import com.example.eventplanner.dto.event.invitation.InvitationDto;
 import com.example.eventplanner.dto.user.user.BaseUserDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,4 +29,5 @@ public class EventDto {
     private long date;
     private List<ActivityDto> activity;
     private List<BudgetDto> budgets;
+    private List<String> invitationEmails;
 }

@@ -12,6 +12,7 @@ public class ServiceProductCategoryMapper {
         ServiceProductCategoryDto dto = new ServiceProductCategoryDto();
         dto.setId(entity.getId());
         dto.setName(entity.getName());
+        dto.setDescription(entity.getDescription());
         return dto;
     }
     public static ServiceProductCategory toEntity(ServiceProductCategoryDto dto) {
@@ -21,6 +22,7 @@ public class ServiceProductCategoryMapper {
         ServiceProductCategory entity = new ServiceProductCategory();
         entity.setId(dto.getId());
         entity.setName(dto.getName());
+        entity.setDescription(dto.getDescription());
         return entity;
     }
 
@@ -30,6 +32,7 @@ public class ServiceProductCategoryMapper {
 
         ServiceProductCategory entity = new ServiceProductCategory();
         entity.setName(dto.getName());
+        entity.setDescription(dto.getDescription());
         entity.setActive(true);
         return entity;
     }

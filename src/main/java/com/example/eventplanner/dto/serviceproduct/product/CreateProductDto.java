@@ -21,4 +21,5 @@ public class CreateProductDto {
     private boolean available;
     private boolean visible;
     private long serviceProductProviderId;
+    private List<String> images;
 }

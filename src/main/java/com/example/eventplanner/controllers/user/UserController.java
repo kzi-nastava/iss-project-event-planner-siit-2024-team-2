@@ -1,6 +1,7 @@
 
 package com.example.eventplanner.controllers.user;
 
+import com.example.eventplanner.dto.event.event.EventDto;
 import com.example.eventplanner.dto.user.user.CompanyInfoDto;
 import com.example.eventplanner.dto.user.user.RegisterUserDto;
 import com.example.eventplanner.dto.user.user.UserInfoDto;
@@ -74,6 +75,14 @@ public class UserController {
     public ResponseEntity<Collection<UserReportDto>> getUserReports(@PathVariable long id,
                                                                     @RequestParam(required = false) Boolean approved) {
         Collection<UserReportDto> result = userService.getUserReports(id, approved);
+        return result != null ?
+                new ResponseEntity<>(result, HttpStatus.OK) :
+                new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @GetMapping("/{id}/attended-events")
+    public ResponseEntity<Collection<EventDto>> getAttendingEvents(@PathVariable long id) {
+        Collection<EventDto> result = userService.getAttendingEvents(id);
         return result != null ?
                 new ResponseEntity<>(result, HttpStatus.OK) :
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);

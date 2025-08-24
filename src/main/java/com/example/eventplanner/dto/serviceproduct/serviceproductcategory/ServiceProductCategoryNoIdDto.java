@@ -11,4 +11,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ServiceProductCategoryNoIdDto {
     private String name;
+    private String description;
 }
