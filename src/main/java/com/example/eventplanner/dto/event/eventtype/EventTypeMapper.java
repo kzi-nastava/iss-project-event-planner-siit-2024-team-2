@@ -16,8 +16,10 @@ public class EventTypeMapper {
         if (eventType == null)
             return null;
         List<ServiceProductNameIdDto> list = new ArrayList<>();
-        for (ServiceProduct serviceProduct: eventType.getRecommendedServiceProducts()) {
-            list.add(ServiceProductMapper.toNameDto(serviceProduct));
+        if (eventType.getRecommendedServiceProducts() != null) {
+            for (ServiceProduct serviceProduct: eventType.getRecommendedServiceProducts()) {
+                list.add(ServiceProductMapper.toNameDto(serviceProduct));
+            }
         }
         return new EventTypeDto(
                 eventType.getId(),
