@@ -27,7 +27,6 @@ public class EventTypeService {
     }
     public EventTypeDto getById(long id) {
         return eventTypeRepository.findById(id)
-                .filter(EventType::isActive)
                 .map(EventTypeMapper::toDto)
                 .orElse(null);
     }
@@ -47,7 +46,6 @@ public class EventTypeService {
             serviceProductList.add(serviceProductRepository.findById(sid).orElse(null));
         }
         return eventTypeRepository.findById(id)
-                .filter(EventType::isActive)
                 .map(existingEventType -> {
                     EventType updatedEventType = EventTypeMapper.toEntity(eventTypeDto, serviceProductList);
                     updatedEventType.setId(id);
@@ -59,7 +57,6 @@ public class EventTypeService {
 
     public boolean delete(long id) {
         return eventTypeRepository.findById(id)
-                .filter(EventType::isActive)
                 .map(eventType -> {
                     eventType.setActive(false);
                     eventTypeRepository.save(eventType);
