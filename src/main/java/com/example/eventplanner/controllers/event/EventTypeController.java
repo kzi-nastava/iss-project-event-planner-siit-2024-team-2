@@ -3,6 +3,7 @@ package com.example.eventplanner.controllers.event;
 import com.example.eventplanner.dto.event.event.EventDto;
 import com.example.eventplanner.dto.event.eventtype.CreateEventTypeDto;
 import com.example.eventplanner.dto.event.eventtype.EventTypeDto;
+import com.example.eventplanner.dto.event.eventtype.EventTypeSimpleDto;
 import com.example.eventplanner.services.event.EventTypeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -25,12 +26,12 @@ public class EventTypeController {
     }
 
     @GetMapping("/paginated")
-    public ResponseEntity<Page<EventTypeDto>> getAllEvents(
+    public ResponseEntity<Page<EventTypeSimpleDto>> getAllEvents(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(required = false) Integer size,
             @RequestParam(defaultValue = "") String name,
             @RequestParam(defaultValue = "") String description) {
-        Page<EventTypeDto> result = eventTypeService.getAllFiltered(
+        Page<EventTypeSimpleDto> result = eventTypeService.getAllFiltered(
                 page, size, name, description);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
