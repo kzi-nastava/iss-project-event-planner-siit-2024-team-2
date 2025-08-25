@@ -52,4 +52,13 @@ public class EventTypeMapper {
         eventType.setActive(true);
         return eventType;
     }
+
+    public static EventTypeSimpleDto toSimpleDto(EventType eventType) {
+        if (eventType == null)
+            return null;
+        return new EventTypeSimpleDto(
+                eventType.getId(),
+                eventType.getName()
+        );
+    }
 }
