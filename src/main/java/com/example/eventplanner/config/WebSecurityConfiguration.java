@@ -47,7 +47,8 @@ public class WebSecurityConfiguration {
                                 , "/api/service-products/summaries"
                                 , "/api/service-products/filtering-values").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/event-types").permitAll()
-                        .requestMatchers("/socket", "/send-message-rest", "/send/message").permitAll()
+                        .requestMatchers("/socket", "/socket/**", "/send-message-rest", "/send/message").permitAll()
+                        .requestMatchers("/api/images/{path}", "/api/images").permitAll()
 
                         // Protected endpoints (JWT required)
                         // Events
@@ -83,7 +84,7 @@ public class WebSecurityConfiguration {
                         .requestMatchers(HttpMethod.DELETE, "/api/products/{id}").hasRole("SERVICE_PRODUCT_PROVIDER")
                         .requestMatchers(HttpMethod.GET, "/api/products/mine").hasRole("SERVICE_PRODUCT_PROVIDER")
                         // Everything else requires authentication
-                        .anyRequest().permitAll())
+                        .anyRequest().authenticated())
                 .sessionManagement(session -> {
                     session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
                 })
