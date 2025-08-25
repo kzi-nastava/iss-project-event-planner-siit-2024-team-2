@@ -1,10 +1,10 @@
 package com.example.eventplanner.controllers.serviceproduct;
 
-import com.example.eventplanner.dto.serviceproduct.pricelist.CreatePriceListDto;
 import com.example.eventplanner.dto.serviceproduct.pricelist.PriceListDto;
 import com.example.eventplanner.services.serviceproduct.PriceListService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,29 +16,30 @@ import java.util.Collection;
 public class PriceListController {
     private final PriceListService priceListService;
 
-    @GetMapping()
-    public ResponseEntity<Collection<PriceListDto>> getAllPriceList() {
-        return ResponseEntity.ok(priceListService.getAll());
-    }
-
-    @GetMapping(value = "/{id}")
-    public ResponseEntity<PriceListDto> getPriceListById(@PathVariable("id") Long id) {
-        PriceListDto priceListDto = priceListService.getById(id);
-        return priceListDto != null ?
-                ResponseEntity.ok(priceListDto) :
+    @GetMapping(value = "/{sppId}")
+    public ResponseEntity<Collection<PriceListDto>> getBySppId(@PathVariable("sppId") Long sppId) {
+        Collection<PriceListDto> priceList = priceListService.getBySppId(sppId);
+        return priceList != null ?
+                ResponseEntity.ok(priceList) :
                 ResponseEntity.notFound().build();
-    }
-
-    @PostMapping()
-    public ResponseEntity<PriceListDto> createPriceList(@RequestBody CreatePriceListDto createPriceListDto) {
-        return new ResponseEntity<>(priceListService.create(createPriceListDto), HttpStatus.CREATED);
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<PriceListDto> updatePriceList(@PathVariable("id") Long id, @RequestBody CreatePriceListDto createPriceListDto) {
-        PriceListDto updatedPriceListDto = priceListService.update(id, createPriceListDto);
+    public ResponseEntity<PriceListDto> updatePriceList(@PathVariable("id") Long id,
+                                                        @RequestParam Double price,
+                                                        @RequestParam Double discount) {
+        PriceListDto updatedPriceListDto = priceListService.update(id, price, discount);
         return updatedPriceListDto != null ?
                 ResponseEntity.ok(updatedPriceListDto) :
                 ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/{id}/pdf")
+    public ResponseEntity<byte[]> getPdf(@PathVariable Long id) {
+        byte[] pdf = priceListService.generatePdf (id);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=price_list_" + id + ".pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdf);
     }
 }

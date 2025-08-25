@@ -1,6 +1,5 @@
 package com.example.eventplanner.dto.serviceproduct.pricelist;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -8,19 +7,18 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class PriceListDto {
-    private Long orderNumber;
+    private Long id;
     private String name;
-    private double price;
-    private double discount;
-    private double total = price - discount;
+    private Double price;
+    private Double discount;
+    private Double total;
 
-    public PriceListDto(Long orderNumber, CreatePriceListDto createPriceListDto) {
-        this.orderNumber = orderNumber;
-        this.name = createPriceListDto.getName();
-        this.price = createPriceListDto.getPrice();
-        this.discount = createPriceListDto.getDiscount();
+    public PriceListDto(Long id, String name, Double price, Double discount) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.discount = discount;
         this.total = price - discount;
     }
 }
