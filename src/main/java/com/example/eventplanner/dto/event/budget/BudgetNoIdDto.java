@@ -16,6 +16,6 @@ public class BudgetNoIdDto {
     private double plannedSpending;
     private double currentSpent;
     private long serviceProductCategoryId;
-    private List<Long> bookings;
-    private List<Long> purchases;
+    private List<Long> bookingIds;
+    private List<Long> purchaseIds;
 }

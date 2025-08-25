@@ -15,7 +15,6 @@ public class PurchaseMapper {
 
         return new PurchaseDto(
                 purchase.getId(),
-                EventMapper.toDto(purchase.getEvent()),
                 ProductMapper.toDto(purchase.getProduct()),
                 purchase.getPrice()
         );
@@ -26,17 +25,15 @@ public class PurchaseMapper {
             return null;
 
         return new PurchaseNoIdDto(
-                purchase.getEvent().getId(),
                 purchase.getProduct().getId(),
                 purchase.getPrice()
         );
     }
 
-    public static Purchase toEntity(PurchaseNoIdDto dto, Event event, Product product) {
+    public static Purchase toEntity(PurchaseNoIdDto dto, Product product) {
         if (dto == null)
             return null;
         return new Purchase(
-                event,
                 product,
                 dto.getPrice());
     }

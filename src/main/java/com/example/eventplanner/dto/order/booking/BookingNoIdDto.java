@@ -10,7 +10,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookingNoIdDto {
-    private long eventId;
     private long serviceId;
     private double price;
     private long date;

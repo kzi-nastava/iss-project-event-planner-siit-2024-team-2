@@ -56,12 +56,12 @@ public class BudgetService {
                     budget.setPlannedSpending(dto.getPlannedSpending());
                     serviceProductCategoryRepository.findById(dto.getServiceProductCategoryId()).ifPresent(budget::setServiceProductCategory);
 
-                    budget.setBookings(dto.getBookings().stream()
+                    budget.setBookings(dto.getBookingIds().stream()
                             .map(bookid -> bookingRepository.findById(bookid)
                                     .orElseThrow(() -> new RuntimeException("Booking not found: " + bookid)))
                             .collect(Collectors.toList()));
 
-                    budget.setPurchases(dto.getPurchases().stream()
+                    budget.setPurchases(dto.getPurchaseIds().stream()
                             .map(purid -> purchaseRepository.findById(purid)
                                     .orElseThrow(() -> new RuntimeException("Purchase not found: " + purid)))
                             .collect(Collectors.toList()));

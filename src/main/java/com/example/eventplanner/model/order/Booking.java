@@ -20,8 +20,6 @@ import java.util.Date;
 @jakarta.persistence.Entity
 public class Booking extends Entity {
     @ManyToOne
-    private Event event;
-    @ManyToOne
     private Service service;
     private double price;
     private Date date;

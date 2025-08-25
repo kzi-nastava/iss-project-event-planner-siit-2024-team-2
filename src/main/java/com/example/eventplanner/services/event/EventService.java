@@ -149,20 +149,6 @@ public class EventService {
                 .orElse(false);
     }
 
-    public List<PurchaseDto> getPurchases(long id) {
-        return purchaseService.getAll()
-                .stream()
-                .filter(purchase -> purchase.getEvent().getId() == id)
-                .toList();
-    }
-
-    public List<BookingDto> getBookings(long id) {
-        return bookingService.getAll()
-                .stream()
-                .filter(booking -> booking.getEvent().getId() == id)
-                .toList();
-    }
-
     public List<Integer> getMaxAttendancesRange() {
         List<Object[]> result = eventRepository.findMaxAttendancesRange();
         Integer min = (Integer) result.get(0)[0];
