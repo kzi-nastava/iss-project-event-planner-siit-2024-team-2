@@ -16,5 +16,6 @@ public class InvitationDto {
     private String email;
     private String token;
     private boolean accepted;
-    private boolean quickRegistration;
+    private boolean quickRegistration; // Whether the user uses the quick registration/login
+    private boolean justRegistered; // Used to show a welcome message to new users
 }
