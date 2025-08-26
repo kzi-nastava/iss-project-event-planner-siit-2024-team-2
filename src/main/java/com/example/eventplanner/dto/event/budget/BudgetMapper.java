@@ -24,14 +24,14 @@ public class BudgetMapper {
     }
 
     public static Budget toEntity(BudgetNoIdDto budgetDto, ServiceProductCategory category,
-                                  List<Booking> bookings, List<Purchase> purchases) {
+                                  Double currentSpent, List<Booking> bookings, List<Purchase> purchases) {
         if (budgetDto == null)
             return null;
 
         return new Budget(
                 budgetDto.getName(),
                 budgetDto.getPlannedSpending(),
-                budgetDto.getCurrentSpent(),
+                currentSpent,
                 category,
                 bookings,
                 purchases);

@@ -14,8 +14,5 @@ import java.util.List;
 public class BudgetNoIdDto {
     private String name;
     private double plannedSpending;
-    private double currentSpent;
     private long serviceProductCategoryId;
-    private List<Long> bookingIds;
-    private List<Long> purchaseIds;
 }

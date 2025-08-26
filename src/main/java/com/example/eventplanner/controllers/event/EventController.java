@@ -8,6 +8,7 @@ import com.example.eventplanner.dto.event.event.EventNoIdDto;
 import com.example.eventplanner.dto.event.event.EventSummaryDto;
 import com.example.eventplanner.dto.order.booking.BookingDto;
 import com.example.eventplanner.dto.order.purchase.PurchaseDto;
+import com.example.eventplanner.model.event.Budget;
 import com.example.eventplanner.model.user.EventOrganizer;
 import com.example.eventplanner.services.event.EventReportService;
 import com.example.eventplanner.services.event.EventService;
@@ -183,5 +184,12 @@ public class EventController {
         return result != null ?
                 new ResponseEntity<>(result, HttpStatus.OK) :
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @PostMapping("/{id}/budgets")
+    public void addBudgetToEvent(
+            @PathVariable Long id,
+            @RequestBody Budget budget) {
+        eventService.addBudgetToEvent(id, budget);
     }
 }

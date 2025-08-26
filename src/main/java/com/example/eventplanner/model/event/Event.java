@@ -34,6 +34,6 @@ public class Event extends Entity {
     private Date date;
     @OneToMany(cascade = {CascadeType.ALL})
     private List<Activity> activities;
-    @OneToMany(cascade = {CascadeType.ALL})
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Budget> budgets;
 }

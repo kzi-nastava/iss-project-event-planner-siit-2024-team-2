@@ -11,6 +11,7 @@ import com.example.eventplanner.dto.order.booking.BookingDto;
 import com.example.eventplanner.dto.order.purchase.PurchaseDto;
 import com.example.eventplanner.model.Entity;
 import com.example.eventplanner.model.event.Activity;
+import com.example.eventplanner.model.event.Budget;
 import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.event.EventType;
 import com.example.eventplanner.model.user.EventOrganizer;
@@ -21,6 +22,8 @@ import com.example.eventplanner.services.order.BookingService;
 import com.example.eventplanner.services.order.PurchaseService;
 import com.example.eventplanner.services.util.DateUtil;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -227,6 +230,15 @@ public class EventService {
         }
 
         return true;
+    }
+
+    @Transactional
+    public void addBudgetToEvent(Long eventId, Budget budget) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new EntityNotFoundException("Event not found"));
+
+        event.getBudgets().add(budget);
+        eventRepository.save(event);
     }
 
 }
