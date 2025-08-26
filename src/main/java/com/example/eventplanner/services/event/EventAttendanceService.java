@@ -53,4 +53,13 @@ public class EventAttendanceService {
         return AttendanceResult.SUCCESS;
     }
 
+    public boolean eventFull(long eventId, String email) {
+        Event event = eventRepository.findById(eventId).orElse(null);
+        if (event == null)
+            return false;
+        if (event.getAttendees().stream().anyMatch(attendee -> attendee.getEmail().equals(email)))
+            return false; // User is already attending
+        return event.getAttendees().size() >= event.getMaxAttendances();
+    }
+
 }
