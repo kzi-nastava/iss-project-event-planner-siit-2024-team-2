@@ -3,7 +3,6 @@ package com.example.eventplanner.services.user;
 import com.example.eventplanner.dto.user.user.RegisterServiceProductProviderDto;
 import com.example.eventplanner.dto.user.user.RegisterUserDto;
 import com.example.eventplanner.model.user.BaseUser;
-import com.example.eventplanner.model.user.EventOrganizer;
 import com.example.eventplanner.model.utils.UserRole;
 import com.example.eventplanner.repositories.user.UserRepository;
 import jakarta.persistence.EntityManager;

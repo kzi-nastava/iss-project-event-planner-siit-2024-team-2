@@ -6,7 +6,6 @@ import com.example.eventplanner.dto.user.user.UpdateEventOrganizerDto;
 import com.example.eventplanner.model.user.EventOrganizer;
 import com.example.eventplanner.model.utils.UserRole;
 import com.example.eventplanner.repositories.user.EventOrganizerRepository;
-import com.example.eventplanner.repositories.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
