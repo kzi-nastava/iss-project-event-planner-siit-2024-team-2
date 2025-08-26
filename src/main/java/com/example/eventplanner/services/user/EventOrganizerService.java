@@ -14,24 +14,6 @@ import org.springframework.stereotype.Service;
 public class EventOrganizerService {
     private final EventOrganizerRepository eventOrganizerRepository;
 
-    public boolean registerEventOrganizer(RegisterEventOrganizerDto registerEventOrganizerDto) {
-        if (!validateEventOrganizer(registerEventOrganizerDto))
-            return false;
-        eventOrganizerRepository.save(EventOrganizerMapper.toEntity(registerEventOrganizerDto));
-        return true;
-    }
-
-    private boolean validateEventOrganizer(RegisterEventOrganizerDto user) {
-        if (user == null) return false;
-        if (user.getEmail() == null || user.getEmail().isEmpty()) return false;
-        if (eventOrganizerRepository.existsByEmail(user.getEmail())) return false;
-        if (user.getPassword() == null || user.getPassword().length() < 6) return false;
-        if (user.getFirstName() == null || user.getFirstName().isEmpty()) return false;
-        if (user.getLastName() == null || user.getLastName().isEmpty()) return false;
-        if (user.getPhoneNumber() == null || !user.getPhoneNumber().matches("\\d{10,15}")) return false;
-        return true;
-    }
-
     public RegisterEventOrganizerDto getEventOrganizerById(long id) {
         return eventOrganizerRepository.findById(id)
                 .map(EventOrganizerMapper::toDto)

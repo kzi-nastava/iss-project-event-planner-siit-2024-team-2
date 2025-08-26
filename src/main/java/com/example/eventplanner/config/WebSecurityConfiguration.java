@@ -49,6 +49,7 @@ public class WebSecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/api/event-types").permitAll()
                         .requestMatchers("/socket", "/socket/**", "/send-message-rest", "/send/message").permitAll()
                         .requestMatchers("/api/images/{path}", "/api/images").permitAll()
+                        .requestMatchers("/api/invitations/{token}/accept").permitAll()
 
                         // Protected endpoints (JWT required)
                         // Events
@@ -74,15 +75,32 @@ public class WebSecurityConfiguration {
                         .requestMatchers(HttpMethod.PUT, "/api/service-products/{id}").hasRole("SERVICE_PRODUCT_PROVIDER")
                         .requestMatchers(HttpMethod.DELETE, "/api/service-products/{id}").hasRole("SERVICE_PRODUCT_PROVIDER")
 
-                        .requestMatchers(HttpMethod.POST, "/api/services").hasRole("SERVICE_PRODUCT_PROVIDER")
+                        .requestMatchers(HttpMethod.POST, "/api/services").hasAnyRole("SERVICE_PRODUCT_PROVIDER", "ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/services/{id}").hasRole("SERVICE_PRODUCT_PROVIDER")
                         .requestMatchers(HttpMethod.DELETE, "/api/services/{id}").hasRole("SERVICE_PRODUCT_PROVIDER")
                         .requestMatchers(HttpMethod.GET, "/api/services/all").hasRole("SERVICE_PRODUCT_PROVIDER")
 
-                        .requestMatchers(HttpMethod.POST, "/api/products").hasRole("SERVICE_PRODUCT_PROVIDER")
+                        .requestMatchers(HttpMethod.POST, "/api/products").hasAnyRole("SERVICE_PRODUCT_PROVIDER")
                         .requestMatchers(HttpMethod.PUT, "/api/products/{id}").hasRole("SERVICE_PRODUCT_PROVIDER")
                         .requestMatchers(HttpMethod.DELETE, "/api/products/{id}").hasRole("SERVICE_PRODUCT_PROVIDER")
                         .requestMatchers(HttpMethod.GET, "/api/products/mine").hasRole("SERVICE_PRODUCT_PROVIDER")
+
+                        // Invitations
+                        .requestMatchers(HttpMethod.GET, "/api/invitations").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/invitations/{id}").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/invitations/{id}").hasRole("ADMIN")
+
+                        // Notifications
+                        .requestMatchers(HttpMethod.GET, "/api/notifications/mine").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/notifications/dismiss").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/notifications/seen").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/notifications").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/notifications/{id}").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/notifications").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/notifications/{id}").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/notifications/{id}").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/notifications/send-category-request").hasRole("SERVICE_PRODUCT_PROVIDER")
+
                         // Everything else requires authentication
                         .anyRequest().authenticated())
                 .sessionManagement(session -> {

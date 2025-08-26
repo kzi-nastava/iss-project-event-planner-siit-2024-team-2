@@ -12,6 +12,7 @@ import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.user.EventOrganizer;
 import com.example.eventplanner.model.user.ServiceProductProvider;
 import com.example.eventplanner.model.utils.AttendanceResult;
+import com.example.eventplanner.model.utils.UserRole;
 import com.example.eventplanner.services.event.EventAttendanceService;
 import com.example.eventplanner.services.event.EventReportService;
 import com.example.eventplanner.services.event.EventService;
@@ -109,6 +110,9 @@ public class EventController {
             @RequestParam(required = false) Double maxDistance,
             @RequestParam(required = false) Long startDate,
             @RequestParam(required = false) Long endDate) {
+        BaseUser user = authUtil.getAuthenticatedUser();
+        if (user == null || user.getUserRole() != UserRole.ADMIN)
+            open = true; // Users can only see open events
         Sort sort = Sort.by(sortDirection, sortBy);
         Page<EventSummaryDto> result = eventService.getAllFiltered(
                 EventSummaryDto.class,

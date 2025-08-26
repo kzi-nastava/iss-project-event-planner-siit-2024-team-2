@@ -7,7 +7,7 @@ import com.example.eventplanner.model.event.Invitation;
 public class InvitationMapper {
     private InvitationMapper() {}
 
-    public static InvitationDto toDto(Invitation invitation) {
+    public static InvitationDto toDto(Invitation invitation, boolean justRegistered) {
         if (invitation == null)
             return null;
 
@@ -17,8 +17,12 @@ public class InvitationMapper {
                 invitation.getEmail(),
                 invitation.getToken(),
                 invitation.isAccepted(),
-                invitation.isQuickRegistration()
+                invitation.isQuickRegistration(),
+                justRegistered
         );
+    }
+    public static InvitationDto toDto(Invitation invitation) {
+        return toDto(invitation, false);
     }
 
     public static Invitation toEntity(InvitationNoIdDto dto, Event event) {

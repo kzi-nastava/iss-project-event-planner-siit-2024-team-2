@@ -5,7 +5,9 @@ import com.example.eventplanner.dto.communication.notification.NotificationDto;
 import com.example.eventplanner.dto.communication.notification.NotificationMapper;
 import com.example.eventplanner.dto.communication.notification.NotificationNoIdDto;
 import com.example.eventplanner.model.communication.Notification;
+import com.example.eventplanner.model.user.Admin;
 import com.example.eventplanner.model.user.BaseUser;
+import com.example.eventplanner.model.utils.UserRole;
 import com.example.eventplanner.repositories.communication.NotificationRepository;
 import com.example.eventplanner.repositories.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -84,6 +86,17 @@ public class NotificationService {
         if (!notificationRepository.existsById(id))
             return false;
         notificationRepository.deleteById(id);
+        return true;
+    }
+
+    public boolean sendCategoryRequest(NotificationNoIdDto dto) {
+        BaseUser admin = userRepository.findFirstByUserRole(UserRole.ADMIN).orElse(null);
+        if (admin == null)
+            return false;
+        dto.setUserId(admin.getId());
+        dto.setSeen(false);
+        dto.setDismissed(false);
+        sendNotification(dto);
         return true;
     }
 

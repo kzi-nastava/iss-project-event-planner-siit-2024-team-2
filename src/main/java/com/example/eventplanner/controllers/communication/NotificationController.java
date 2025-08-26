@@ -98,4 +98,12 @@ public class NotificationController {
         Page<NotificationDto> result = notificationService.getAllForUser(userId, sentAt, pageable);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
+
+    @PostMapping("/send-category-request")
+    public ResponseEntity<Void> sendCategoryRequest(@RequestBody NotificationNoIdDto dto) {
+        boolean success = notificationService.sendCategoryRequest(dto);
+        return success ?
+                new ResponseEntity<>(HttpStatus.OK) :
+                new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
 }

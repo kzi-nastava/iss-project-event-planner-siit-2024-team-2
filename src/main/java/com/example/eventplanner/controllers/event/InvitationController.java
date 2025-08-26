@@ -1,9 +1,8 @@
 package com.example.eventplanner.controllers.event;
 
-import com.example.eventplanner.dto.event.invitation.InvitationDto;
-import com.example.eventplanner.dto.event.invitation.InvitationNoIdDto;
+import com.example.eventplanner.dto.event.invitation.*;
+import com.example.eventplanner.model.utils.InvitationResult;
 import com.example.eventplanner.services.event.InvitationService;
-import com.example.eventplanner.utils.StatusPair;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,10 +39,21 @@ public class InvitationController {
     }
 
     @PostMapping(value = "/{token}/accept")
-    public ResponseEntity<InvitationDto> acceptInvitation(@PathVariable("token") String token) {
-        StatusPair<InvitationDto> result = invitationService.acceptInvitation(token);
-        return result.getStatus() == HttpStatus.OK ?
-                new ResponseEntity<>(result.getValue(), HttpStatus.OK) :
-                new ResponseEntity<>(result.getStatus());
+    public ResponseEntity<?> acceptInvitation(@PathVariable("token") String token) {
+        InvitationResult result = invitationService.acceptInvitation(token);
+        if (result.getError() == null)
+            return new ResponseEntity<>(InvitationMapper.toDto(result.getInvitation()), HttpStatus.OK);
+        else {
+            InvitationErrorDto errorDto = new InvitationErrorDto(result.getError());
+            if (result.getError() != InvitationErrorType.NOT_FOUND)
+                errorDto.setEventId(result.getInvitation().getEvent().getId());
+
+            return switch (result.getError()) {
+                case EVENT_FULL, EVENT_FULL_QUICK_REGISTRATION -> new ResponseEntity<>(errorDto, HttpStatus.CONFLICT);
+                case UNAUTHORIZED_QUICK_REGISTRATION, UNAUTHORIZED -> new ResponseEntity<>(errorDto, HttpStatus.UNAUTHORIZED);
+                case FORBIDDEN -> new ResponseEntity<>(errorDto, HttpStatus.FORBIDDEN);
+                case NOT_FOUND -> new ResponseEntity<>(errorDto, HttpStatus.NOT_FOUND);
+            };
+        }
     }
 }
