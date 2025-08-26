@@ -183,6 +183,41 @@ public class EventService {
             return events.map(EventMapper::toSummaryDto)
                     .map(clazz::cast);
     }
+    public <T> Page<T> getAllFilteredByOrganizer(
+            Class<T> clazz, long organizerId, int page, Integer size, Sort sort, String name, String description, List<Long> types,
+            Integer minMaxAttendances, Integer maxMaxAttendances, Boolean open,
+            List<Double> latitudes, List<Double> longitudes, Double maxDistance,
+            Long startDate, Long endDate) {
+        PageRequest pageRequest = PageRequest.of(page, size != null ? size : 10, sort);
+        LocalDateTime startDateTime = startDate != null ?
+                LocalDateTime.ofInstant(Instant.ofEpochMilli(startDate), TimeZone.getDefault().toZoneId()) :
+                LocalDateTime.of(-4711, 1, 1, 0, 0);
+        LocalDateTime endDateTime = endDate != null ?
+                LocalDateTime.ofInstant(Instant.ofEpochMilli(endDate), TimeZone.getDefault().toZoneId()) :
+                LocalDateTime.of(294275, 12, 31, 23, 59);
+        Double[] latitudesArray, longitudesArray;
+        if (latitudes == null || longitudes == null || maxDistance == null  || maxDistance == 0) {
+            latitudesArray = new Double[0];
+            longitudesArray = new Double[0];
+            maxDistance = 0D;
+        } else {
+            latitudesArray = latitudes.toArray(new Double[0]);
+            longitudesArray = longitudes.toArray(new Double[0]);
+        }
+        Long[] eventTypeIdsArray = types == null ?
+                new Long[0] :
+                types.toArray(new Long[0]);
+        Page<Event> events = eventRepository.findAllFilteredByOrganizer(
+                organizerId, name, description, eventTypeIdsArray, minMaxAttendances, maxMaxAttendances, open,
+                latitudesArray, longitudesArray,
+                maxDistance,
+                startDateTime, endDateTime, pageRequest);
+        if (clazz == EventDto.class)
+            return events.map(EventMapper::toDto).map(clazz::cast);
+        else
+            return events.map(EventMapper::toSummaryDto)
+                    .map(clazz::cast);
+    }
 
     public boolean createAgenda(long id, List<ActivityDto> activityDtos) {
         return eventRepository.findById(id)

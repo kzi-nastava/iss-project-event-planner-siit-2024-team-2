@@ -4,6 +4,7 @@ import com.example.eventplanner.dto.event.event.EventDto;
 import com.example.eventplanner.dto.event.eventtype.CreateEventTypeDto;
 import com.example.eventplanner.dto.event.eventtype.EventTypeDto;
 import com.example.eventplanner.dto.event.eventtype.EventTypeMapper;
+import com.example.eventplanner.dto.event.eventtype.EventTypeSimpleDto;
 import com.example.eventplanner.model.event.EventType;
 import com.example.eventplanner.model.serviceproduct.ServiceProduct;
 import com.example.eventplanner.repositories.event.EventTypeRepository;
@@ -65,11 +66,11 @@ public class EventTypeService {
                 .orElse(false);
     }
 
-    public Page<EventTypeDto> getAllFiltered(int page, Integer size, String name, String description) {
+    public Page<EventTypeSimpleDto> getAllFiltered(int page, Integer size, String name, String description) {
         PageRequest pageRequest = PageRequest.of(page, size != null ? size : 10);
 
         Page<EventType> eventTypes = eventTypeRepository.findAllFiltered(pageRequest);
 
-        return eventTypes.map(EventTypeMapper::toDto);
+        return eventTypes.map(EventTypeMapper::toSimpleDto);
     }
 }

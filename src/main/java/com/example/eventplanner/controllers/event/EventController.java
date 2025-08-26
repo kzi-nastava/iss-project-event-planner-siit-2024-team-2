@@ -10,6 +10,7 @@ import com.example.eventplanner.dto.order.booking.BookingDto;
 import com.example.eventplanner.dto.order.purchase.PurchaseDto;
 import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.user.EventOrganizer;
+import com.example.eventplanner.model.user.ServiceProductProvider;
 import com.example.eventplanner.model.utils.AttendanceResult;
 import com.example.eventplanner.model.utils.UserRole;
 import com.example.eventplanner.services.event.EventAttendanceService;
@@ -58,6 +59,35 @@ public class EventController {
         Sort sort = Sort.by(sortDirection, sortBy);
         Page<EventDto> result = eventService.getAllFiltered(
                 EventDto.class,
+                page, size, sort, name, description, types, minMaxAttendances, maxMaxAttendances,
+                open, latitudes, longitudes, maxDistance, startDate, endDate);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping("/mine")
+    public ResponseEntity<Page<EventDto>> getMyEvents(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) Integer size,
+            @RequestParam(defaultValue = "date") String sortBy,
+            @RequestParam(defaultValue = "DESC") Sort.Direction sortDirection,
+            @RequestParam(defaultValue = "") String name,
+            @RequestParam(defaultValue = "") String description,
+            @RequestParam(required = false) List<Long> types,
+            @RequestParam(required = false) Integer minMaxAttendances,
+            @RequestParam(required = false) Integer maxMaxAttendances,
+            @RequestParam(required = false) Boolean open,
+            @RequestParam(required = false) List<Double> latitudes,
+            @RequestParam(required = false) List<Double> longitudes,
+            @RequestParam(required = false) Double maxDistance,
+            @RequestParam(required = false) Long startDate,
+            @RequestParam(required = false) Long endDate) {
+        Sort sort = Sort.by(sortDirection, sortBy);
+        EventOrganizer organizer = authUtil.getAuthenticatedEventOrganizer();
+        if (organizer == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        Page<EventDto> result = eventService.getAllFilteredByOrganizer(
+                EventDto.class, organizer.getId(),
                 page, size, sort, name, description, types, minMaxAttendances, maxMaxAttendances,
                 open, latitudes, longitudes, maxDistance, startDate, endDate);
         return new ResponseEntity<>(result, HttpStatus.OK);

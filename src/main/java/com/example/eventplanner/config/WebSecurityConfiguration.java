@@ -40,14 +40,51 @@ public class WebSecurityConfiguration {
                 .cors(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable()) // Disable CSRF for simplicity (not recommended for production)
                 .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/*").permitAll()
-                .requestMatchers("/**").permitAll()
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/users/**").permitAll()
-                //.anyRequest().authenticated()
-                //.requestMatchers("/api/event-types").hasRole("ADMIN")
-                )
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/events", "/api/events/summaries", "/api/events/top5").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/events/{id}", "/api/events/{id}/agenda").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/service-products/top5"
+                                , "/api/service-products/summaries"
+                                , "/api/service-products/filtering-values").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/event-types").permitAll()
+                        .requestMatchers("/socket", "/socket/**", "/send-message-rest", "/send/message").permitAll()
+                        .requestMatchers("/api/images/{path}", "/api/images").permitAll()
+
+                        // Protected endpoints (JWT required)
+                        // Events
+                        .requestMatchers(HttpMethod.POST, "/api/events").hasRole("EVENT_ORGANIZER")
+                        .requestMatchers(HttpMethod.PUT, "/api/events/{id}").hasRole("EVENT_ORGANIZER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/events/{id}").hasRole("EVENT_ORGANIZER")
+
+                        // Event types
+                        .requestMatchers(HttpMethod.POST, "/api/event-types").hasRole("EVENT_ORGANIZER")
+                        .requestMatchers(HttpMethod.PUT, "/api/event-types/{id}").hasRole("EVENT_ORGANIZER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/event-types/{id}").hasRole("EVENT_ORGANIZER")
+                        .requestMatchers(HttpMethod.GET, "/api/event-types/paginated").hasRole("ADMIN")
+
+                        // Event agenda
+                        .requestMatchers(HttpMethod.POST, "/api/events/{id}/agenda/**").hasRole("EVENT_ORGANIZER")
+                        .requestMatchers(HttpMethod.PUT, "/api/events/{id}/agenda/**").hasRole("EVENT_ORGANIZER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/events/{id}/agenda/**").hasRole("EVENT_ORGANIZER")
+
+                        .requestMatchers(HttpMethod.GET, "/api/events/{id}/purchases", "/api/events/{id}/bookings").hasAnyRole("EVENT_ORGANIZER", "ADMIN")
+
+                        // Service products
+                        .requestMatchers(HttpMethod.POST, "/api/service-products").hasRole("SERVICE_PRODUCT_PROVIDER")
+                        .requestMatchers(HttpMethod.PUT, "/api/service-products/{id}").hasRole("SERVICE_PRODUCT_PROVIDER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/service-products/{id}").hasRole("SERVICE_PRODUCT_PROVIDER")
+
+                        .requestMatchers(HttpMethod.POST, "/api/services").hasRole("SERVICE_PRODUCT_PROVIDER")
+                        .requestMatchers(HttpMethod.PUT, "/api/services/{id}").hasRole("SERVICE_PRODUCT_PROVIDER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/services/{id}").hasRole("SERVICE_PRODUCT_PROVIDER")
+                        .requestMatchers(HttpMethod.GET, "/api/services/all").hasRole("SERVICE_PRODUCT_PROVIDER")
+
+                        .requestMatchers(HttpMethod.POST, "/api/products").hasRole("SERVICE_PRODUCT_PROVIDER")
+                        .requestMatchers(HttpMethod.PUT, "/api/products/{id}").hasRole("SERVICE_PRODUCT_PROVIDER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/products/{id}").hasRole("SERVICE_PRODUCT_PROVIDER")
+                        .requestMatchers(HttpMethod.GET, "/api/products/mine").hasRole("SERVICE_PRODUCT_PROVIDER")
+                        // Everything else requires authentication
+                        .anyRequest().authenticated())
                 .sessionManagement(session -> {
                     session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
                 })

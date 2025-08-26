@@ -1,5 +1,6 @@
 package com.example.eventplanner.repositories.serviceproduct;
 
+import com.example.eventplanner.dto.serviceproduct.pricelist.PriceListDto;
 import com.example.eventplanner.model.serviceproduct.ServiceProduct;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -67,4 +68,8 @@ public interface ServiceProductRepository extends JpaRepository<ServiceProduct, 
     List<Object[]> findPriceRange();
     @Query("SELECT MIN(s.duration), MAX(s.duration) FROM Service s WHERE s.visible = true")
     List<Object[]> findDurationRange();
+
+    @Query("SELECT new com.example.eventplanner.dto.serviceproduct.pricelist.PriceListDto(sp.id, sp.name, sp.price, sp.discount) " +
+            "FROM ServiceProduct sp WHERE sp.serviceProductProvider.id = :sppId")
+    List<PriceListDto> getPriceListBySppId(@Param("sppId") Long sppId);
 }
