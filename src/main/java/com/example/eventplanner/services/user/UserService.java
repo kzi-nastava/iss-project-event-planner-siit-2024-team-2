@@ -5,6 +5,7 @@ import com.example.eventplanner.dto.event.event.EventDto;
 import com.example.eventplanner.dto.event.event.EventMapper;
 import com.example.eventplanner.dto.user.user.*;
 import com.example.eventplanner.dto.user.userreport.UserReportDto;
+import com.example.eventplanner.model.user.AuthenticatedUser;
 import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.user.ServiceProductProvider;
 import com.example.eventplanner.model.utils.UserRole;
@@ -48,6 +49,15 @@ public class UserService implements UserDetailsService {
         registerCompanyDto.setPassword(passwordEncoder.encode(registerCompanyDto.getPassword()));
         userRepository.save(UserMapper.toEntity(registerCompanyDto));
         return true;
+    }
+
+    public BaseUser quickRegister(String email) {
+        AuthenticatedUser user = new AuthenticatedUser();
+        user.setEmail(email);
+        user.setUserRole(UserRole.AUTHENTICATED);
+        user.setAttendingEvents(new ArrayList<>()); // Initialize manually so the attendance service can access it immediately
+        userRepository.saveAndFlush(user);
+        return user;
     }
 
     private boolean validateUser(RegisterUserDto user) {
@@ -123,7 +133,7 @@ public class UserService implements UserDetailsService {
         if (!ret.isEmpty()) {
             return org.springframework.security.core.userdetails.User
                     .withUsername(email)
-                    .password(ret.get().getPassword())
+                    .password(ret.get().getPassword() != null ? ret.get().getPassword() : "DUMMY_PASSWORD")
                     .roles(ret.get().getUserRole().toString())
                     .build();
         }

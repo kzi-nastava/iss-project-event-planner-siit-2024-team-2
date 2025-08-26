@@ -3,17 +3,23 @@ package com.example.eventplanner.controllers.auth;
 import com.example.eventplanner.config.jwt.JwtTokenUtil;
 import com.example.eventplanner.dto.auth.LoginDto;
 import com.example.eventplanner.dto.auth.LoginResponseDto;
+import com.example.eventplanner.dto.auth.QuickLoginDto;
 import com.example.eventplanner.dto.auth.ResetPasswordDto;
+import com.example.eventplanner.dto.event.invitation.InvitationDto;
 import com.example.eventplanner.dto.user.user.RegisterServiceProductProviderDto;
 import com.example.eventplanner.dto.user.user.RegisterUserDto;
 import com.example.eventplanner.model.user.BaseUser;
+import com.example.eventplanner.model.utils.UserRole;
+import com.example.eventplanner.services.event.InvitationService;
 import com.example.eventplanner.services.user.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,6 +32,7 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
 
     private final JwtTokenUtil jwtTokenUtil;
+    private final InvitationService invitationService;
 
     @PostMapping("/login")
     public LoginResponseDto login(@RequestBody LoginDto request) {
@@ -64,5 +71,28 @@ public class AuthController {
         return success
                 ? ResponseEntity.ok().build()
                 : ResponseEntity.badRequest().build();
+    }
+
+    @PostMapping("/quick-login")
+    public ResponseEntity<LoginResponseDto> quickLogin(@RequestBody QuickLoginDto quickLoginDto) {
+        InvitationDto invitation = invitationService.getByToken(quickLoginDto.getInvitationToken());
+        if (invitation == null)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+
+        BaseUser user = userService.getUserByEmail(invitation.getEmail());
+        if (user == null)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+
+        if (!invitation.isQuickRegistration() || !invitation.isAccepted() || user.getUserRole() != UserRole.AUTHENTICATED)
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+
+        String jwt = jwtTokenUtil.generateToken(user.getEmail());
+
+        return ResponseEntity.ok(new LoginResponseDto(
+                user.getId(),
+                user.getEmail(),
+                jwt,
+                user.getUserRole()
+        ));
     }
 }
