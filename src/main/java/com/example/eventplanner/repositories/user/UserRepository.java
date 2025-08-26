@@ -1,6 +1,7 @@
 package com.example.eventplanner.repositories.user;
 
 import com.example.eventplanner.model.user.BaseUser;
+import com.example.eventplanner.model.utils.UserRole;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -15,6 +16,7 @@ public interface UserRepository extends JpaRepository<BaseUser, Long> {
     Optional<BaseUser> findByEmailAndPassword(String email, String password);
     boolean existsByEmail(String email);
     Optional<BaseUser> findByEmail(String email);
+    Optional<BaseUser> findFirstByUserRole(UserRole userRole);
 
     @Modifying
     @Query(value = "UPDATE baseuser " +
