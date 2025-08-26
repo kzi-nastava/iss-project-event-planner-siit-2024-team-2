@@ -75,12 +75,12 @@ public class WebSecurityConfiguration {
                         .requestMatchers(HttpMethod.PUT, "/api/service-products/{id}").hasRole("SERVICE_PRODUCT_PROVIDER")
                         .requestMatchers(HttpMethod.DELETE, "/api/service-products/{id}").hasRole("SERVICE_PRODUCT_PROVIDER")
 
-                        .requestMatchers(HttpMethod.POST, "/api/services").hasRole("SERVICE_PRODUCT_PROVIDER")
+                        .requestMatchers(HttpMethod.POST, "/api/services").hasAnyRole("SERVICE_PRODUCT_PROVIDER", "ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/services/{id}").hasRole("SERVICE_PRODUCT_PROVIDER")
                         .requestMatchers(HttpMethod.DELETE, "/api/services/{id}").hasRole("SERVICE_PRODUCT_PROVIDER")
                         .requestMatchers(HttpMethod.GET, "/api/services/all").hasRole("SERVICE_PRODUCT_PROVIDER")
 
-                        .requestMatchers(HttpMethod.POST, "/api/products").hasRole("SERVICE_PRODUCT_PROVIDER")
+                        .requestMatchers(HttpMethod.POST, "/api/products").hasAnyRole("SERVICE_PRODUCT_PROVIDER")
                         .requestMatchers(HttpMethod.PUT, "/api/products/{id}").hasRole("SERVICE_PRODUCT_PROVIDER")
                         .requestMatchers(HttpMethod.DELETE, "/api/products/{id}").hasRole("SERVICE_PRODUCT_PROVIDER")
                         .requestMatchers(HttpMethod.GET, "/api/products/mine").hasRole("SERVICE_PRODUCT_PROVIDER")
@@ -91,6 +91,9 @@ public class WebSecurityConfiguration {
                         .requestMatchers(HttpMethod.PUT, "/api/invitations/{id}").hasRole("ADMIN")
 
                         // Notifications
+                        .requestMatchers(HttpMethod.GET, "/api/notifications/mine").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/notifications/dismiss").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/notifications/seen").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/notifications").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/notifications/{id}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/notifications").hasRole("ADMIN")
