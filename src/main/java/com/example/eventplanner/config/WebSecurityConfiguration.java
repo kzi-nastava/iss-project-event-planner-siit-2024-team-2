@@ -49,6 +49,7 @@ public class WebSecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/api/event-types").permitAll()
                         .requestMatchers("/socket", "/socket/**", "/send-message-rest", "/send/message").permitAll()
                         .requestMatchers("/api/images/{path}", "/api/images").permitAll()
+                        .requestMatchers("/api/invitations/{token}/accept").permitAll()
 
                         // Protected endpoints (JWT required)
                         // Events
