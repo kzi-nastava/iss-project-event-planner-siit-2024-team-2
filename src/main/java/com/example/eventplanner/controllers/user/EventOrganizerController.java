@@ -22,13 +22,6 @@ public class EventOrganizerController {
                 ResponseEntity.notFound().build();
     }
 
-    @PostMapping
-    public ResponseEntity<Boolean> registerEventOrganizer (@RequestBody RegisterEventOrganizerDto registerEventOrganizerDto) {
-        return eventOrganizerService.registerEventOrganizer(registerEventOrganizerDto)
-                ? new ResponseEntity<>(true, HttpStatus.CREATED)
-                : ResponseEntity.badRequest().build();
-    }
-
     @PutMapping("/{id}")
     public ResponseEntity<UpdateEventOrganizerDto> updateEventOrganizer(@PathVariable long id, @RequestBody UpdateEventOrganizerDto eventOrganizerDto) {
         UpdateEventOrganizerDto user = eventOrganizerService.updateEventOrganizer(id, eventOrganizerDto);

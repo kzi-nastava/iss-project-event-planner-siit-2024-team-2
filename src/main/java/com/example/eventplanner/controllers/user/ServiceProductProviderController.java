@@ -13,12 +13,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/users/service-product-providers")
 public class ServiceProductProviderController {
     private final ServiceProductProviderService serviceProductProviderService;
-    @PostMapping
-    public ResponseEntity<Boolean> registerServiceProductProvider (@RequestBody RegisterServiceProductProviderDto registerServiceProductProvider) {
-        return serviceProductProviderService.registerServiceProductProvider(registerServiceProductProvider)
-                ? new ResponseEntity<>(true, HttpStatus.OK)
-                : ResponseEntity.badRequest().build();
-    }
 
     @GetMapping("/{id}")
     public ResponseEntity<RegisterServiceProductProviderDto> getServiceProductProviderById(@PathVariable long id) {
