@@ -32,11 +32,18 @@ public class UserService implements UserDetailsService {
     private PasswordEncoder passwordEncoder;
     private final UserReportService userReportService;
     private final UserRepository userRepository;
+    private final UserUpgradeService userUpgradeService;
 
     public boolean registerUser(RegisterUserDto registerUserDto) {
         if (!validateUser(registerUserDto))
             return false;
 
+        BaseUser existingUser = userRepository.findByEmail(registerUserDto.getEmail()).orElse(null);
+        if (existingUser != null && existingUser.getUserRole() == UserRole.AUTHENTICATED) {
+            String encodedPassword = passwordEncoder.encode(registerUserDto.getPassword());
+            userUpgradeService.upgradeToEventOrganizer(registerUserDto, existingUser, encodedPassword);
+            return true;
+        }
         registerUserDto.setUserRole(UserRole.EVENT_ORGANIZER);
         registerUserDto.setPassword(passwordEncoder.encode(registerUserDto.getPassword()));
         userRepository.save(UserMapper.toEntity(registerUserDto));
@@ -48,6 +55,13 @@ public class UserService implements UserDetailsService {
             return false;
         if (!validateCompany(registerCompanyDto))
             return false;
+
+        BaseUser existingUser = userRepository.findByEmail(registerCompanyDto.getEmail()).orElse(null);
+        if (existingUser != null && existingUser.getUserRole() == UserRole.AUTHENTICATED) {
+            String encodedPassword = passwordEncoder.encode(registerCompanyDto.getPassword());
+            userUpgradeService.upgradeToServiceProductProvider(registerCompanyDto, existingUser, encodedPassword);
+            return true;
+        }
 
         registerCompanyDto.setUserRole(UserRole.SERVICE_PRODUCT_PROVIDER);
         registerCompanyDto.setPassword(passwordEncoder.encode(registerCompanyDto.getPassword()));
@@ -117,6 +131,7 @@ public class UserService implements UserDetailsService {
     public boolean resetPassword(ResetPasswordDto resetPasswordDto, long userId) {
         return userRepository
                 .findById(userId)
+                .filter(u -> u.getUserRole() != UserRole.AUTHENTICATED)
                 .filter(u -> passwordEncoder.matches(resetPasswordDto.getOldPassword(), u.getPassword()))
                 .map(u -> {
                     u.setPassword(passwordEncoder.encode(resetPasswordDto.getNewPassword()));

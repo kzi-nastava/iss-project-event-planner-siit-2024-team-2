@@ -1,6 +1,7 @@
 package com.example.eventplanner.controllers.auth;
 
 import com.example.eventplanner.config.jwt.JwtTokenUtil;
+import com.example.eventplanner.controllers.utils.AuthUtil;
 import com.example.eventplanner.dto.auth.LoginDto;
 import com.example.eventplanner.dto.auth.LoginResponseDto;
 import com.example.eventplanner.dto.auth.QuickLoginDto;
@@ -33,6 +34,7 @@ public class AuthController {
 
     private final JwtTokenUtil jwtTokenUtil;
     private final InvitationService invitationService;
+    private final AuthUtil authUtil;
 
     @PostMapping("/login")
     public LoginResponseDto login(@RequestBody LoginDto request) {
@@ -67,6 +69,11 @@ public class AuthController {
     }
     @PostMapping("/reset-password/{id}")
     public ResponseEntity<Void> resetPassword(@PathVariable long id, @RequestBody ResetPasswordDto resetPasswordDto) {
+        BaseUser user = authUtil.getAuthenticatedUser();
+        if (user == null)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        if (user.getId() != id && user.getUserRole() != UserRole.ADMIN)
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         boolean success = userService.resetPassword(resetPasswordDto, id);
         return success
                 ? ResponseEntity.ok().build()
