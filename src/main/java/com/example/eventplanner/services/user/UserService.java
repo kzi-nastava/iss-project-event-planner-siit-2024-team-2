@@ -12,6 +12,8 @@ import com.example.eventplanner.model.utils.UserRole;
 import com.example.eventplanner.repositories.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -34,6 +36,7 @@ public class UserService implements UserDetailsService {
     public boolean registerUser(RegisterUserDto registerUserDto) {
         if (!validateUser(registerUserDto))
             return false;
+
         registerUserDto.setUserRole(UserRole.EVENT_ORGANIZER);
         registerUserDto.setPassword(passwordEncoder.encode(registerUserDto.getPassword()));
         userRepository.save(UserMapper.toEntity(registerUserDto));
@@ -45,6 +48,7 @@ public class UserService implements UserDetailsService {
             return false;
         if (!validateCompany(registerCompanyDto))
             return false;
+
         registerCompanyDto.setUserRole(UserRole.SERVICE_PRODUCT_PROVIDER);
         registerCompanyDto.setPassword(passwordEncoder.encode(registerCompanyDto.getPassword()));
         userRepository.save(UserMapper.toEntity(registerCompanyDto));
@@ -60,14 +64,16 @@ public class UserService implements UserDetailsService {
         return user;
     }
 
-    private boolean validateUser(RegisterUserDto user) {
+    public boolean validateUser(RegisterUserDto user) {
         if (user == null) return false;
         if (user.getEmail() == null || user.getEmail().isEmpty())  return false;
-        if (userRepository.existsByEmail(user.getEmail())) return false;
         if (user.getPassword() == null || user.getPassword().length() < 6) return false;
         if (user.getFirstName() == null || user.getFirstName().isEmpty()) return false;
         if (user.getLastName() == null || user.getLastName().isEmpty()) return false;
         if (user.getPhoneNumber() == null || !user.getPhoneNumber().matches("\\d{10,15}")) return false;
+
+        if (!isRegisterEmailValidWithCurrentUser(user.getEmail())) return false;
+
         return true;
     }
 
@@ -130,7 +136,7 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Optional<BaseUser> ret = userRepository.findByEmail(email);
-        if (!ret.isEmpty()) {
+        if (ret.isPresent()) {
             return org.springframework.security.core.userdetails.User
                     .withUsername(email)
                     .password(ret.get().getPassword() != null ? ret.get().getPassword() : "DUMMY_PASSWORD")
@@ -175,6 +181,23 @@ public class UserService implements UserDetailsService {
                         .map(EventMapper::toDto)
                         .toList())
                 .orElse(new ArrayList<>());
+    }
+
+    /**
+     * Checks if the user can register with the given email. Takes into account the current user.
+     * @param registerEmail The email used in registration form
+     * @return True if user can register with the given email, false otherwise
+     */
+    public boolean isRegisterEmailValidWithCurrentUser(String registerEmail) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        BaseUser authenticatedUser = userRepository.findByEmail(email).orElse(null);
+
+        if (authenticatedUser != null && authenticatedUser.getUserRole() == UserRole.AUTHENTICATED) { // Upgrading
+            // User is trying to register with another email
+            return authenticatedUser.getEmail().equals(registerEmail);
+        }
+        return !userRepository.existsByEmail(registerEmail);
     }
 }
 
