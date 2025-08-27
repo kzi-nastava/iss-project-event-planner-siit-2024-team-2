@@ -4,7 +4,6 @@ import com.example.eventplanner.dto.auth.ResetPasswordDto;
 import com.example.eventplanner.dto.event.event.EventDto;
 import com.example.eventplanner.dto.event.event.EventMapper;
 import com.example.eventplanner.dto.user.user.*;
-import com.example.eventplanner.dto.user.userreport.UserReportDto;
 import com.example.eventplanner.model.user.AuthenticatedUser;
 import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.user.ServiceProductProvider;
@@ -21,7 +20,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,7 +28,6 @@ import java.util.Optional;
 public class UserService implements UserDetailsService {
     @Autowired
     private PasswordEncoder passwordEncoder;
-    private final UserReportService userReportService;
     private final UserRepository userRepository;
     private final UserUpgradeService userUpgradeService;
 
@@ -138,14 +135,6 @@ public class UserService implements UserDetailsService {
                     userRepository.save(u);
                     return true;
                 }).orElse(false);
-    }
-
-    public Collection<UserReportDto> getUserReports(long id, Boolean approved) {
-        return userReportService.getAll()
-                .stream()
-                .filter(report -> report.getReported().getId() == id)
-                .filter(report -> approved == null || approved == (report.getApprovedAt() != null))
-                .toList();
     }
 
     @Override
