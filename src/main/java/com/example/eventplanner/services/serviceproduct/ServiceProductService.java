@@ -8,6 +8,7 @@ import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProduct
 import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductSummaryDto;
 import com.example.eventplanner.dto.serviceproduct.serviceproductcategory.ServiceProductCategoryDto;
 import com.example.eventplanner.dto.serviceproduct.serviceproductcategory.ServiceProductCategoryMapper;
+import com.example.eventplanner.model.event.EventType;
 import com.example.eventplanner.model.serviceproduct.Product;
 import com.example.eventplanner.model.serviceproduct.ServiceProduct;
 import com.example.eventplanner.model.utils.ServiceProductDType;
@@ -108,5 +109,10 @@ public class ServiceProductService {
                 categories,
                 types
         );
+    }
+
+    public List<String> getCategoriesByAvailableEventType(Long eventTypeId) {
+        EventType eventType = eventTypeRepository.getReferenceById(eventTypeId);
+        return serviceProductRepository.getCategoriesByAvailableEventType((eventType));
     }
 }

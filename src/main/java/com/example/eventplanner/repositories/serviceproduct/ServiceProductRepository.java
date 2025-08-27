@@ -1,5 +1,6 @@
 package com.example.eventplanner.repositories.serviceproduct;
 
+import com.example.eventplanner.model.event.EventType;
 import com.example.eventplanner.model.serviceproduct.ServiceProduct;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -67,4 +68,7 @@ public interface ServiceProductRepository extends JpaRepository<ServiceProduct, 
     List<Object[]> findPriceRange();
     @Query("SELECT MIN(s.duration), MAX(s.duration) FROM Service s WHERE s.visible = true")
     List<Object[]> findDurationRange();
+
+    @Query("SELECT sp.category.name FROM ServiceProduct sp WHERE :eventType MEMBER OF sp.availableEventTypes")
+    List<String> getCategoriesByAvailableEventType(@Param("eventType") EventType eventType);
 }
