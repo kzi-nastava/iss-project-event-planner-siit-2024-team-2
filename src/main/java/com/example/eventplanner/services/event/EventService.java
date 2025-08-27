@@ -91,7 +91,7 @@ public class EventService {
         Event event = EventMapper.toEntity(dto, type, eventOrganizer);
         List<Invitation> invitations = dto.getInvitationEmails()
                 .stream()
-                .map(email -> new Invitation(event, email, userService.existsByEmail(email)))
+                .map(email -> new Invitation(event, email, !userService.existsByEmail(email)))
                 .toList();
         invitationService.sendInvitations(invitations);
         event.setInvitations(invitations);
@@ -119,7 +119,7 @@ public class EventService {
                     List<Invitation> newInvitations = dto.getInvitationEmails()
                             .stream()
                             .filter(email -> !existingInvitations.containsKey(email))
-                            .map(email -> new Invitation(event, email, userService.existsByEmail(email)))
+                            .map(email -> new Invitation(event, email, !userService.existsByEmail(email)))
                             .toList();
                     invitationService.sendInvitations(newInvitations);
                     event.getInvitations().addAll(newInvitations);

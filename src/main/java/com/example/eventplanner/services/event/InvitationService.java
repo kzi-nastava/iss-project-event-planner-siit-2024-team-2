@@ -100,18 +100,22 @@ public class InvitationService {
     public InvitationResult acceptInvitation(String token) {
         BaseUser authenticatedUser = authUtil.getAuthenticatedUser();
         Invitation invitation = invitationRepository.findByToken(token).orElse(null);
-        if (invitation == null || invitation.getEvent() == null)
-            return new InvitationResult(null, InvitationErrorType.NOT_FOUND);
+        if (invitation == null)
+            return new InvitationResult(null, InvitationErrorType.INVITATION_NOT_FOUND);
 
         try {
             BaseUser emailUser = userService.getUserByEmail(invitation.getEmail());
             return handleExistingUser(invitation, emailUser, authenticatedUser);
         } catch (UsernameNotFoundException ignored) { // User doesn't exist, create an account for them
-            return handleQuickRegistration(invitation);
+            return handleQuickRegistration(invitation, authenticatedUser);
         }
     }
 
-    private InvitationResult handleQuickRegistration(Invitation invitation) {
+    private InvitationResult handleQuickRegistration(Invitation invitation, BaseUser authenticatedUser) {
+        if (authenticatedUser != null) // Can't quickly register while someone is logged in
+            return new InvitationResult(invitation, InvitationErrorType.FORBIDDEN);
+        if (invitation.getEvent() == null)
+            return new InvitationResult(null, InvitationErrorType.EVENT_NOT_FOUND);
         // Don't create a new user if the event is full
         if (eventAttendanceService.eventFull(invitation.getEvent().getId(), invitation.getEmail()))
             return new InvitationResult(invitation, InvitationErrorType.EVENT_FULL);
@@ -138,6 +142,8 @@ public class InvitationService {
             else
                 return new InvitationResult(invitation, InvitationErrorType.UNAUTHORIZED);
 
+        if (invitation.getEvent() == null)
+            return new InvitationResult(null, InvitationErrorType.EVENT_NOT_FOUND);
         if (!authenticatedUser.getEmail().equals(invitation.getEmail()))
             return new InvitationResult(invitation, InvitationErrorType.FORBIDDEN);
 

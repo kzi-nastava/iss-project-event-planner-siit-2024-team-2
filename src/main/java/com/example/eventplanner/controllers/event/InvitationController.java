@@ -45,14 +45,14 @@ public class InvitationController {
             return new ResponseEntity<>(InvitationMapper.toDto(result.getInvitation()), HttpStatus.OK);
         else {
             InvitationErrorDto errorDto = new InvitationErrorDto(result.getError());
-            if (result.getError() != InvitationErrorType.NOT_FOUND)
+            if (result.getInvitation() != null && result.getInvitation().getEvent() != null)
                 errorDto.setEventId(result.getInvitation().getEvent().getId());
 
             return switch (result.getError()) {
                 case EVENT_FULL, EVENT_FULL_QUICK_REGISTRATION -> new ResponseEntity<>(errorDto, HttpStatus.CONFLICT);
                 case UNAUTHORIZED_QUICK_REGISTRATION, UNAUTHORIZED -> new ResponseEntity<>(errorDto, HttpStatus.UNAUTHORIZED);
                 case FORBIDDEN -> new ResponseEntity<>(errorDto, HttpStatus.FORBIDDEN);
-                case NOT_FOUND -> new ResponseEntity<>(errorDto, HttpStatus.NOT_FOUND);
+                case INVITATION_NOT_FOUND, EVENT_NOT_FOUND -> new ResponseEntity<>(errorDto, HttpStatus.NOT_FOUND);
             };
         }
     }

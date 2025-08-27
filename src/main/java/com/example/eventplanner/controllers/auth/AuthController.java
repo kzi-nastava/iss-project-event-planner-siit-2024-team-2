@@ -41,7 +41,7 @@ public class AuthController {
     private final UserReportService userReportService;
 
     @PostMapping("/login")
-    public LoginResponseDto login(@RequestBody LoginDto request) {
+    public ResponseEntity<LoginResponseDto> login(@RequestBody LoginDto request) {
         // Authenticate user
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
@@ -50,15 +50,17 @@ public class AuthController {
 
         BaseUser authenticatedUser = userService.getUserByEmail(request.getEmail());
         if (userReportService.checkAndUpdateSuspension(authenticatedUser))
-            return new LoginResponseDto(0L, null, null, authenticatedUser.getUserRole(), authenticatedUser.getSuspendedAt());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(new LoginResponseDto(0L, null, null,
+                            authenticatedUser.getUserRole(), authenticatedUser.getSuspendedAt()));
 
         String token = jwtTokenUtil.generateToken(authenticatedUser.getEmail());
 
-        return new LoginResponseDto(authenticatedUser.getId(),
+        return ResponseEntity.ok(new LoginResponseDto(authenticatedUser.getId(),
                 authenticatedUser.getEmail(),
                 token,
                 authenticatedUser.getUserRole(),
-                null);
+                null));
     }
 
     @PostMapping("/signup")
@@ -101,7 +103,9 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
         if (userReportService.checkAndUpdateSuspension(user)) {
-            return ResponseEntity.ok(new LoginResponseDto(0L, null, null, user.getUserRole(), user.getSuspendedAt()));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(new LoginResponseDto(0L, null, null,
+                            user.getUserRole(), user.getSuspendedAt()));
         }
 
         String jwt = jwtTokenUtil.generateToken(user.getEmail());
