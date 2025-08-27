@@ -12,6 +12,7 @@ import com.example.eventplanner.dto.user.user.RegisterUserDto;
 import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.utils.UserRole;
 import com.example.eventplanner.services.event.InvitationService;
+import com.example.eventplanner.services.user.UserReportService;
 import com.example.eventplanner.services.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,6 +38,7 @@ public class AuthController {
     private final JwtTokenUtil jwtTokenUtil;
     private final InvitationService invitationService;
     private final AuthUtil authUtil;
+    private final UserReportService userReportService;
 
     @PostMapping("/login")
     public LoginResponseDto login(@RequestBody LoginDto request) {
@@ -44,13 +49,16 @@ public class AuthController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         BaseUser authenticatedUser = userService.getUserByEmail(request.getEmail());
+        if (userReportService.checkAndUpdateSuspension(authenticatedUser))
+            return new LoginResponseDto(0L, null, null, authenticatedUser.getUserRole(), authenticatedUser.getSuspendedAt());
 
         String token = jwtTokenUtil.generateToken(authenticatedUser.getEmail());
 
         return new LoginResponseDto(authenticatedUser.getId(),
                 authenticatedUser.getEmail(),
                 token,
-                authenticatedUser.getUserRole());
+                authenticatedUser.getUserRole(),
+                null);
     }
 
     @PostMapping("/signup")
@@ -92,13 +100,18 @@ public class AuthController {
         if (!invitation.isQuickRegistration() || !invitation.isAccepted() || user.getUserRole() != UserRole.AUTHENTICATED)
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 
+        if (userReportService.checkAndUpdateSuspension(user)) {
+            return ResponseEntity.ok(new LoginResponseDto(0L, null, null, user.getUserRole(), user.getSuspendedAt()));
+        }
+
         String jwt = jwtTokenUtil.generateToken(user.getEmail());
 
         return ResponseEntity.ok(new LoginResponseDto(
                 user.getId(),
                 user.getEmail(),
                 jwt,
-                user.getUserRole()
+                user.getUserRole(),
+                null
         ));
     }
 }

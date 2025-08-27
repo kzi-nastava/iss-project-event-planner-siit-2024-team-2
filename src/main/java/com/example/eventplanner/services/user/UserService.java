@@ -144,7 +144,7 @@ public class UserService implements UserDetailsService {
         return userReportService.getAll()
                 .stream()
                 .filter(report -> report.getReported().getId() == id)
-                .filter(report -> approved == null || approved == (report.getDateApproved() != null))
+                .filter(report -> approved == null || approved == (report.getApprovedAt() != null))
                 .toList();
     }
 

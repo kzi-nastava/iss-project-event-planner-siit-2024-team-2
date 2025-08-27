@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.time.Instant;
 import java.util.Date;
 
 @Getter
@@ -21,6 +22,6 @@ public class UserReport extends Entity {
     private BaseUser reporter;
     @ManyToOne
     private BaseUser reported;
-    private Date dateApproved;
+    private Instant approvedAt = null;
     private String reason;
 }
