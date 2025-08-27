@@ -5,12 +5,15 @@ import com.example.eventplanner.dto.communication.notification.NotificationDto;
 import com.example.eventplanner.dto.communication.notification.NotificationMapper;
 import com.example.eventplanner.dto.communication.notification.NotificationNoIdDto;
 import com.example.eventplanner.model.communication.Notification;
+import com.example.eventplanner.model.user.Admin;
 import com.example.eventplanner.model.user.BaseUser;
+import com.example.eventplanner.model.utils.UserRole;
 import com.example.eventplanner.repositories.communication.NotificationRepository;
 import com.example.eventplanner.repositories.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -86,6 +89,18 @@ public class NotificationService {
         return true;
     }
 
+    public boolean sendCategoryRequest(NotificationNoIdDto dto) {
+        BaseUser admin = userRepository.findFirstByUserRole(UserRole.ADMIN).orElse(null);
+        if (admin == null)
+            return false;
+        dto.setUserId(admin.getId());
+        dto.setSeen(false);
+        dto.setDismissed(false);
+        sendNotification(dto);
+        return true;
+    }
+
+    @Async
     public void sendNotification(NotificationNoIdDto dto) {
         create(dto);
         MessageDto messageDto = MessageDto.builder()

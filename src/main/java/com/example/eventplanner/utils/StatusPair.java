@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 @Setter
 @AllArgsConstructor
-public class StatusPair {
-    private Object value;
+public class StatusPair<T> {
+    private T value;
     private HttpStatus status;
 }

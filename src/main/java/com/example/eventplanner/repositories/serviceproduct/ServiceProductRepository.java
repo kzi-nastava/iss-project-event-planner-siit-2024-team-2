@@ -1,6 +1,7 @@
 package com.example.eventplanner.repositories.serviceproduct;
 
 import com.example.eventplanner.model.event.EventType;
+import com.example.eventplanner.dto.serviceproduct.pricelist.PriceListDto;
 import com.example.eventplanner.model.serviceproduct.ServiceProduct;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -71,4 +72,8 @@ public interface ServiceProductRepository extends JpaRepository<ServiceProduct, 
 
     @Query("SELECT sp.category.name FROM ServiceProduct sp WHERE :eventType MEMBER OF sp.availableEventTypes")
     List<String> getCategoriesByAvailableEventType(@Param("eventType") EventType eventType);
+           
+    @Query("SELECT new com.example.eventplanner.dto.serviceproduct.pricelist.PriceListDto(sp.id, sp.name, sp.price, sp.discount) " +
+            "FROM ServiceProduct sp WHERE sp.serviceProductProvider.id = :sppId")
+    List<PriceListDto> getPriceListBySppId(@Param("sppId") Long sppId);
 }

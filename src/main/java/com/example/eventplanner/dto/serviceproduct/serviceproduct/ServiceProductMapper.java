@@ -1,11 +1,13 @@
 package com.example.eventplanner.dto.serviceproduct.serviceproduct;
 
 import com.example.eventplanner.dto.event.eventtype.EventTypeMapper;
+import com.example.eventplanner.dto.serviceproduct.pricelist.PriceListDto;
 import com.example.eventplanner.dto.serviceproduct.serviceproductcategory.ServiceProductCategoryMapper;
 import com.example.eventplanner.dto.user.user.UserMapper;
 import com.example.eventplanner.model.event.EventType;
 import com.example.eventplanner.model.serviceproduct.ServiceProduct;
 import com.example.eventplanner.model.serviceproduct.ServiceProductCategory;
+import com.example.eventplanner.model.serviceproduct.ServiceProductNameIdDto;
 import com.example.eventplanner.model.user.ServiceProductProvider;
 import com.example.eventplanner.services.serviceproduct.ImageService;
 
@@ -92,5 +94,27 @@ public class ServiceProductMapper {
                 dto.getImages().stream().map(ImageService::decodePath).toList(),
                 availableEventTypes,
                 serviceProductProvider);
+    }
+
+    public static PriceListDto toPriceListItemDto(ServiceProduct sp) {
+        if (sp == null)
+            return null;
+        return new PriceListDto(
+                sp.getId(),
+                sp.getName(),
+                sp.getPrice(),
+                sp.getDiscount()
+       );
+    }
+
+    public static ServiceProductNameIdDto toNameDto(ServiceProduct serviceProduct) {
+        if (serviceProduct == null)
+            return null;
+
+        return new ServiceProductNameIdDto(
+                serviceProduct.getId(),
+                serviceProduct.getName(),
+                serviceProduct.getDescription()
+        );
     }
 }

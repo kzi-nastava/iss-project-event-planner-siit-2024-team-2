@@ -39,11 +39,15 @@ public class AuthUtil {
     }
 
     public Long getAuthenticatedUserId() {
+        BaseUser user = getAuthenticatedUser();
+        return user != null ? user.getId() : null;
+    }
+
+    public BaseUser getAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         try {
-            BaseUser user = userService.findByUsername(username);
-            return user != null ? user.getId() : null;
+            return userService.getUserByEmail(username);
         } catch (Exception e) {
             return null;
         }

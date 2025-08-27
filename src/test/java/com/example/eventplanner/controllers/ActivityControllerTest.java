@@ -1,11 +1,9 @@
 package com.example.eventplanner.controllers;
 
-import com.example.eventplanner.controllers.event.EventController;
 import com.example.eventplanner.dto.event.activity.ActivityDto;
 import com.example.eventplanner.model.event.Activity;
 import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.repositories.event.EventRepository;
-import com.example.eventplanner.repositories.event.EventReviewRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -17,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.mockito.ArgumentMatchers.any;
 
@@ -35,6 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @AutoConfigureMockMvc
 @SpringBootTest
+@ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class ActivityControllerTest {
 

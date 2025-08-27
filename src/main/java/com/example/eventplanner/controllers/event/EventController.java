@@ -9,9 +9,16 @@ import com.example.eventplanner.dto.event.event.EventSummaryDto;
 import com.example.eventplanner.dto.order.booking.BookingDto;
 import com.example.eventplanner.dto.order.purchase.PurchaseDto;
 import com.example.eventplanner.model.event.Budget;
+import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.user.EventOrganizer;
+import com.example.eventplanner.model.user.ServiceProductProvider;
+import com.example.eventplanner.model.utils.AttendanceResult;
+import com.example.eventplanner.model.utils.UserRole;
+import com.example.eventplanner.services.event.EventAttendanceService;
 import com.example.eventplanner.services.event.EventReportService;
 import com.example.eventplanner.services.event.EventService;
+import com.example.eventplanner.utils.StatusPair;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
@@ -31,6 +38,7 @@ public class EventController {
     private final EventService eventService;
     private final AuthUtil authUtil;
     private final EventReportService eventReportService;
+    private final EventAttendanceService eventAttendanceService;
 
     @GetMapping
     public ResponseEntity<Page<EventDto>> getAllEvents(
@@ -57,6 +65,35 @@ public class EventController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    @GetMapping("/mine")
+    public ResponseEntity<Page<EventDto>> getMyEvents(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) Integer size,
+            @RequestParam(defaultValue = "date") String sortBy,
+            @RequestParam(defaultValue = "DESC") Sort.Direction sortDirection,
+            @RequestParam(defaultValue = "") String name,
+            @RequestParam(defaultValue = "") String description,
+            @RequestParam(required = false) List<Long> types,
+            @RequestParam(required = false) Integer minMaxAttendances,
+            @RequestParam(required = false) Integer maxMaxAttendances,
+            @RequestParam(required = false) Boolean open,
+            @RequestParam(required = false) List<Double> latitudes,
+            @RequestParam(required = false) List<Double> longitudes,
+            @RequestParam(required = false) Double maxDistance,
+            @RequestParam(required = false) Long startDate,
+            @RequestParam(required = false) Long endDate) {
+        Sort sort = Sort.by(sortDirection, sortBy);
+        EventOrganizer organizer = authUtil.getAuthenticatedEventOrganizer();
+        if (organizer == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        Page<EventDto> result = eventService.getAllFilteredByOrganizer(
+                EventDto.class, organizer.getId(),
+                page, size, sort, name, description, types, minMaxAttendances, maxMaxAttendances,
+                open, latitudes, longitudes, maxDistance, startDate, endDate);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
     @GetMapping(value = "/summaries")
     public ResponseEntity<Page<EventSummaryDto>> getEventSummaries(
             @RequestParam(defaultValue = "0") int page,
@@ -74,6 +111,9 @@ public class EventController {
             @RequestParam(required = false) Double maxDistance,
             @RequestParam(required = false) Long startDate,
             @RequestParam(required = false) Long endDate) {
+        BaseUser user = authUtil.getAuthenticatedUser();
+        if (user == null || user.getUserRole() != UserRole.ADMIN)
+            open = true; // Users can only see open events
         Sort sort = Sort.by(sortDirection, sortBy);
         Page<EventSummaryDto> result = eventService.getAllFiltered(
                 EventSummaryDto.class,
@@ -84,14 +124,14 @@ public class EventController {
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<EventDto> getEventById(@PathVariable("id") Long id) {
-        EventDto result = eventService.getById(id);
-        return result != null ?
-                new ResponseEntity<>(result, HttpStatus.OK) :
-                new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        StatusPair<EventDto> result = eventService.getById(id);
+        return result.getStatus() == HttpStatus.OK ?
+                new ResponseEntity<>(result.getValue(), HttpStatus.OK) :
+                new ResponseEntity<>(result.getStatus());
     }
 
     @PostMapping
-    public ResponseEntity<EventDto> createEvent(@RequestBody EventNoIdDto dto) {
+    public ResponseEntity<EventDto> createEvent(@Valid @RequestBody EventNoIdDto dto) {
         EventOrganizer organizer = authUtil.getAuthenticatedEventOrganizer();
         if (organizer == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -106,7 +146,7 @@ public class EventController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<EventDto> updateEvent(@PathVariable("id") Long id, @RequestBody EventNoIdDto dto) {
+    public ResponseEntity<EventDto> updateEvent(@Valid @PathVariable("id") Long id, @RequestBody EventNoIdDto dto) {
         EventDto result = eventService.update(dto, id);
         return result != null ?
                 new ResponseEntity<>(result, HttpStatus.OK) :
@@ -191,5 +231,35 @@ public class EventController {
             @PathVariable Long id,
             @RequestBody Budget budget) {
         eventService.addBudgetToEvent(id, budget);
+    }
+  
+    @PostMapping("/{id}/attend")
+    public ResponseEntity<String> attendEvent(@PathVariable long id) {
+        BaseUser user = authUtil.getAuthenticatedUser();
+        if (user == null)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+        AttendanceResult result = eventAttendanceService.attendEvent(id, user);
+
+        if (result == AttendanceResult.FULL)
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Event is full");
+        else if (result == AttendanceResult.NOT_FOUND)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Event not found");
+        else
+            return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{id}/attend")
+    public ResponseEntity<String> removeEventAttendance(@PathVariable long id) {
+        BaseUser user = authUtil.getAuthenticatedUser();
+        if (user == null)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+        AttendanceResult result = eventAttendanceService.removeEventAttendance(id, user);
+
+        if (result == AttendanceResult.NOT_FOUND)
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Event not found");
+        else
+            return ResponseEntity.ok().build();
     }
 }

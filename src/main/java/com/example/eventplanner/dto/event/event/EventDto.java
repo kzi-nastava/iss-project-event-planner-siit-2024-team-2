@@ -28,4 +28,5 @@ public class EventDto {
     private long date;
     private List<ActivityDto> activity;
     private List<BudgetDto> budgets;
+    private List<String> invitationEmails;
 }

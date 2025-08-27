@@ -56,8 +56,9 @@ public class NotificationController {
     }
 
     @PostMapping("/dismiss")
-    public ResponseEntity<?> dismissNotifications(@RequestBody Collection<Long> ids) {
-        long userId = authUtil.getAuthenticatedUserId();
+    public ResponseEntity<Void> dismissNotifications(@RequestBody Collection<Long> ids) {
+        Long userId = authUtil.getAuthenticatedUserId();
+        if (userId == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         try {
             notificationService.dismiss(ids, userId);
             return new ResponseEntity<>(HttpStatus.OK);
@@ -67,7 +68,7 @@ public class NotificationController {
     }
 
     @PostMapping("/seen")
-    public ResponseEntity<?> seenNotifications(@RequestBody Collection<Long> ids) {
+    public ResponseEntity<Void> seenNotifications(@RequestBody Collection<Long> ids) {
         Long userId = authUtil.getAuthenticatedUserId();
         if (userId == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         try {
@@ -96,5 +97,13 @@ public class NotificationController {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "sentAt"));
         Page<NotificationDto> result = notificationService.getAllForUser(userId, sentAt, pageable);
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @PostMapping("/send-category-request")
+    public ResponseEntity<Void> sendCategoryRequest(@RequestBody NotificationNoIdDto dto) {
+        boolean success = notificationService.sendCategoryRequest(dto);
+        return success ?
+                new ResponseEntity<>(HttpStatus.OK) :
+                new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 }
