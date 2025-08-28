@@ -18,4 +18,5 @@ public class UserReportDto {
     private BaseUserDto reported;
     private Instant approvedAt = null;
     private String reason;
+    private Instant createdAt;
 }

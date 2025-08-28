@@ -24,4 +24,5 @@ public class UserReport extends Entity {
     private BaseUser reported;
     private Instant approvedAt = null;
     private String reason;
+    private final Instant createdAt = Instant.now();
 }

@@ -18,7 +18,8 @@ public class UserReportMapper {
                 UserMapper.toBaseUserDto(userReport.getReporter()),
                 UserMapper.toBaseUserDto(userReport.getReported()),
                 userReport.getApprovedAt(),
-                userReport.getReason()
+                userReport.getReason(),
+                userReport.getCreatedAt()
         );
     }
 

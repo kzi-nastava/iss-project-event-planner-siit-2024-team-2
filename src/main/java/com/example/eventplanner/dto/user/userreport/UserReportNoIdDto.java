@@ -10,6 +10,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserReportNoIdDto {
-    private long reportedId;
+    private String reportedEmail;
     private String reason;
 }

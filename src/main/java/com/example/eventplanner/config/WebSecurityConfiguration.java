@@ -102,7 +102,7 @@ public class WebSecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/api/notifications/send-category-request").hasRole("SERVICE_PRODUCT_PROVIDER")
 
                         // UserReports
-                        .requestMatchers(HttpMethod.POST, "/api/user-reports").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/user-reports").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/user-reports").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/user-reports/{id}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/user-reports/approve").hasRole("ADMIN")

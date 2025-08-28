@@ -58,21 +58,12 @@ public class UserReportService {
         BaseUser reporter = authUtil.getAuthenticatedUser();
         if (reporter == null)
             return null;
-        BaseUser reported = userRepository.getReferenceById(dto.getReportedId());
+        BaseUser reported = userRepository.findByEmail(dto.getReportedEmail()).orElse(null);
+        if (reported == null)
+            return null;
 
         UserReport userReport = UserReportMapper.toEntity(dto, reporter, reported);
         return UserReportMapper.toDto(userReportRepository.save(userReport));
-    }
-
-    public UserReportDto update(UserReportNoIdDto dto, long id) {
-        return userReportRepository.findById(id)
-                .map(ur -> {
-                    ur.setReason(dto.getReason());
-                    BaseUser reported = userRepository.getReferenceById(dto.getReportedId());
-                    ur.setReported(reported);
-                    return UserReportMapper.toDto(userReportRepository.save(ur));
-                })
-                .orElse(null);
     }
 
     public boolean delete(long id) {

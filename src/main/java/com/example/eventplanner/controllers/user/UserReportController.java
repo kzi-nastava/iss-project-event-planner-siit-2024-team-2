@@ -46,15 +46,9 @@ public class UserReportController {
     @PostMapping
     public ResponseEntity<UserReportDto> createUserReport(@RequestBody UserReportNoIdDto dto) {
         UserReportDto result = userReportService.create(dto);
-        return new ResponseEntity<>(result, HttpStatus.CREATED);
-    }
-
-    @PutMapping(value = "/{id}")
-    public ResponseEntity<UserReportDto> updateUserReport(@PathVariable("id") Long id, @RequestBody UserReportNoIdDto dto) {
-        UserReportDto result = userReportService.update(dto, id);
         return result != null ?
-                new ResponseEntity<>(result, HttpStatus.OK) :
-                new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                new ResponseEntity<>(result, HttpStatus.CREATED) :
+                new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @DeleteMapping(value = "/{id}")
