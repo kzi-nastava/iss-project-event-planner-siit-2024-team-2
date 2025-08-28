@@ -36,4 +36,5 @@ public class ServiceProduct extends Entity {
     private List<EventType> availableEventTypes;
     @ManyToOne
     private ServiceProductProvider serviceProductProvider;
+    private String dtype;
 }

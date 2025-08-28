@@ -26,4 +26,5 @@ public class ServiceProductDto {
     private List<String> images;
     private List<EventTypeDto> availableEventTypes;
     private ServiceProductProviderDto serviceProductProvider;
+    private String dtype;
 }
