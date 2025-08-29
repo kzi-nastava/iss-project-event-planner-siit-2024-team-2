@@ -90,12 +90,14 @@ public class EventService {
         EventType type = eventTypeRepository.findById(dto.getEventTypeId()).orElseThrow();
         EventOrganizer eventOrganizer = (EventOrganizer) userRepository.findById(dto.getEventOrganizerId()).orElseThrow();
         Event event = EventMapper.toEntity(dto, type, eventOrganizer);
-        List<Invitation> invitations = dto.getInvitationEmails()
-                .stream()
-                .map(email -> new Invitation(event, email, !userService.existsByEmail(email)))
-                .toList();
-        invitationService.sendInvitations(invitations);
-        event.setInvitations(invitations);
+        if (!event.isOpen() && dto.getInvitationEmails() != null) {
+            List<Invitation> invitations = dto.getInvitationEmails()
+                    .stream()
+                    .map(email -> new Invitation(event, email, !userService.existsByEmail(email)))
+                    .toList();
+            invitationService.sendInvitations(invitations);
+            event.setInvitations(invitations);
+        }
         return EventMapper.toDto(eventRepository.save(event));
     }
 

@@ -8,6 +8,7 @@ import com.example.eventplanner.model.user.AuthenticatedUser;
 import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.user.ServiceProductProvider;
 import com.example.eventplanner.model.utils.UserRole;
+import com.example.eventplanner.repositories.user.UserReportRepository;
 import com.example.eventplanner.repositories.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +32,8 @@ public class UserService implements UserDetailsService {
     private PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final UserUpgradeService userUpgradeService;
+    @Autowired
+    private UserReportRepository userReportRepository;
 
     public boolean registerUser(RegisterUserDto registerUserDto) {
         if (!validateUser(registerUserDto))
@@ -116,11 +120,13 @@ public class UserService implements UserDetailsService {
         return new CompanyInfoDto(serviceProductProvider.getCompanyName(), serviceProductProvider.getCompanyDescription());
     }
 
+    @Transactional
     public boolean delete(long id) {
         return userRepository.findById(id)
                 .map(u -> {
                     u.setActive(false);
                     userRepository.save(u);
+                    userReportRepository.deleteReportsByUserId(id);
                     return true;
                 }).orElse(false);
     }

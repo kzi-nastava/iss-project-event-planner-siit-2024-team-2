@@ -15,4 +15,8 @@ public interface UserReportRepository extends JpaRepository<UserReport, Long> {
     @Query("UPDATE UserReport e SET e.active = false WHERE e.id = :id")
     void deleteById(@Param("id") long id);
     Page<UserReport> findAllByApprovedAtIsNull(Pageable pageable);
+
+    @Modifying
+    @Query("UPDATE UserReport e SET e.active = false WHERE e.reporter.id = :userId OR e.reported.id = :userId")
+    void deleteReportsByUserId(long userId);
 }

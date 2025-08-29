@@ -4,6 +4,7 @@ import com.example.eventplanner.controllers.utils.AuthUtil;
 import com.example.eventplanner.dto.user.userreport.UserReportDto;
 import com.example.eventplanner.dto.user.userreport.UserReportMapper;
 import com.example.eventplanner.dto.user.userreport.UserReportNoIdDto;
+import com.example.eventplanner.exception.NotFoundException;
 import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.user.UserReport;
 import com.example.eventplanner.repositories.serviceproduct.ServiceProductRepository;
@@ -77,10 +78,10 @@ public class UserReportService {
     public UserReportDto approve(long id) {
         UserReport userReport = userReportRepository.findById(id).orElse(null);
         if (userReport == null)
-            return null;
+            throw new NotFoundException("User report not found");
         BaseUser user = userRepository.findById(userReport.getReported().getId()).orElse(null);
         if (user == null)
-            return null;
+            throw new NotFoundException("User not found");
 
         userReport.setApprovedAt(Instant.now());
         userReportRepository.save(userReport);
