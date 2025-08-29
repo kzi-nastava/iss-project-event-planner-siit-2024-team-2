@@ -102,7 +102,7 @@ public class WebSecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/api/notifications/send-category-request").hasRole("SERVICE_PRODUCT_PROVIDER")
 
                         // Everything else requires authentication
-                        .anyRequest().authenticated())
+                        .anyRequest().permitAll())
                 .sessionManagement(session -> {
                     session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
                 })

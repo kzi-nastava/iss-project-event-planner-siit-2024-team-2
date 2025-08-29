@@ -4,6 +4,7 @@ package com.example.eventplanner.controllers.user;
 import com.example.eventplanner.controllers.utils.AuthUtil;
 import com.example.eventplanner.dto.event.event.EventDto;
 import com.example.eventplanner.dto.user.user.CompanyInfoDto;
+import com.example.eventplanner.dto.user.user.ImageNameDto;
 import com.example.eventplanner.dto.user.user.RegisterUserDto;
 import com.example.eventplanner.dto.user.user.UserInfoDto;
 import com.example.eventplanner.dto.user.userreport.UserReportDto;
@@ -114,8 +115,8 @@ public class UserController {
     @PostMapping("/{id}/upload-picture")
     public ResponseEntity<RegisterUserDto> uploadProfilePicture(
             @PathVariable long id,
-            @RequestParam("imageName") String imageName) {
-        RegisterUserDto updatedUser = userService.uploadProfilePicture(id, imageName);
+            @RequestBody ImageNameDto dto) {
+        RegisterUserDto updatedUser = userService.uploadProfilePicture(id, dto.getImageName());
         return updatedUser != null
                 ? ResponseEntity.ok(updatedUser)
                 : ResponseEntity.notFound().build();
@@ -128,5 +129,4 @@ public class UserController {
                 ? ResponseEntity.ok(updatedUser)
                 : ResponseEntity.notFound().build();
     }
-
 }
