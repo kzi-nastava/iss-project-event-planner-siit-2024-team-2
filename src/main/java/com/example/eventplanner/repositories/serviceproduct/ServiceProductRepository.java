@@ -21,7 +21,7 @@ public interface ServiceProductRepository extends JpaRepository<ServiceProduct, 
     FROM serviceproduct sp
     LEFT JOIN serviceproductreview spr
       ON sp.id = spr.serviceproduct_id AND spr.reviewstatus = 1
-    WHERE sp.visible = true
+    WHERE sp.visible = true AND sp.active = true
     GROUP BY sp.id
     ORDER BY COALESCE(AVG(spr.grade), 0) DESC
     LIMIT 5
