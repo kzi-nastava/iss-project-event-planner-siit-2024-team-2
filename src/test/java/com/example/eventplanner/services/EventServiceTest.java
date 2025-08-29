@@ -1,8 +1,10 @@
 package com.example.eventplanner.services;
 
+import com.example.eventplanner.controllers.utils.AuthUtil;
 import com.example.eventplanner.dto.event.activity.ActivityDto;
 import com.example.eventplanner.dto.event.event.EventDto;
 import com.example.eventplanner.dto.event.event.EventNoIdDto;
+import com.example.eventplanner.exception.NotFoundException;
 import com.example.eventplanner.model.event.Activity;
 import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.event.EventType;
@@ -18,7 +20,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.management.BadAttributeValueExpException;
 import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -40,6 +41,9 @@ class EventServiceTest {
 
     @Mock
     private InvitationService invitationService;
+
+    @Mock
+    private AuthUtil authUtil;
 
     private EventNoIdDto eventDto;
     private EventType eventType;
@@ -76,6 +80,7 @@ class EventServiceTest {
         event.setEventOrganizer(organizer);
         event.setOpen(true);
         event.setAttendees(new ArrayList<>());
+        event.setEventOrganizer(organizer);
     }
 
     @Test
@@ -127,15 +132,16 @@ class EventServiceTest {
     }
 
     @Test
-    void getById_ShouldReturnNull_WhenNotFound() {
+    void getById_ShouldReturnNotFoundException_WhenNotFound() {
         when(eventRepository.findById(99L)).thenReturn(Optional.empty());
 
-        assertNull(eventService.getById(99L));
+        assertThrows(NotFoundException.class, () -> eventService.getById(99L));
     }
 
     @Test
     void delete_ShouldReturnTrue_WhenExists() {
         when(eventRepository.findById(10L)).thenReturn(Optional.of(event));
+        when(authUtil.getAuthenticatedUser()).thenReturn(organizer);
 
         boolean result = eventService.delete(10L);
 
@@ -144,12 +150,10 @@ class EventServiceTest {
     }
 
     @Test
-    void delete_ShouldReturnFalse_WhenNotExists() {
+    void delete_ShouldThrowNotFoundException_WhenNotExists() {
         when(eventRepository.findById(99L)).thenReturn(Optional.empty());
 
-        boolean result = eventService.delete(99L);
-
-        assertFalse(result);
+        assertThrows(NotFoundException.class, () -> eventService.delete(99L));
         verify(eventRepository, never()).deleteById(anyLong());
     }
 
@@ -162,9 +166,11 @@ class EventServiceTest {
 
         Event existingEvent = new Event();
         existingEvent.setActivities(new ArrayList<>());
+        existingEvent.setEventOrganizer(organizer);
 
         when(eventRepository.findById(1L)).thenReturn(Optional.of(existingEvent));
         when(eventRepository.save(any())).thenReturn(existingEvent);
+        when(authUtil.getAuthenticatedUser()).thenReturn(organizer);
 
         boolean result = eventService.addActivity(1L, dto);
 
@@ -185,8 +191,10 @@ class EventServiceTest {
 
         Event event = new Event();
         event.setActivities(List.of(existing));
+        event.setEventOrganizer(organizer);
 
         when(eventRepository.findById(1L)).thenReturn(Optional.of(event));
+        when(authUtil.getAuthenticatedUser()).thenReturn(organizer);
 
         boolean result = eventService.addActivity(1L, dto);
 
@@ -194,20 +202,20 @@ class EventServiceTest {
     }
 
     @Test
-    void updateActivity_ShouldReturnFalse_WhenEventNotFound() {
+    void updateActivity_ShouldThrowNotFoundException_WhenEventNotFound() {
         when(eventRepository.findById(1L)).thenReturn(Optional.empty());
 
-        boolean result = eventService.updateActivity(1L, 1L, new ActivityDto());
-
-        assertFalse(result);
+        assertThrows(NotFoundException.class, () -> eventService.updateActivity(1L, 1L, new ActivityDto()));
     }
 
     @Test
     void updateActivity_ShouldReturnFalse_WhenActivityNotFound() {
         Event event = new Event();
         event.setActivities(new ArrayList<>());
+        event.setEventOrganizer(organizer);
 
         when(eventRepository.findById(1L)).thenReturn(Optional.of(event));
+        when(authUtil.getAuthenticatedUser()).thenReturn(organizer);
 
         boolean result = eventService.updateActivity(1L, 99L, new ActivityDto());
 
@@ -222,7 +230,7 @@ class EventServiceTest {
 
         List<Activity> activities = List.of(a1);
 
-        boolean result = invokeIsTimeValid(activities, 15, 25, null);
+        boolean result = invokeIsTimeValid(activities, 15L, 25L, null);
 
         assertFalse(result);
     }
@@ -235,35 +243,44 @@ class EventServiceTest {
 
         List<Activity> activities = List.of(a1);
 
-        boolean result = invokeIsTimeValid(activities, 21, 30, null);
+        boolean result = invokeIsTimeValid(activities, 21L, 30L, null);
 
         assertTrue(result);
     }
 
     @Test
     void addActivity_ShouldFail_WhenEmptyName() {
+        when(eventRepository.findById(10L)).thenReturn(Optional.of(event));
+        when(authUtil.getAuthenticatedUser()).thenReturn(organizer);
+
         ActivityDto dto = new ActivityDto();
-        dto.setActivityStart(10);
-        dto.setActivityEnd(10);
-        boolean result = eventService.addActivity(1L, dto);
+        dto.setActivityStart(10L);
+        dto.setActivityEnd(10L);
+        boolean result = eventService.addActivity(10L, dto);
         assertFalse(result, "Failed: Added activity with name");
     }
 
     @Test
     void addActivity_ShouldFail_WhenEmptyStart() {
+        when(eventRepository.findById(10L)).thenReturn(Optional.of(event));
+        when(authUtil.getAuthenticatedUser()).thenReturn(organizer);
+
         ActivityDto dto = new ActivityDto();
         dto.setName("Test");
-        dto.setActivityEnd(10);
-        boolean result = eventService.addActivity(1L, dto);
+        dto.setActivityEnd(10L);
+        boolean result = eventService.addActivity(10L, dto);
         assertFalse(result, "Failed: Added activity with empty timestamp");
     }
 
     @Test
     void addActivity_ShouldFail_WhenEmptyEnd() {
+        when(eventRepository.findById(10L)).thenReturn(Optional.of(event));
+        when(authUtil.getAuthenticatedUser()).thenReturn(organizer);
+
         ActivityDto dto = new ActivityDto();
         dto.setName("Test");
-        dto.setActivityStart(10);
-        boolean result = eventService.addActivity(1L, dto);
+        dto.setActivityStart(10L);
+        boolean result = eventService.addActivity(10L, dto);
         assertFalse(result, "Failed: Added activity with empty timestamp");
     }
 
@@ -275,8 +292,10 @@ class EventServiceTest {
 
         Event event = new Event();
         event.setActivities(new ArrayList<>(List.of(existing)));
+        event.setEventOrganizer(organizer);
 
         when(eventRepository.findById(1L)).thenReturn(Optional.of(event));
+        when(authUtil.getAuthenticatedUser()).thenReturn(organizer);
 
         List<ActivityTestCase> testCases = List.of(
                 new ActivityTestCase(6, 5, false, "Start after end"),
@@ -318,9 +337,9 @@ class EventServiceTest {
     }
 
 
-    private boolean invokeIsTimeValid(List<Activity> activities, long start, long end, Long activityId) {
+    private boolean invokeIsTimeValid(List<Activity> activities, Long start, Long end, Long activityId) {
         try {
-            var method = EventService.class.getDeclaredMethod("isTimeValid", List.class, long.class, long.class, Long.class);
+            var method = EventService.class.getDeclaredMethod("isTimeValid", List.class, Long.class, Long.class, Long.class);
             method.setAccessible(true);
             return (boolean) method.invoke(eventService, activities, start, end, activityId);
         } catch (Exception e) {

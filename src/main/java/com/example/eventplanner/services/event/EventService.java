@@ -253,7 +253,7 @@ public class EventService {
 
     public boolean addActivity(long id, ActivityDto activity) {
         Event event = getAuthorizedEvent(id);
-        if (activity.getName().isEmpty()) return false;
+        if (activity.getName() == null || activity.getName().isEmpty()) return false;
         if (!isTimeValid(event.getActivities(), activity.getActivityStart(), activity.getActivityEnd(), null)) return false;
         event.getActivities().add(ActivityMapper.toEntity(activity));
         sendUpdateNotifications(event, "Event " + event.getName() + " had its agenda updated");
@@ -308,7 +308,8 @@ public class EventService {
         return activity != null;
     }
 
-    private boolean isTimeValid(List<Activity> activities, long start, long end, Long activityId) {
+    private boolean isTimeValid(List<Activity> activities, Long start, Long end, Long activityId) {
+        if (start == null || end == null) return false;
         if (start >= end) return false;
 
         for (Activity activity : activities.stream().filter(Entity::isActive).toList()) {
@@ -342,13 +343,13 @@ public class EventService {
     }
 
     @NotNull
-    private Event getAuthorizedEvent(long id) {
-        BaseUser user = authUtil.getAuthenticatedUser();
-        if (user == null)
-            throw new UnauthorizedException("User not found");
+    public Event getAuthorizedEvent(long id) {
         Event event = eventRepository.findById(id).orElse(null);
         if (event == null)
             throw new NotFoundException("Event not found");
+        BaseUser user = authUtil.getAuthenticatedUser();
+        if (user == null)
+            throw new UnauthorizedException("User not found");
         boolean admin = user.getUserRole() == UserRole.ADMIN;
         if (event.getEventOrganizer().getId() != user.getId() && !admin)
             throw new ForbiddenException("You are not authorized to access this event");
