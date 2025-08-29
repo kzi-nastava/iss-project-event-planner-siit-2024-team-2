@@ -33,7 +33,7 @@ public interface ServiceProductRepository extends JpaRepository<ServiceProduct, 
             "AND (:description LIKE '' OR LOWER(sp.description) LIKE LOWER(CONCAT('%', :description, '%'))) " +
             "AND (:categoryIds IS NULL OR sp.category.id in :categoryIds) " +
             "AND (:available IS NULL OR sp.available = :available) " +
-            "AND (:visible IS NULL OR sp.visible = :visible) " +
+            "AND (sp.visible = true) " +
             "AND (:minPrice IS NULL OR sp.price >= :minPrice) " +
             "AND (:maxPrice IS NULL OR sp.price <= :maxPrice) " +
             "AND (:typeIds IS NULL OR EXISTS (" +
@@ -53,7 +53,6 @@ public interface ServiceProductRepository extends JpaRepository<ServiceProduct, 
             @Param("description") String description,
             @Param("categoryIds") List<Long> categoryIds,
             @Param("available") Boolean available,
-            @Param("visible") Boolean visible,
             @Param("minPrice") Integer minPrice,
             @Param("maxPrice") Integer maxPrice,
             @Param("typeIds") List<Long> availableEventTypeIds,
