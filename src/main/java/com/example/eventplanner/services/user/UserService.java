@@ -214,5 +214,22 @@ public class UserService implements UserDetailsService {
         }
         return !userRepository.existsByEmail(registerEmail);
     }
+
+    public RegisterUserDto uploadProfilePicture(long id, String imageName) {
+        BaseUser user = userRepository.findById(id).orElse(null);
+        if (user == null) return null;
+        user.setImage(imageName);
+        userRepository.save(user);
+        return UserMapper.toDto(user);
+    }
+
+    public RegisterUserDto removeProfilePicture(long id) {
+        BaseUser user = userRepository.findById(id).orElse(null);
+        if (user == null) return null;
+        user.setImage(null);
+        userRepository.save(user);
+        return UserMapper.toDto(user);
+    }
+
 }
 

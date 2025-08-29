@@ -27,6 +27,7 @@ public class BaseUser extends Entity {
     private String lastName;
     private String address;
     private String phoneNumber;
+    private String image;
     @ManyToMany
     private List<BaseUser> blockedUsers;
     @Transient

@@ -111,4 +111,22 @@ public class UserController {
                 new ResponseEntity<>(result, HttpStatus.OK) :
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+    @PostMapping("/{id}/upload-picture")
+    public ResponseEntity<RegisterUserDto> uploadProfilePicture(
+            @PathVariable long id,
+            @RequestParam("imageName") String imageName) {
+        RegisterUserDto updatedUser = userService.uploadProfilePicture(id, imageName);
+        return updatedUser != null
+                ? ResponseEntity.ok(updatedUser)
+                : ResponseEntity.notFound().build();
+    }
+
+    @DeleteMapping("/{id}/remove-picture")
+    public ResponseEntity<RegisterUserDto> removeProfilePicture(@PathVariable long id) {
+        RegisterUserDto updatedUser = userService.removeProfilePicture(id);
+        return updatedUser != null
+                ? ResponseEntity.ok(updatedUser)
+                : ResponseEntity.notFound().build();
+    }
+
 }

@@ -3,6 +3,7 @@ package com.example.eventplanner.dto.user.user;
 import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.user.EventOrganizer;
 import com.example.eventplanner.model.user.ServiceProductProvider;
+import com.example.eventplanner.services.serviceproduct.ImageService;
 
 public class UserMapper {
     private UserMapper() {}
@@ -20,6 +21,8 @@ public class UserMapper {
         dto.setAddress(entity.getAddress());
         dto.setPhoneNumber(entity.getPhoneNumber());
         dto.setUserRole(entity.getUserRole());
+        dto.setImage(entity.getImage());
+        dto.setImageEncodedName(ImageService.encodePath(entity.getImage()));
         return dto;
     }
 
@@ -37,6 +40,7 @@ public class UserMapper {
         entity.setAddress(dto.getAddress());
         entity.setPhoneNumber(dto.getPhoneNumber());
         entity.setUserRole(dto.getUserRole());
+        entity.setImage(dto.getImage());
         return entity;
     }
 
@@ -56,40 +60,8 @@ public class UserMapper {
         entity.setAddress(dto.getAddress());
         entity.setPhoneNumber(dto.getPhoneNumber());
         entity.setUserRole(dto.getUserRole());
+        entity.setImage(dto.getImage());
         return entity;
-    }
-
-
-    public static ServiceProductProviderDto toSppDto(ServiceProductProvider entity) {
-        if (entity == null)
-            return null;
-
-        ServiceProductProviderDto dto = new ServiceProductProviderDto();
-        dto.setId(entity.getId());
-        dto.setEmail(entity.getEmail());
-        dto.setFirstName(entity.getFirstName());
-        dto.setLastName(entity.getLastName());
-        dto.setAddress(entity.getAddress());
-        dto.setPhoneNumber(entity.getPhoneNumber());
-        dto.setUserRole(entity.getUserRole());
-        dto.setCompanyName(entity.getCompanyName());
-        dto.setCompanyDescription(entity.getCompanyDescription());
-        return dto;
-    }
-    public static RegisterUserDto toDto(RegisterUserDto entity) {
-        if (entity == null)
-            return null;
-
-        RegisterEventOrganizerDto dto = new RegisterEventOrganizerDto();
-        dto.setId(entity.getId());
-        dto.setPassword(entity.getPassword());
-        dto.setEmail(entity.getEmail());
-        dto.setFirstName(entity.getFirstName());
-        dto.setLastName(entity.getLastName());
-        dto.setAddress(entity.getAddress());
-        dto.setPhoneNumber(entity.getPhoneNumber());
-        dto.setUserRole(entity.getUserRole());
-        return dto;
     }
 
     public static BaseUserDto toBaseUserDto(BaseUser user) {
@@ -103,7 +75,9 @@ public class UserMapper {
                 user.getFirstName(),
                 user.getLastName(),
                 user.getAddress(),
-                user.getPhoneNumber()
+                user.getPhoneNumber(),
+                user.getImage(),
+                ImageService.encodePath(user.getImage())
         );
     }
 
@@ -120,7 +94,9 @@ public class UserMapper {
                 spp.getAddress(),
                 spp.getPhoneNumber(),
                 spp.getCompanyName(),
-                spp.getCompanyDescription()
+                spp.getCompanyDescription(),
+                spp.getImage(),
+                ImageService.encodePath(spp.getImage())
         );
     }
 }
