@@ -10,13 +10,11 @@ import com.example.eventplanner.dto.order.booking.BookingDto;
 import com.example.eventplanner.dto.order.purchase.PurchaseDto;
 import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.user.EventOrganizer;
-import com.example.eventplanner.model.user.ServiceProductProvider;
 import com.example.eventplanner.model.utils.AttendanceResult;
 import com.example.eventplanner.model.utils.UserRole;
 import com.example.eventplanner.services.event.EventAttendanceService;
 import com.example.eventplanner.services.event.EventReportService;
 import com.example.eventplanner.services.event.EventService;
-import com.example.eventplanner.utils.StatusPair;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -123,10 +121,10 @@ public class EventController {
 
     @GetMapping(value = "/{id}")
     public ResponseEntity<EventDto> getEventById(@PathVariable("id") Long id) {
-        StatusPair<EventDto> result = eventService.getById(id);
-        return result.getStatus() == HttpStatus.OK ?
-                new ResponseEntity<>(result.getValue(), HttpStatus.OK) :
-                new ResponseEntity<>(result.getStatus());
+        EventDto result = eventService.getById(id);
+        return result != null ?
+                new ResponseEntity<>(result, HttpStatus.OK) :
+                new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @PostMapping

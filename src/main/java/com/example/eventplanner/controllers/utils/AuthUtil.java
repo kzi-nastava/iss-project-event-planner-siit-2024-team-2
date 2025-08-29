@@ -52,5 +52,10 @@ public class AuthUtil {
             return null;
         }
     }
+
+    public boolean isAdmin() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication.getAuthorities().stream().anyMatch(authority -> authority.getAuthority().equals("ADMIN"));
+    }
 }
 

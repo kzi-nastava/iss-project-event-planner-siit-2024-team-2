@@ -1,8 +1,8 @@
 package com.example.eventplanner.services.serviceproduct;
 
-import com.example.eventplanner.utils.StatusPair;
+import com.example.eventplanner.exception.BadRequestException;
+import com.example.eventplanner.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,17 +31,17 @@ public class ImageService {
             default -> MediaType.IMAGE_JPEG;
         };
     }
-    public StatusPair<InputStream> getImageStream(String path) {
+    public InputStream getImageStream(String path) {
         String decodedPath = new String(Base64.getDecoder().decode(path));
         // TODO: Add authorization
         Path imagePath = sanitizePath(decodedPath);
         if (imagePath == null)
-            return new StatusPair<>(null, HttpStatus.BAD_REQUEST);
+            throw new BadRequestException("Invalid image path");
         try {
-            return new StatusPair<>(new FileInputStream(imagePath.toFile()), HttpStatus.OK);
+            return new FileInputStream(imagePath.toFile());
         }
         catch (FileNotFoundException e) {
-            return new StatusPair<>(null, HttpStatus.NOT_FOUND);
+            throw new NotFoundException("Image not found");
         }
     }
     private Path sanitizePath(String decodedPath)  {

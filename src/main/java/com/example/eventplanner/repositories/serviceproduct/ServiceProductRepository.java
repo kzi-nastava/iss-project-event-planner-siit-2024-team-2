@@ -17,14 +17,14 @@ public interface ServiceProductRepository extends JpaRepository<ServiceProduct, 
     void deleteById(@Param("id") long id);
 
     @Query(value = """
-    SELECT sp.*
-    FROM serviceproduct sp
-    LEFT JOIN serviceproductreview spr
-      ON sp.id = spr.serviceproduct_id AND spr.reviewstatus = 1
-    WHERE sp.visible = true
-    GROUP BY sp.id
-    ORDER BY COALESCE(AVG(spr.grade), 0) DESC
-    LIMIT 5
+        SELECT sp.*
+        FROM serviceproduct sp
+        LEFT JOIN serviceproductreview spr
+          ON sp.id = spr.serviceproduct_id AND spr.reviewstatus = 1
+        WHERE sp.visible = true
+        GROUP BY sp.id
+        ORDER BY COALESCE(AVG(spr.grade), 0) DESC
+        LIMIT 5
     """, nativeQuery = true)
     List<ServiceProduct> findTop5();
 

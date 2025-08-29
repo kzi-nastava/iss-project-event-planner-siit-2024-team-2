@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.Instant;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -15,4 +17,5 @@ public class LoginResponseDto {
     private String email;
     private String jwt;
     private UserRole role;
+    private Instant suspendedAt = null;
 }
