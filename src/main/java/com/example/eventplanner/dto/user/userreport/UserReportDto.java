@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.Instant;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -14,6 +16,7 @@ public class UserReportDto {
     private long id;
     private BaseUserDto reporter;
     private BaseUserDto reported;
-    private Long dateApproved;
+    private Instant approvedAt = null;
     private String reason;
+    private Instant createdAt;
 }

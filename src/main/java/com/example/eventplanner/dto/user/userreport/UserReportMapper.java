@@ -17,20 +17,9 @@ public class UserReportMapper {
                 userReport.getId(),
                 UserMapper.toBaseUserDto(userReport.getReporter()),
                 UserMapper.toBaseUserDto(userReport.getReported()),
-                userReport.getDateApproved().getTime(),
-                userReport.getReason()
-        );
-    }
-
-    public static UserReportNoIdDto toDtoNoId(UserReport userReport) {
-        if (userReport == null)
-            return null;
-
-        return new UserReportNoIdDto(
-                userReport.getReporter().getId(),
-                userReport.getReported().getId(),
-                userReport.getDateApproved().getTime(),
-                userReport.getReason()
+                userReport.getApprovedAt(),
+                userReport.getReason(),
+                userReport.getCreatedAt()
         );
     }
 
@@ -41,7 +30,7 @@ public class UserReportMapper {
         return new UserReport(
                 reporter,
                 reported,
-                new Date(dto.getDateApproved()),
+                null,
                 dto.getReason());
     }
 }

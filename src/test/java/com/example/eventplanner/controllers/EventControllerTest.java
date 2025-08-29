@@ -1,6 +1,7 @@
 package com.example.eventplanner.controllers;
 
 import com.example.eventplanner.config.jwt.JwtRequestFilter;
+import com.example.eventplanner.controllers.utils.AuthUtil;
 import com.example.eventplanner.dto.event.event.EventNoIdDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
@@ -88,7 +89,7 @@ class EventControllerIntegrationTest {
         mockMvc.perform(post("/api/events/{id}/agenda", 999L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(agendaJson))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
     @Test
@@ -114,7 +115,7 @@ class EventControllerIntegrationTest {
         mockMvc.perform(post("/api/events/{id}/agenda/activity", 999L)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(activityJson))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+                .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 }
 
