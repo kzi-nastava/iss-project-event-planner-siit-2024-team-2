@@ -1,7 +1,8 @@
 package com.example.eventplanner.dto.event.invitation;
 
 public enum InvitationErrorType {
-    NOT_FOUND,
+    INVITATION_NOT_FOUND,
+    EVENT_NOT_FOUND,
     UNAUTHORIZED,
     UNAUTHORIZED_QUICK_REGISTRATION,
     EVENT_FULL,

@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -27,6 +29,7 @@ public class BaseUser extends Entity {
     private String lastName;
     private String address;
     private String phoneNumber;
+    private String image;
     @ManyToMany
     private List<BaseUser> blockedUsers;
     @Transient
@@ -36,4 +39,5 @@ public class BaseUser extends Entity {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "event_id"))
     private List<Event> attendingEvents;
+    private Instant suspendedAt = null;
 }

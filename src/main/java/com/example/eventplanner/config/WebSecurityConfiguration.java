@@ -101,8 +101,19 @@ public class WebSecurityConfiguration {
                         .requestMatchers(HttpMethod.DELETE, "/api/notifications/{id}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/notifications/send-category-request").hasRole("SERVICE_PRODUCT_PROVIDER")
 
+                        // UserReports
+                        .requestMatchers(HttpMethod.POST, "/api/user-reports").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/user-reports").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/user-reports/{id}").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/user-reports/approve").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/user-reports/{id}").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/user-reports/{id}").hasRole("ADMIN")
+
+                        // Users
+                        .requestMatchers(HttpMethod.POST, "/api/users/{email}/suspend").hasRole("ADMIN")
+
                         // Everything else requires authentication
-                        .anyRequest().authenticated())
+                        .anyRequest().permitAll())
                 .sessionManagement(session -> {
                     session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
                 })
