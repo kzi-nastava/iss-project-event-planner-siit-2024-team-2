@@ -11,6 +11,9 @@ import com.example.eventplanner.dto.event.event.EventNoIdDto;
 import com.example.eventplanner.dto.event.event.EventSummaryDto;
 import com.example.eventplanner.dto.order.booking.BookingDto;
 import com.example.eventplanner.dto.order.purchase.PurchaseDto;
+import com.example.eventplanner.exception.ForbiddenException;
+import com.example.eventplanner.exception.NotFoundException;
+import com.example.eventplanner.exception.UnauthorizedException;
 import com.example.eventplanner.model.Entity;
 import com.example.eventplanner.model.event.Activity;
 import com.example.eventplanner.model.event.Event;
@@ -26,15 +29,13 @@ import com.example.eventplanner.services.communication.NotificationService;
 import com.example.eventplanner.services.order.BookingService;
 import com.example.eventplanner.services.order.PurchaseService;
 import com.example.eventplanner.services.user.UserService;
-import com.example.eventplanner.services.util.DateUtil;
-import com.example.eventplanner.utils.StatusPair;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.management.BadAttributeValueExpException;
 import java.time.Instant;
@@ -63,25 +64,25 @@ public class EventService {
                 .toList();
     }
 
-    public StatusPair<EventDto> getById(long id) {
+    public EventDto getById(long id) {
         Event event = eventRepository.findById(id).orElse(null);
         if (event == null)
-            return new StatusPair<>(null, HttpStatus.NOT_FOUND);
+            throw new NotFoundException("Event not found");
         if (!event.isOpen()) {
             BaseUser user = authUtil.getAuthenticatedUser();
             if (user == null)
-                return new StatusPair<>(null, HttpStatus.UNAUTHORIZED);
+                throw new UnauthorizedException("Unauthorized");
             if (user.getUserRole() == UserRole.EVENT_ORGANIZER &&
                     event.getEventOrganizer().getId() == user.getId())
-                return new StatusPair<>(EventMapper.toDto(event), HttpStatus.OK);
+                return EventMapper.toDto(event);
             if (user.getUserRole() != UserRole.ADMIN &&
                     event.getInvitations()
                             .stream()
                             .noneMatch(invitation -> invitation.isAccepted()
                                     && invitation.getEmail().equals(user.getEmail())))
-                return new StatusPair<>(null, HttpStatus.FORBIDDEN);
+                throw new ForbiddenException("Forbidden");
         }
-        return new StatusPair<>(EventMapper.toDto(event), HttpStatus.OK);
+        return EventMapper.toDto(event);
     }
 
     public EventDto create(EventNoIdDto dto) throws Exception {
@@ -89,51 +90,51 @@ public class EventService {
         EventType type = eventTypeRepository.findById(dto.getEventTypeId()).orElseThrow();
         EventOrganizer eventOrganizer = (EventOrganizer) userRepository.findById(dto.getEventOrganizerId()).orElseThrow();
         Event event = EventMapper.toEntity(dto, type, eventOrganizer);
-        List<Invitation> invitations = dto.getInvitationEmails()
-                .stream()
-                .map(email -> new Invitation(event, email, userService.existsByEmail(email)))
-                .toList();
-        invitationService.sendInvitations(invitations);
-        event.setInvitations(invitations);
+        if (!event.isOpen() && dto.getInvitationEmails() != null) {
+            List<Invitation> invitations = dto.getInvitationEmails()
+                    .stream()
+                    .map(email -> new Invitation(event, email, !userService.existsByEmail(email)))
+                    .toList();
+            invitationService.sendInvitations(invitations);
+            event.setInvitations(invitations);
+        }
         return EventMapper.toDto(eventRepository.save(event));
     }
 
+    @Transactional
     public EventDto update(EventNoIdDto dto, long id) {
+        boolean admin = authUtil.isAdmin();
+        Event event = getAuthorizedEvent(id);
 
-        return eventRepository.findById(id)
-                .map(event -> {
-                    event.setId(id);
-                    event.setActive(true);
-                    event.setDate(dto.getDate());
-                    event.setDescription(dto.getDescription());
-                    event.setName(dto.getName());
-                    event.setOpen(dto.isOpen());
-                    event.setLatitude(dto.getLatitude());
-                    event.setLongitude(dto.getLongitude());
-                    event.setMaxAttendances(dto.getMaxAttendances());
-                    eventTypeRepository.findById(dto.getEventTypeId()).ifPresent(event::setType);
-                    userRepository.findById(dto.getEventOrganizerId()).ifPresent(eo -> event.setEventOrganizer((EventOrganizer) eo));
-                    Map<String, Invitation> existingInvitations = event.getInvitations()
-                            .stream()
-                            .collect(Collectors.toMap(Invitation::getEmail, invitation -> invitation));
-                    List<Invitation> newInvitations = dto.getInvitationEmails()
-                            .stream()
-                            .filter(email -> !existingInvitations.containsKey(email))
-                            .map(email -> new Invitation(event, email, userService.existsByEmail(email)))
-                            .toList();
-                    invitationService.sendInvitations(newInvitations);
-                    event.getInvitations().addAll(newInvitations);
-                    Event updatedEvent = eventRepository.save(event);
-                    sendUpdateNotifications(updatedEvent);
-                    return EventMapper.toDto(updatedEvent);
-                })
-                .orElse(null);
+        event.setId(id);
+        event.setActive(true);
+        event.setDate(dto.getDate());
+        event.setDescription(dto.getDescription());
+        event.setName(dto.getName());
+        event.setOpen(dto.isOpen());
+        event.setLatitude(dto.getLatitude());
+        event.setLongitude(dto.getLongitude());
+        event.setMaxAttendances(dto.getMaxAttendances());
+        eventTypeRepository.findById(dto.getEventTypeId()).ifPresent(event::setType);
+        if (admin) // Only admin can change event organizer
+            userRepository.findById(dto.getEventOrganizerId()).ifPresent(eo -> event.setEventOrganizer((EventOrganizer) eo));
+        Map<String, Invitation> existingInvitations = event.getInvitations()
+                .stream()
+                .collect(Collectors.toMap(Invitation::getEmail, invitation -> invitation));
+        List<Invitation> newInvitations = dto.getInvitationEmails()
+                .stream()
+                .filter(email -> !existingInvitations.containsKey(email))
+                .map(email -> new Invitation(event, email, !userService.existsByEmail(email)))
+                .toList();
+        invitationService.sendInvitations(newInvitations);
+        event.getInvitations().addAll(newInvitations);
+        Event updatedEvent = eventRepository.save(event);
+        sendUpdateNotifications(updatedEvent);
+        return EventMapper.toDto(updatedEvent);
     }
 
     public boolean delete(long id) {
-        Event event = eventRepository.findById(id).orElse(null);
-        if (event == null)
-            return false;
+        Event event = getAuthorizedEvent(id);
         sendEventNotifications(event, "Event deleted", "Event " + event.getName() + " has been deleted");
         event.getAttendees().forEach(attendee -> attendee.getAttendingEvents().remove(event));
         userRepository.saveAll(event.getAttendees());
@@ -142,7 +143,7 @@ public class EventService {
     }
 
     public Collection<EventSummaryDto> getTop5() {
-        return eventRepository.findTop5ByOrderByDateAsc()
+        return eventRepository.findTop5(LocalDateTime.now())
                 .stream()
                 .map(EventMapper::toSummaryDto)
                 .toList();
@@ -220,17 +221,15 @@ public class EventService {
     }
 
     public boolean createAgenda(long id, List<ActivityDto> activityDtos) {
-        return eventRepository.findById(id)
-                .map(event -> {
-                    List<Activity> activities = activityDtos.stream()
-                            .map(ActivityMapper::toEntity)
-                            .toList();
-                    event.setActivities(activities);
-                    sendUpdateNotifications(event, "Event " + event.getName() + " had its agenda updated");
-                    eventRepository.save(event);
-                    return true;
-                })
-                .orElse(false);
+        Event event = getAuthorizedEvent(id);
+
+        List<Activity> activities = activityDtos.stream()
+                .map(ActivityMapper::toEntity)
+                .toList();
+        event.setActivities(activities);
+        sendUpdateNotifications(event, "Event " + event.getName() + " had its agenda updated");
+        eventRepository.save(event);
+        return true;
     }
 
     public List<PurchaseDto> getPurchases(long id) {
@@ -255,9 +254,8 @@ public class EventService {
     }
 
     public boolean addActivity(long id, ActivityDto activity) {
-        Event event = eventRepository.findById(id).orElse(null);
-        if (event == null) return false;
-        if (activity.getName().isEmpty()) return false;
+        Event event = getAuthorizedEvent(id);
+        if (activity.getName() == null || activity.getName().isEmpty()) return false;
         if (!isTimeValid(event.getActivities(), activity.getActivityStart(), activity.getActivityEnd(), null)) return false;
         event.getActivities().add(ActivityMapper.toEntity(activity));
         sendUpdateNotifications(event, "Event " + event.getName() + " had its agenda updated");
@@ -278,8 +276,7 @@ public class EventService {
     }
 
     public boolean updateActivity(long eventId, long activityId, ActivityDto dto) {
-        Event event = eventRepository.findById(eventId).orElse(null);
-        if (event == null) return false;
+        Event event = getAuthorizedEvent(eventId);
 
         Optional<Activity> optionalActivity = event.getActivities().stream()
                 .filter(a -> a.getId() == activityId)
@@ -303,8 +300,7 @@ public class EventService {
     }
 
     public boolean deleteActivity(long eventId, long activityId) {
-        Event event = eventRepository.findById(eventId).orElse(null);
-        if (event == null) return false;
+        Event event = getAuthorizedEvent(eventId);
         Activity activity = event.getActivities().stream().filter(a -> a.getId() == activityId).findFirst().orElse(null);
         if (activity != null) {
             activity.setActive(false);
@@ -314,7 +310,8 @@ public class EventService {
         return activity != null;
     }
 
-    private boolean isTimeValid(List<Activity> activities, long start, long end, Long activityId) {
+    private boolean isTimeValid(List<Activity> activities, Long start, Long end, Long activityId) {
+        if (start == null || end == null) return false;
         if (start >= end) return false;
 
         for (Activity activity : activities.stream().filter(Entity::isActive).toList()) {
@@ -345,5 +342,19 @@ public class EventService {
                         message,
                         attendee.getId()
                 )));
+    }
+
+    @NotNull
+    public Event getAuthorizedEvent(long id) {
+        Event event = eventRepository.findById(id).orElse(null);
+        if (event == null)
+            throw new NotFoundException("Event not found");
+        BaseUser user = authUtil.getAuthenticatedUser();
+        if (user == null)
+            throw new UnauthorizedException("User not found");
+        boolean admin = user.getUserRole() == UserRole.ADMIN;
+        if (event.getEventOrganizer().getId() != user.getId() && !admin)
+            throw new ForbiddenException("You are not authorized to access this event");
+        return event;
     }
 }

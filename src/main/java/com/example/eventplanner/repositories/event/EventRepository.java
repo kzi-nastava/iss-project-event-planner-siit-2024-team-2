@@ -1,6 +1,7 @@
 package com.example.eventplanner.repositories.event;
 
 import com.example.eventplanner.model.event.Event;
+import com.example.eventplanner.model.serviceproduct.ServiceProduct;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,12 +10,39 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long> {
-    List<Event> findTop5ByOrderByDateAsc();
+    @Query(value = """
+        (
+            SELECT * FROM event
+            WHERE open = true
+              AND active = true
+              AND date >= :currentDate
+            ORDER BY date ASC
+            LIMIT 5
+        )
+        UNION ALL
+        (
+            SELECT * FROM event
+            WHERE open = true
+              AND active = true
+              AND date < :currentDate
+            ORDER BY date DESC
+            LIMIT (5 - (
+                SELECT COUNT(*) FROM event
+                WHERE open = true
+                  AND active = true
+                  AND date >= :currentDate
+            ))
+        )
+        ORDER BY date ASC
+        LIMIT 5
+    """, nativeQuery = true)
+    List<Event> findTop5(LocalDateTime currentDate);
 
     @Query(value = "SELECT e.id, e.active, e.name, e.description, e.type_id, e.maxattendances, e.latitude, e.longitude, e.open, e.date, e.eventorganizer_id " +
             "FROM Event e " +

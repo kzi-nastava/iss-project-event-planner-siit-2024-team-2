@@ -1,8 +1,12 @@
 package com.example.eventplanner.controllers;
 
+import com.example.eventplanner.controllers.utils.AuthUtil;
 import com.example.eventplanner.dto.event.activity.ActivityDto;
 import com.example.eventplanner.model.event.Activity;
 import com.example.eventplanner.model.event.Event;
+import com.example.eventplanner.model.user.BaseUser;
+import com.example.eventplanner.model.user.EventOrganizer;
+import com.example.eventplanner.model.utils.UserRole;
 import com.example.eventplanner.repositories.event.EventRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,12 +50,19 @@ class ActivityControllerTest {
 
     @MockBean
     private EventRepository eventRepository;
+    @MockBean
+    private AuthUtil authUtil;
     private Long eventId;
 
     @BeforeEach
     void setup() {
+        EventOrganizer organizer = new EventOrganizer();
+        organizer.setId(1L);
+        organizer.setUserRole(UserRole.EVENT_ORGANIZER);
+
         Event event = new Event();
         event.setId(1L);
+        event.setEventOrganizer(organizer);
         event.setName("Test Event");
         event.setDate(new Date(System.currentTimeMillis() + 86400000));
         eventId = event.getId();
@@ -66,6 +77,7 @@ class ActivityControllerTest {
         when(eventRepository.findById(1L)).thenReturn(Optional.of(event));
 
         when(eventRepository.save(any(Event.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(authUtil.getAuthenticatedUser()).thenReturn(organizer);
         eventId = 1L;
     }
 

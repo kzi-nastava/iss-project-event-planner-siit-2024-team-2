@@ -7,7 +7,6 @@ import com.example.eventplanner.dto.user.user.CompanyInfoDto;
 import com.example.eventplanner.dto.user.user.ImageNameDto;
 import com.example.eventplanner.dto.user.user.RegisterUserDto;
 import com.example.eventplanner.dto.user.user.UserInfoDto;
-import com.example.eventplanner.dto.user.userreport.UserReportDto;
 import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.utils.UserRole;
 import com.example.eventplanner.services.user.UserService;
@@ -86,19 +85,6 @@ public class UserController {
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.notFound().build();
     }
-    @GetMapping("/{id}/reports")
-    public ResponseEntity<Collection<UserReportDto>> getUserReports(@PathVariable long id,
-                                                                    @RequestParam(required = false) Boolean approved) {
-        BaseUser user = authUtil.getAuthenticatedUser();
-        if (user == null)
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        if (user.getId() != id && user.getUserRole() != UserRole.ADMIN)
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        Collection<UserReportDto> result = userService.getUserReports(id, approved);
-        return result != null ?
-                new ResponseEntity<>(result, HttpStatus.OK) :
-                new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
 
     @GetMapping("/{id}/attended-events")
     public ResponseEntity<Collection<EventDto>> getAttendingEvents(@PathVariable long id) {
@@ -112,6 +98,7 @@ public class UserController {
                 new ResponseEntity<>(result, HttpStatus.OK) :
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+
     @PostMapping("/{id}/upload-picture")
     public ResponseEntity<RegisterUserDto> uploadProfilePicture(
             @PathVariable long id,
@@ -128,5 +115,12 @@ public class UserController {
         return updatedUser != null
                 ? ResponseEntity.ok(updatedUser)
                 : ResponseEntity.notFound().build();
+    }
+
+
+    @PostMapping("/{email}/suspend")
+    public ResponseEntity<Void> suspendUser(@PathVariable("email") String email) {
+        userService.suspendUser(email);
+        return ResponseEntity.noContent().build();
     }
 }

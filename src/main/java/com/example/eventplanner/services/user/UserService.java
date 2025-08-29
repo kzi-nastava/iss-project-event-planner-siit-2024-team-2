@@ -4,11 +4,12 @@ import com.example.eventplanner.dto.auth.ResetPasswordDto;
 import com.example.eventplanner.dto.event.event.EventDto;
 import com.example.eventplanner.dto.event.event.EventMapper;
 import com.example.eventplanner.dto.user.user.*;
-import com.example.eventplanner.dto.user.userreport.UserReportDto;
+import com.example.eventplanner.exception.NotFoundException;
 import com.example.eventplanner.model.user.AuthenticatedUser;
 import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.user.ServiceProductProvider;
 import com.example.eventplanner.model.utils.UserRole;
+import com.example.eventplanner.repositories.user.UserReportRepository;
 import com.example.eventplanner.repositories.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +20,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,9 +32,10 @@ import java.util.Optional;
 public class UserService implements UserDetailsService {
     @Autowired
     private PasswordEncoder passwordEncoder;
-    private final UserReportService userReportService;
     private final UserRepository userRepository;
     private final UserUpgradeService userUpgradeService;
+    @Autowired
+    private UserReportRepository userReportRepository;
 
     public boolean registerUser(RegisterUserDto registerUserDto) {
         if (!validateUser(registerUserDto))
@@ -119,11 +122,13 @@ public class UserService implements UserDetailsService {
         return new CompanyInfoDto(serviceProductProvider.getCompanyName(), serviceProductProvider.getCompanyDescription());
     }
 
+    @Transactional
     public boolean delete(long id) {
         return userRepository.findById(id)
                 .map(u -> {
                     u.setActive(false);
                     userRepository.save(u);
+                    userReportRepository.deleteReportsByUserId(id);
                     return true;
                 }).orElse(false);
     }
@@ -138,14 +143,6 @@ public class UserService implements UserDetailsService {
                     userRepository.save(u);
                     return true;
                 }).orElse(false);
-    }
-
-    public Collection<UserReportDto> getUserReports(long id, Boolean approved) {
-        return userReportService.getAll()
-                .stream()
-                .filter(report -> report.getReported().getId() == id)
-                .filter(report -> approved == null || approved == (report.getDateApproved() != null))
-                .toList();
     }
 
     @Override
@@ -229,6 +226,12 @@ public class UserService implements UserDetailsService {
         user.setImage(null);
         userRepository.save(user);
         return UserMapper.toDto(user);
+    }
+
+    public void suspendUser(String email) {
+        BaseUser user = userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("User not found"));
+        user.setSuspendedAt(Instant.now());
+        userRepository.save(user);
     }
 
 }

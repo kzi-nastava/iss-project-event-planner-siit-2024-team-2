@@ -4,6 +4,10 @@ import com.example.eventplanner.dto.user.userreport.UserReportDto;
 import com.example.eventplanner.dto.user.userreport.UserReportNoIdDto;
 import com.example.eventplanner.services.user.UserReportService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +26,15 @@ public class UserReportController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    @GetMapping("/not-approved")
+    public ResponseEntity<Page<UserReportDto>> getAllNotApproved(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) Integer size) {
+        Pageable pageable = PageRequest.of(page, size != null ? size : 10).withSort(Sort.by(Sort.Direction.DESC, "id"));
+        Page<UserReportDto> result = userReportService.getAllNotApproved(pageable);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
     @GetMapping(value = "/{id}")
     public ResponseEntity<UserReportDto> getUserReportById(@PathVariable("id") Long id) {
         UserReportDto result = userReportService.getById(id);
@@ -33,15 +46,9 @@ public class UserReportController {
     @PostMapping
     public ResponseEntity<UserReportDto> createUserReport(@RequestBody UserReportNoIdDto dto) {
         UserReportDto result = userReportService.create(dto);
-        return new ResponseEntity<>(result, HttpStatus.CREATED);
-    }
-
-    @PutMapping(value = "/{id}")
-    public ResponseEntity<UserReportDto> updateUserReport(@PathVariable("id") Long id, @RequestBody UserReportNoIdDto dto) {
-        UserReportDto result = userReportService.update(dto, id);
         return result != null ?
-                new ResponseEntity<>(result, HttpStatus.OK) :
-                new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                new ResponseEntity<>(result, HttpStatus.CREATED) :
+                new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @DeleteMapping(value = "/{id}")
@@ -50,5 +57,11 @@ public class UserReportController {
         return success ?
                 new ResponseEntity<>(HttpStatus.NO_CONTENT) :
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @PostMapping("/approve")
+    public ResponseEntity<UserReportDto> approveUserReport(@RequestBody Long id) {
+        UserReportDto result = userReportService.approve(id);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

@@ -11,8 +11,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class ActivityDto {
     private String name;
-    private long activityStart;
-    private long activityEnd;
+    private Long activityStart;
+    private Long activityEnd;
     private String description;
     private String location;
 }
