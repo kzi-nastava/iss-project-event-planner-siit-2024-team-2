@@ -29,15 +29,11 @@ import com.example.eventplanner.services.communication.NotificationService;
 import com.example.eventplanner.services.order.BookingService;
 import com.example.eventplanner.services.order.PurchaseService;
 import com.example.eventplanner.services.user.UserService;
-import com.example.eventplanner.services.util.DateUtil;
-import com.example.eventplanner.utils.StatusPair;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -68,25 +64,25 @@ public class EventService {
                 .toList();
     }
 
-    public StatusPair<EventDto> getById(long id) {
+    public EventDto getById(long id) {
         Event event = eventRepository.findById(id).orElse(null);
         if (event == null)
-            return new StatusPair<>(null, HttpStatus.NOT_FOUND);
+            throw new NotFoundException("Event not found");
         if (!event.isOpen()) {
             BaseUser user = authUtil.getAuthenticatedUser();
             if (user == null)
-                return new StatusPair<>(null, HttpStatus.UNAUTHORIZED);
+                throw new UnauthorizedException("Unauthorized");
             if (user.getUserRole() == UserRole.EVENT_ORGANIZER &&
                     event.getEventOrganizer().getId() == user.getId())
-                return new StatusPair<>(EventMapper.toDto(event), HttpStatus.OK);
+                return EventMapper.toDto(event);
             if (user.getUserRole() != UserRole.ADMIN &&
                     event.getInvitations()
                             .stream()
                             .noneMatch(invitation -> invitation.isAccepted()
                                     && invitation.getEmail().equals(user.getEmail())))
-                return new StatusPair<>(null, HttpStatus.FORBIDDEN);
+                throw new ForbiddenException("Forbidden");
         }
-        return new StatusPair<>(EventMapper.toDto(event), HttpStatus.OK);
+        return EventMapper.toDto(event);
     }
 
     public EventDto create(EventNoIdDto dto) throws Exception {

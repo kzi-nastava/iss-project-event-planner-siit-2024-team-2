@@ -1,7 +1,6 @@
 package com.example.eventplanner.controllers.serviceproduct;
 
 import com.example.eventplanner.services.serviceproduct.ImageService;
-import com.example.eventplanner.utils.StatusPair;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.InputStreamResource;
@@ -24,12 +23,7 @@ public class ImageController {
     @GetMapping("/{path}")
     public ResponseEntity<InputStreamResource> getImage(@PathVariable("path") String path) {
         MediaType contentType = imageService.getMediaType(path);
-        StatusPair<InputStream> sp = imageService.getImageStream(path);
-        if (sp.getStatus() != HttpStatus.OK)
-            return new ResponseEntity<>(sp.getStatus());
-        if (sp.getValue() == null)
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        InputStream in = (InputStream) sp.getValue();
+        InputStream in = imageService.getImageStream(path);
         InputStreamResource resource = new InputStreamResource(new InputStreamSource() {
             @Override
             @NonNull

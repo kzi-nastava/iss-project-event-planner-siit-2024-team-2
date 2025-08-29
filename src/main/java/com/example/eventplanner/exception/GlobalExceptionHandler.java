@@ -38,4 +38,12 @@ public class GlobalExceptionHandler {
                                     e.getMessage())
         );
     }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ErrorResponse> handleBadRequestException(BadRequestException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                new ErrorResponse(HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                                    e.getMessage())
+        );
+    }
 }

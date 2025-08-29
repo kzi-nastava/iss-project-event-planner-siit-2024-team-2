@@ -12,7 +12,6 @@ import com.example.eventplanner.repositories.event.EventTypeRepository;
 import com.example.eventplanner.repositories.user.UserRepository;
 import com.example.eventplanner.services.event.EventService;
 import com.example.eventplanner.services.event.InvitationService;
-import com.example.eventplanner.utils.StatusPair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -121,7 +120,7 @@ class EventServiceTest {
     void getById_ShouldReturnDto_WhenFound() {
         when(eventRepository.findById(10L)).thenReturn(Optional.of(event));
 
-        EventDto result = eventService.getById(10L).getValue();
+        EventDto result = eventService.getById(10L);
 
         assertNotNull(result);
         assertEquals("Test", result.getName());
@@ -131,7 +130,7 @@ class EventServiceTest {
     void getById_ShouldReturnNull_WhenNotFound() {
         when(eventRepository.findById(99L)).thenReturn(Optional.empty());
 
-        assertNull(eventService.getById(99L).getValue());
+        assertNull(eventService.getById(99L));
     }
 
     @Test
