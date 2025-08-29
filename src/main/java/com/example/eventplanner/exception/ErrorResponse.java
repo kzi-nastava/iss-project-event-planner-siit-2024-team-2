@@ -1,3 +1,3 @@
 package com.example.eventplanner.exception;
 
-public record ErrorResponse(String error, String message, int status) {}
+public record ErrorResponse(String error, String message) {}

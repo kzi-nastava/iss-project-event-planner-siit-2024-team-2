@@ -145,7 +145,7 @@ public class EventService {
     }
 
     public Collection<EventSummaryDto> getTop5() {
-        return eventRepository.findTop5ByOrderByDateAsc()
+        return eventRepository.findTop5(LocalDateTime.now())
                 .stream()
                 .map(EventMapper::toSummaryDto)
                 .toList();

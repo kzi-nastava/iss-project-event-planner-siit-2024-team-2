@@ -11,8 +11,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleNotFoundException(NotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 new ErrorResponse(HttpStatus.NOT_FOUND.getReasonPhrase(),
-                                    e.getMessage(),
-                                    HttpStatus.NOT_FOUND.value())
+                                    e.getMessage())
         );
     }
 
@@ -20,8 +19,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleUnauthorizedException(UnauthorizedException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
                 new ErrorResponse(HttpStatus.UNAUTHORIZED.getReasonPhrase(),
-                                    e.getMessage(),
-                                    HttpStatus.UNAUTHORIZED.value())
+                                    e.getMessage())
         );
     }
 
@@ -29,8 +27,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleForbiddenException(ForbiddenException e) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
                 new ErrorResponse(HttpStatus.FORBIDDEN.getReasonPhrase(),
-                                    e.getMessage(),
-                                    HttpStatus.FORBIDDEN.value())
+                                    e.getMessage())
         );
     }
 
@@ -38,8 +35,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleConflictException(ConflictException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
                 new ErrorResponse(HttpStatus.CONFLICT.getReasonPhrase(),
-                                    e.getMessage(),
-                                    HttpStatus.CONFLICT.value())
+                                    e.getMessage())
         );
     }
 }
