@@ -4,6 +4,7 @@ package com.example.eventplanner.controllers.user;
 import com.example.eventplanner.controllers.utils.AuthUtil;
 import com.example.eventplanner.dto.event.event.EventDto;
 import com.example.eventplanner.dto.user.user.CompanyInfoDto;
+import com.example.eventplanner.dto.user.user.ImageNameDto;
 import com.example.eventplanner.dto.user.user.RegisterUserDto;
 import com.example.eventplanner.dto.user.user.UserInfoDto;
 import com.example.eventplanner.model.user.BaseUser;
@@ -97,6 +98,25 @@ public class UserController {
                 new ResponseEntity<>(result, HttpStatus.OK) :
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+
+    @PostMapping("/{id}/upload-picture")
+    public ResponseEntity<RegisterUserDto> uploadProfilePicture(
+            @PathVariable long id,
+            @RequestBody ImageNameDto dto) {
+        RegisterUserDto updatedUser = userService.uploadProfilePicture(id, dto.getImageName());
+        return updatedUser != null
+                ? ResponseEntity.ok(updatedUser)
+                : ResponseEntity.notFound().build();
+    }
+
+    @DeleteMapping("/{id}/remove-picture")
+    public ResponseEntity<RegisterUserDto> removeProfilePicture(@PathVariable long id) {
+        RegisterUserDto updatedUser = userService.removeProfilePicture(id);
+        return updatedUser != null
+                ? ResponseEntity.ok(updatedUser)
+                : ResponseEntity.notFound().build();
+    }
+
 
     @PostMapping("/{email}/suspend")
     public ResponseEntity<Void> suspendUser(@PathVariable("email") String email) {

@@ -20,5 +20,6 @@ public class ServiceProductProviderDto {
     private String phoneNumber;
     private String companyName;
     private String companyDescription;
-
+    private String image = null;
+    private String imageEncodedName = null;
 }

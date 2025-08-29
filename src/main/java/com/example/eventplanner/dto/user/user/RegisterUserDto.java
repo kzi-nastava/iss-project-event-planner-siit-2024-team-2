@@ -19,4 +19,6 @@ public class RegisterUserDto {
     private String address;
     private String phoneNumber;
     private UserRole userRole;
+    private String image = null;
+    private String imageEncodedName = null;
 }
