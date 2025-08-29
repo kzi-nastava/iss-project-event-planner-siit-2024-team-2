@@ -1,6 +1,7 @@
 package com.example.eventplanner.model.user;
 
 import com.example.eventplanner.model.Entity;
+import jakarta.persistence.Column;
 import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,6 +24,7 @@ public class UserReport extends Entity {
     @ManyToOne
     private BaseUser reported;
     private Instant approvedAt = null;
+    @Column(columnDefinition = "TEXT")
     private String reason;
     private final Instant createdAt = Instant.now();
 }
