@@ -6,7 +6,6 @@ import com.example.eventplanner.dto.event.event.EventDto;
 import com.example.eventplanner.dto.user.user.CompanyInfoDto;
 import com.example.eventplanner.dto.user.user.RegisterUserDto;
 import com.example.eventplanner.dto.user.user.UserInfoDto;
-import com.example.eventplanner.dto.user.userreport.UserReportDto;
 import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.utils.UserRole;
 import com.example.eventplanner.services.user.UserService;
@@ -97,5 +96,11 @@ public class UserController {
         return result != null ?
                 new ResponseEntity<>(result, HttpStatus.OK) :
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @PostMapping("/{email}/suspend")
+    public ResponseEntity<Void> suspendUser(@PathVariable("email") String email) {
+        userService.suspendUser(email);
+        return ResponseEntity.noContent().build();
     }
 }

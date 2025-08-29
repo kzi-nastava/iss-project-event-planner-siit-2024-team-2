@@ -4,6 +4,7 @@ import com.example.eventplanner.dto.auth.ResetPasswordDto;
 import com.example.eventplanner.dto.event.event.EventDto;
 import com.example.eventplanner.dto.event.event.EventMapper;
 import com.example.eventplanner.dto.user.user.*;
+import com.example.eventplanner.exception.NotFoundException;
 import com.example.eventplanner.model.user.AuthenticatedUser;
 import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.user.ServiceProductProvider;
@@ -21,6 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -208,6 +210,12 @@ public class UserService implements UserDetailsService {
             return authenticatedUser.getEmail().equals(registerEmail);
         }
         return !userRepository.existsByEmail(registerEmail);
+    }
+
+    public void suspendUser(String email) {
+        BaseUser user = userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("User not found"));
+        user.setSuspendedAt(Instant.now());
+        userRepository.save(user);
     }
 }
 
