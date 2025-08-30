@@ -8,6 +8,7 @@ import com.example.eventplanner.dto.user.user.UserMapper;
 import com.example.eventplanner.model.event.*;
 import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.user.EventOrganizer;
+import com.example.eventplanner.services.serviceproduct.ImageService;
 import com.example.eventplanner.services.util.DateUtil;
 
 import java.time.LocalDate;
@@ -62,6 +63,7 @@ public class EventMapper {
     public static EventSummaryDto toSummaryDto(Event event) {
         if (event == null)
             return null;
+        EventOrganizer organizer = event.getEventOrganizer();
 
         return new EventSummaryDto(
                 event.getId(),
@@ -73,12 +75,9 @@ public class EventMapper {
                 event.getLongitude(),
                 event.getLatitude(),
                 event.getDate().getTime(),
-                event.getEventOrganizer() != null
-                        ? event.getEventOrganizer().getFirstName() + " " + event.getEventOrganizer().getLastName()
-                        : "",
-                event.getEventOrganizer() != null
-                        ? event.getEventOrganizer().getEmail()
-                        : ""
+                organizer != null ? organizer.getFirstName() + " " + organizer.getLastName() : "",
+                organizer != null ? organizer.getEmail() : "",
+                ImageService.encodePath(organizer != null ? organizer.getImage() : null)
         );
     }
 

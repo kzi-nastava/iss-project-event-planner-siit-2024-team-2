@@ -56,6 +56,7 @@ public class ServiceProductMapper {
     public static ServiceProductSummaryDto toSummaryDto(ServiceProduct serviceProduct) {
         if (serviceProduct == null)
             return null;
+        ServiceProductProvider provider = serviceProduct.getServiceProductProvider();
 
         return new ServiceProductSummaryDto(
                 serviceProduct.getId(),
@@ -65,8 +66,9 @@ public class ServiceProductMapper {
                 serviceProduct.getDiscount(),
                 serviceProduct.getName(),
                 serviceProduct.getDescription(),
-                serviceProduct.getServiceProductProvider().getCompanyName(),
-                serviceProduct.getServiceProductProvider().getEmail(),
+                provider != null ? provider.getCompanyName() : "",
+                provider != null ? provider.getEmail() : "",
+                ImageService.encodePath(provider != null ? provider.getImage() : null),
                 ImageService.encodePath(
                         serviceProduct.getImages()
                                 .stream()
