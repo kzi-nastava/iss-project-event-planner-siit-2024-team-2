@@ -30,10 +30,6 @@ import com.example.eventplanner.services.communication.NotificationService;
 import com.example.eventplanner.services.order.BookingService;
 import com.example.eventplanner.services.order.PurchaseService;
 import com.example.eventplanner.services.user.UserService;
-import com.example.eventplanner.services.util.DateUtil;
-import com.example.eventplanner.utils.StatusPair;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -41,7 +37,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.management.BadAttributeValueExpException;
 import java.time.Instant;
@@ -322,9 +317,7 @@ public class EventService {
 
     @Transactional
     public void addBudgetToEvent(Long eventId, Budget budget) {
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new EntityNotFoundException("Event not found"));
-
+        Event event = getAuthorizedEvent(eventId);
         event.getBudgets().add(budget);
         eventRepository.save(event);
     }
