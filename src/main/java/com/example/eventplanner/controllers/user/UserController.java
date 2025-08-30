@@ -55,11 +55,7 @@ public class UserController {
 
     @PutMapping("/{id}")
     public ResponseEntity<UserInfoDto> updateUserInfo(@PathVariable long id, @RequestBody UserInfoDto userInfoDto) {
-        BaseUser user = authUtil.getAuthenticatedUser();
-        if (user == null)
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        if (user.getId() != id && user.getUserRole() != UserRole.ADMIN)
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        authUtil.checkUserAccess(id);
         UserInfoDto userInfoDto1 = userService.updateUserInfo(userInfoDto, id);
         return userInfoDto1 != null
                 ? ResponseEntity.ok(userInfoDto1)
@@ -75,11 +71,7 @@ public class UserController {
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable long id) {
-        BaseUser user = authUtil.getAuthenticatedUser();
-        if (user == null)
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        if (user.getId() != id && user.getUserRole() != UserRole.ADMIN)
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        authUtil.checkUserAccess(id);
         boolean success = userService.delete(id);
         return success
                 ? ResponseEntity.noContent().build()
@@ -88,11 +80,7 @@ public class UserController {
 
     @GetMapping("/{id}/attended-events")
     public ResponseEntity<Collection<EventDto>> getAttendingEvents(@PathVariable long id) {
-        BaseUser user = authUtil.getAuthenticatedUser();
-        if (user == null)
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        if (user.getId() != id && user.getUserRole() != UserRole.ADMIN)
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        authUtil.checkUserAccess(id);
         Collection<EventDto> result = userService.getAttendingEvents(id);
         return result != null ?
                 new ResponseEntity<>(result, HttpStatus.OK) :
@@ -103,6 +91,7 @@ public class UserController {
     public ResponseEntity<RegisterUserDto> uploadProfilePicture(
             @PathVariable long id,
             @RequestBody ImageNameDto dto) {
+        authUtil.checkUserAccess(id);
         RegisterUserDto updatedUser = userService.uploadProfilePicture(id, dto.getImageName());
         return updatedUser != null
                 ? ResponseEntity.ok(updatedUser)
@@ -111,6 +100,7 @@ public class UserController {
 
     @DeleteMapping("/{id}/remove-picture")
     public ResponseEntity<RegisterUserDto> removeProfilePicture(@PathVariable long id) {
+        authUtil.checkUserAccess(id);
         RegisterUserDto updatedUser = userService.removeProfilePicture(id);
         return updatedUser != null
                 ? ResponseEntity.ok(updatedUser)

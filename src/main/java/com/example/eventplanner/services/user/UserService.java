@@ -1,5 +1,6 @@
 package com.example.eventplanner.services.user;
 
+import com.example.eventplanner.controllers.utils.AuthUtil;
 import com.example.eventplanner.dto.auth.ResetPasswordDto;
 import com.example.eventplanner.dto.event.event.EventDto;
 import com.example.eventplanner.dto.event.event.EventMapper;
@@ -30,12 +31,10 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final UserUpgradeService userUpgradeService;
-    @Autowired
-    private UserReportRepository userReportRepository;
+    private final UserReportRepository userReportRepository;
 
     public boolean registerUser(RegisterUserDto registerUserDto) {
         if (!validateUser(registerUserDto))
@@ -213,16 +212,14 @@ public class UserService implements UserDetailsService {
     }
 
     public RegisterUserDto uploadProfilePicture(long id, String imageName) {
-        BaseUser user = userRepository.findById(id).orElse(null);
-        if (user == null) return null;
+        BaseUser user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found"));
         user.setImage(imageName);
         userRepository.save(user);
         return UserMapper.toDto(user);
     }
 
     public RegisterUserDto removeProfilePicture(long id) {
-        BaseUser user = userRepository.findById(id).orElse(null);
-        if (user == null) return null;
+        BaseUser user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found"));
         user.setImage(null);
         userRepository.save(user);
         return UserMapper.toDto(user);
