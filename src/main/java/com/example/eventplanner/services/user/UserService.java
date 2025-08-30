@@ -212,20 +212,20 @@ public class UserService implements UserDetailsService {
         return !userRepository.existsByEmail(registerEmail);
     }
 
-    public RegisterUserDto uploadProfilePicture(long id, String imageName) {
+    public BaseUserDto uploadProfilePicture(long id, String imageName) {
         BaseUser user = userRepository.findById(id).orElse(null);
         if (user == null) return null;
         user.setImage(imageName);
         userRepository.save(user);
-        return UserMapper.toDto(user);
+        return UserMapper.toBaseUserDto(user);
     }
 
-    public RegisterUserDto removeProfilePicture(long id) {
+    public BaseUserDto removeProfilePicture(long id) {
         BaseUser user = userRepository.findById(id).orElse(null);
         if (user == null) return null;
         user.setImage(null);
         userRepository.save(user);
-        return UserMapper.toDto(user);
+        return UserMapper.toBaseUserDto(user);
     }
 
     public void suspendUser(String email) {

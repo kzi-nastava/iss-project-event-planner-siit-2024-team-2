@@ -47,7 +47,7 @@ public class ProductService {
         ServiceProductProvider serviceProductProvider = (ServiceProductProvider) userRepository.findById(createProductDto.getServiceProductProviderId()).orElseThrow();
         ServiceProductCategory serviceProductCategory = serviceProductCategoryRepository.findById(createProductDto.getCategoryId()).orElseThrow();
         List<EventType> eventTypes = new ArrayList<>();
-        for (long typeId: createProductDto.getAvailableEventTypesIds()) {
+        for (long typeId: createProductDto.getAvailableEventTypeIds()) {
             EventType eventType = eventTypeRepository.findById(typeId).orElseThrow(() ->
                     new NoSuchElementException("EventType with ID " + typeId + " not found"));
             eventTypes.add(eventType);
@@ -66,7 +66,7 @@ public class ProductService {
         ServiceProductProvider serviceProductProvider = (ServiceProductProvider) userRepository.findById(createProductDto.getServiceProductProviderId()).orElseThrow();
         ServiceProductCategory serviceProductCategory = serviceProductCategoryRepository.findById(createProductDto.getCategoryId()).orElseThrow();
         List<EventType> eventTypes = new ArrayList<>();
-        for (long typeId: createProductDto.getAvailableEventTypesIds()) {
+        for (long typeId: createProductDto.getAvailableEventTypeIds()) {
             EventType eventType = eventTypeRepository.findById(typeId)
                     .orElseThrow(() -> new NoSuchElementException("EventType with ID " + typeId + " not found"));
             eventTypes.add(eventType);
@@ -74,6 +74,7 @@ public class ProductService {
         product.setServiceProductProvider(serviceProductProvider);
         product.setCategory(serviceProductCategory);
         product.setAvailableEventTypes(eventTypes);
+        product.setVisible(createProductDto.isVisible());
         product.setName(createProductDto.getName());
         product.setPrice(createProductDto.getPrice());
         product.setAvailable(createProductDto.isAvailable());

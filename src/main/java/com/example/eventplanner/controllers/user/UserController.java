@@ -3,10 +3,7 @@ package com.example.eventplanner.controllers.user;
 
 import com.example.eventplanner.controllers.utils.AuthUtil;
 import com.example.eventplanner.dto.event.event.EventDto;
-import com.example.eventplanner.dto.user.user.CompanyInfoDto;
-import com.example.eventplanner.dto.user.user.ImageNameDto;
-import com.example.eventplanner.dto.user.user.RegisterUserDto;
-import com.example.eventplanner.dto.user.user.UserInfoDto;
+import com.example.eventplanner.dto.user.user.*;
 import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.utils.UserRole;
 import com.example.eventplanner.services.user.UserService;
@@ -100,18 +97,18 @@ public class UserController {
     }
 
     @PostMapping("/{id}/upload-picture")
-    public ResponseEntity<RegisterUserDto> uploadProfilePicture(
+    public ResponseEntity<BaseUserDto> uploadProfilePicture(
             @PathVariable long id,
             @RequestBody ImageNameDto dto) {
-        RegisterUserDto updatedUser = userService.uploadProfilePicture(id, dto.getImageName());
+        BaseUserDto updatedUser = userService.uploadProfilePicture(id, dto.getImageName());
         return updatedUser != null
                 ? ResponseEntity.ok(updatedUser)
                 : ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}/remove-picture")
-    public ResponseEntity<RegisterUserDto> removeProfilePicture(@PathVariable long id) {
-        RegisterUserDto updatedUser = userService.removeProfilePicture(id);
+    public ResponseEntity<BaseUserDto> removeProfilePicture(@PathVariable long id) {
+        BaseUserDto updatedUser = userService.removeProfilePicture(id);
         return updatedUser != null
                 ? ResponseEntity.ok(updatedUser)
                 : ResponseEntity.notFound().build();
