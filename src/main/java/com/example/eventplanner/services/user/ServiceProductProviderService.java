@@ -1,6 +1,7 @@
 package com.example.eventplanner.services.user;
 
 import com.example.eventplanner.dto.user.user.RegisterServiceProductProviderDto;
+import com.example.eventplanner.dto.user.user.ServiceProductProviderDto;
 import com.example.eventplanner.dto.user.user.ServiceProductProviderMapper;
 import com.example.eventplanner.dto.user.user.UpdateServiceProductProviderDto;
 import com.example.eventplanner.model.user.ServiceProductProvider;
@@ -16,7 +17,7 @@ import java.util.NoSuchElementException;
 public class ServiceProductProviderService {
     private final ServiceProductProviderRepository serviceProductProviderRepository;
 
-    public RegisterServiceProductProviderDto getServiceProductProviderById(long id) {
+    public ServiceProductProviderDto getServiceProductProviderById(long id) {
         return serviceProductProviderRepository.findById(id)
                 .map(ServiceProductProviderMapper::toDto)
                 .orElse(null);

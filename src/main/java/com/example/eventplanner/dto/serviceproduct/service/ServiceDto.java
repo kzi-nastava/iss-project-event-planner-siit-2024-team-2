@@ -3,6 +3,7 @@ package com.example.eventplanner.dto.serviceproduct.service;
 import com.example.eventplanner.dto.event.eventtype.EventTypeDto;
 import com.example.eventplanner.dto.serviceproduct.serviceproductcategory.ServiceProductCategoryDto;
 import com.example.eventplanner.dto.user.user.RegisterServiceProductProviderDto;
+import com.example.eventplanner.dto.user.user.ServiceProductProviderDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,7 +27,7 @@ public class ServiceDto {
     private List<String> images;
     private List<String> imageEncodedNames;
     private List<EventTypeDto> availableEventTypes;
-    private RegisterServiceProductProviderDto serviceProductProvider;
+    private ServiceProductProviderDto serviceProductProvider;
 
     private String specifies;
     private float duration;
