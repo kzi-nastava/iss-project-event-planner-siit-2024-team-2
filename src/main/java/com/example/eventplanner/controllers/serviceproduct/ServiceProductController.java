@@ -40,7 +40,6 @@ public class ServiceProductController {
             @RequestParam(required = false) ServiceProductDType type,
             @RequestParam(required = false) List<Long> categoryIds,
             @RequestParam(required = false) Boolean available,
-            @RequestParam(required = false) Boolean visible,
             @RequestParam(required = false) Integer minPrice,
             @RequestParam(required = false) Integer maxPrice,
             @RequestParam(required = false) List<Long> availableEventTypeIds,
@@ -51,7 +50,7 @@ public class ServiceProductController {
         Sort sort = Sort.by(sortDirection, sortBy);
         Page<ServiceProductDto> result = serviceProductService.getAllFiltered(
                 ServiceProductDto.class, type,
-                page, size, sort, name, description, categoryIds, available, visible,
+                page, size, sort, name, description, categoryIds, available,
                 minPrice, maxPrice, availableEventTypeIds, serviceProductProviderId,
                 minDuration, maxDuration, automaticReserved);
         return new ResponseEntity<>(result, HttpStatus.OK);
@@ -68,7 +67,6 @@ public class ServiceProductController {
             @RequestParam(required = false) ServiceProductDType type,
             @RequestParam(required = false) List<Long> categoryIds,
             @RequestParam(required = false) Boolean available,
-            @RequestParam(required = false) Boolean visible,
             @RequestParam(required = false) Integer minPrice,
             @RequestParam(required = false) Integer maxPrice,
             @RequestParam(required = false) List<Long> availableEventTypeIds,
@@ -79,7 +77,7 @@ public class ServiceProductController {
         Sort sort = Sort.by(sortDirection, sortBy);
         Page<ServiceProductSummaryDto> result = serviceProductService.getAllFiltered(
                 ServiceProductSummaryDto.class, type,
-                page, size, sort, name, description, categoryIds, available, visible,
+                page, size, sort, name, description, categoryIds, available,
                 minPrice, maxPrice, availableEventTypeIds, serviceProductProviderId,
                 minDuration, maxDuration, automaticReserved);
         return new ResponseEntity<>(result, HttpStatus.OK);

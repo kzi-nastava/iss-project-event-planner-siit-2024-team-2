@@ -45,7 +45,13 @@ public class WebSecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/api/events/{id}", "/api/events/{id}/agenda").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/service-products/top5"
                                 , "/api/service-products/summaries"
-                                , "/api/service-products/filtering-values").permitAll()
+                                , "/api/service-products/filtering-values"
+                                , "/api/service-products/{id}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/services/{id}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/users/{id}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/users/company/{id}").permitAll()
+
+
                         .requestMatchers(HttpMethod.GET, "/api/event-types").permitAll()
                         .requestMatchers("/socket", "/socket/**", "/send-message-rest", "/send/message").permitAll()
                         .requestMatchers("/api/images/{path}", "/api/images").permitAll()
