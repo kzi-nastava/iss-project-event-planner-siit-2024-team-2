@@ -22,4 +22,5 @@ public class EventSummaryDto {
     private long date;
     private String creatorName;
     private String creatorEmail;
+    private String creatorProfilePicture;
 }
