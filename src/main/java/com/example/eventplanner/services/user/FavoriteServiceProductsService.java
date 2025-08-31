@@ -1,7 +1,7 @@
 package com.example.eventplanner.services.user;
 
-import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductMapper;
 import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductSummaryDto;
+import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductMapper;
 import com.example.eventplanner.model.serviceproduct.ServiceProduct;
 import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.repositories.serviceproduct.ServiceProductRepository;
@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -44,10 +43,6 @@ public class FavoriteServiceProductsService {
         BaseUser user = userOpt.get();
         ServiceProduct serviceProduct = serviceProductOpt.get();
 
-        if (user.getFavoriteServiceProducts() == null) {
-            user.setFavoriteServiceProducts(new ArrayList<>());
-        }
-
         if (!user.getFavoriteServiceProducts().contains(serviceProduct)) {
             user.getFavoriteServiceProducts().add(serviceProduct);
             userRepository.save(user);
@@ -65,10 +60,6 @@ public class FavoriteServiceProductsService {
 
         BaseUser user = userOpt.get();
         ServiceProduct serviceProduct = serviceProductOpt.get();
-
-        if (user.getFavoriteServiceProducts() == null) {
-            user.setFavoriteServiceProducts(new ArrayList<>());
-        }
 
         if (user.getFavoriteServiceProducts().contains(serviceProduct)) {
             user.getFavoriteServiceProducts().remove(serviceProduct);
