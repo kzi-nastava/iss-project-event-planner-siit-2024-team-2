@@ -18,6 +18,7 @@ import com.example.eventplanner.exception.NotFoundException;
 import com.example.eventplanner.exception.UnauthorizedException;
 import com.example.eventplanner.model.Entity;
 import com.example.eventplanner.model.event.Activity;
+import com.example.eventplanner.model.event.Budget;
 import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.event.EventType;
 import com.example.eventplanner.model.event.Invitation;
@@ -33,6 +34,7 @@ import com.example.eventplanner.services.communication.NotificationService;
 import com.example.eventplanner.services.order.BookingService;
 import com.example.eventplanner.services.order.PurchaseService;
 import com.example.eventplanner.services.user.UserService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
@@ -40,7 +42,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.management.BadAttributeValueExpException;
 import java.time.Instant;
@@ -240,20 +241,6 @@ public class EventService {
         return true;
     }
 
-    public List<PurchaseDto> getPurchases(long id) {
-        return purchaseService.getAll()
-                .stream()
-                .filter(purchase -> purchase.getEvent().getId() == id)
-                .toList();
-    }
-
-    public List<BookingDto> getBookings(long id) {
-        return bookingService.getAll()
-                .stream()
-                .filter(booking -> booking.getEvent().getId() == id)
-                .toList();
-    }
-
     public List<Integer> getMaxAttendancesRange() {
         List<Object[]> result = eventRepository.findMaxAttendancesRange();
         Integer min = (Integer) result.get(0)[0];
@@ -340,6 +327,13 @@ public class EventService {
         }
 
         return true;
+    }
+
+    @Transactional
+    public void addBudgetToEvent(Long eventId, Budget budget) {
+        Event event = getAuthorizedEvent(eventId);
+        event.getBudgets().add(budget);
+        eventRepository.save(event);
     }
 
     private void sendUpdateNotifications(Event event) {

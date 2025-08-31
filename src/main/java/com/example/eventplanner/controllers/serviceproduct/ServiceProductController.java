@@ -110,6 +110,11 @@ public class ServiceProductController {
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    @GetMapping("/sp-categories/by-event-type")
+    public ResponseEntity<List<String>> getCategoriesByEventType(@RequestParam Long eventTypeId) {
+        return ResponseEntity.ok(serviceProductService.getCategoriesByAvailableEventType(eventTypeId));
+    }
+
     @GetMapping(value = "/{id}/reviews")
     public ResponseEntity<Page<ReviewDto>> getServiceProductReviews(
             @PathVariable("id") Long id,

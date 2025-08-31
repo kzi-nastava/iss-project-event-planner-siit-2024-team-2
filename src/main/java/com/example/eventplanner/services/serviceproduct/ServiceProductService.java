@@ -11,6 +11,7 @@ import com.example.eventplanner.dto.serviceproduct.serviceproductcategory.Servic
 import com.example.eventplanner.dto.order.review.ReviewDto;
 import com.example.eventplanner.dto.order.review.ReviewMapper;
 import com.example.eventplanner.exception.NotFoundException;
+import com.example.eventplanner.model.event.EventType;
 import com.example.eventplanner.model.serviceproduct.Product;
 import com.example.eventplanner.model.serviceproduct.ServiceProduct;
 import com.example.eventplanner.model.utils.ReviewStatus;
@@ -19,7 +20,6 @@ import com.example.eventplanner.repositories.event.EventTypeRepository;
 import com.example.eventplanner.repositories.order.ServiceProductReviewRepository;
 import com.example.eventplanner.repositories.serviceproduct.ServiceProductCategoryRepository;
 import com.example.eventplanner.repositories.serviceproduct.ServiceProductRepository;
-import com.example.eventplanner.repositories.order.ReviewRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -119,6 +119,11 @@ public class ServiceProductService {
                 categories,
                 types
         );
+    }
+
+    public List<String> getCategoriesByAvailableEventType(Long eventTypeId) {
+        EventType eventType = eventTypeRepository.getReferenceById(eventTypeId);
+        return serviceProductRepository.getCategoriesByAvailableEventType((eventType));
     }
 
     public Page<ReviewDto> getServiceProductReviews(Long id, Pageable pageable) {

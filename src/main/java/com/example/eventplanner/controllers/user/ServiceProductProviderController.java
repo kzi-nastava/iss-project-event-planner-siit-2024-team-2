@@ -1,6 +1,5 @@
 package com.example.eventplanner.controllers.user;
 
-import com.example.eventplanner.dto.user.user.RegisterServiceProductProviderDto;
 import com.example.eventplanner.dto.user.user.ServiceProductProviderDto;
 import com.example.eventplanner.dto.user.user.UpdateServiceProductProviderDto;
 import com.example.eventplanner.services.user.ServiceProductProviderService;

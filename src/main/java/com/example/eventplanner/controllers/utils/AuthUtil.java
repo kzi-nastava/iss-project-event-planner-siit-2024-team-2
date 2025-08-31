@@ -1,8 +1,11 @@
 package com.example.eventplanner.controllers.utils;
 
+import com.example.eventplanner.exception.ForbiddenException;
+import com.example.eventplanner.exception.UnauthorizedException;
 import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.user.EventOrganizer;
 import com.example.eventplanner.model.user.ServiceProductProvider;
+import com.example.eventplanner.model.utils.UserRole;
 import com.example.eventplanner.services.user.EventOrganizerService;
 import com.example.eventplanner.services.user.ServiceProductProviderService;
 import com.example.eventplanner.services.user.UserService;
@@ -56,6 +59,14 @@ public class AuthUtil {
     public boolean isAdmin() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return authentication.getAuthorities().stream().anyMatch(authority -> authority.getAuthority().equals("ADMIN"));
+    }
+
+    public void checkUserAccess(long userId) throws UnauthorizedException, ForbiddenException {
+        BaseUser user = getAuthenticatedUser();
+        if (user == null)
+            throw new UnauthorizedException("User not authenticated");
+        if (user.getId() != userId && user.getUserRole() != UserRole.ADMIN)
+            throw new ForbiddenException("User is not authorized to access this user");
     }
 }
 
