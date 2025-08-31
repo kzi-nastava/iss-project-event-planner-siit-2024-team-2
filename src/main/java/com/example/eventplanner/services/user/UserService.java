@@ -12,7 +12,6 @@ import com.example.eventplanner.model.utils.UserRole;
 import com.example.eventplanner.repositories.user.UserReportRepository;
 import com.example.eventplanner.repositories.user.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -30,12 +29,10 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final UserUpgradeService userUpgradeService;
-    @Autowired
-    private UserReportRepository userReportRepository;
+    private final UserReportRepository userReportRepository;
 
     public boolean registerUser(RegisterUserDto registerUserDto) {
         if (!validateUser(registerUserDto))
@@ -212,20 +209,18 @@ public class UserService implements UserDetailsService {
         return !userRepository.existsByEmail(registerEmail);
     }
 
-    public RegisterUserDto uploadProfilePicture(long id, String imageName) {
-        BaseUser user = userRepository.findById(id).orElse(null);
-        if (user == null) return null;
+    public BaseUserDto uploadProfilePicture(long id, String imageName) {
+        BaseUser user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found"));
         user.setImage(imageName);
         userRepository.save(user);
-        return UserMapper.toDto(user);
+        return UserMapper.toBaseUserDto(user);
     }
 
-    public RegisterUserDto removeProfilePicture(long id) {
-        BaseUser user = userRepository.findById(id).orElse(null);
-        if (user == null) return null;
+    public BaseUserDto removeProfilePicture(long id) {
+        BaseUser user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found"));
         user.setImage(null);
         userRepository.save(user);
-        return UserMapper.toDto(user);
+        return UserMapper.toBaseUserDto(user);
     }
 
     public void suspendUser(String email) {

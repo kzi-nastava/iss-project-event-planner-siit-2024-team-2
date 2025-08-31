@@ -20,5 +20,6 @@ public class ServiceProductSummaryDto {
     private String description;
     private String creatorName;
     private String creatorEmail;
+    private String creatorProfilePicture;
     private String image;
 }

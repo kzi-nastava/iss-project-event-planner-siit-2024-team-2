@@ -11,31 +11,37 @@ import com.example.eventplanner.dto.event.event.EventNoIdDto;
 import com.example.eventplanner.dto.event.event.EventSummaryDto;
 import com.example.eventplanner.dto.order.booking.BookingDto;
 import com.example.eventplanner.dto.order.purchase.PurchaseDto;
+import com.example.eventplanner.dto.order.review.ReviewDto;
+import com.example.eventplanner.dto.order.review.ReviewMapper;
 import com.example.eventplanner.exception.ForbiddenException;
 import com.example.eventplanner.exception.NotFoundException;
 import com.example.eventplanner.exception.UnauthorizedException;
 import com.example.eventplanner.model.Entity;
 import com.example.eventplanner.model.event.Activity;
+import com.example.eventplanner.model.event.Budget;
 import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.event.EventType;
 import com.example.eventplanner.model.event.Invitation;
 import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.user.EventOrganizer;
+import com.example.eventplanner.model.utils.ReviewStatus;
 import com.example.eventplanner.model.utils.UserRole;
 import com.example.eventplanner.repositories.event.EventRepository;
 import com.example.eventplanner.repositories.event.EventTypeRepository;
+import com.example.eventplanner.repositories.order.EventReviewRepository;
 import com.example.eventplanner.repositories.user.UserRepository;
 import com.example.eventplanner.services.communication.NotificationService;
 import com.example.eventplanner.services.order.BookingService;
 import com.example.eventplanner.services.order.PurchaseService;
 import com.example.eventplanner.services.user.UserService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.management.BadAttributeValueExpException;
 import java.time.Instant;
@@ -56,6 +62,7 @@ public class EventService {
     private final UserService userService;
     private final NotificationService notificationService;
     private final AuthUtil authUtil;
+    private final EventReviewRepository eventReviewRepository;
 
     public List<EventDto> getAll() {
         return eventRepository.findAll()
@@ -133,11 +140,13 @@ public class EventService {
         return EventMapper.toDto(updatedEvent);
     }
 
+    @Transactional
     public boolean delete(long id) {
         Event event = getAuthorizedEvent(id);
-        sendEventNotifications(event, "Event deleted", "Event " + event.getName() + " has been deleted");
+        sendEventNotifications(event, "Event deleted", "Event *" + event.getName() + "* has been deleted");
         event.getAttendees().forEach(attendee -> attendee.getAttendingEvents().remove(event));
         userRepository.saveAll(event.getAttendees());
+        eventReviewRepository.deleteByEvent(id);
         eventRepository.deleteById(id);
         return true;
     }
@@ -227,23 +236,9 @@ public class EventService {
                 .map(ActivityMapper::toEntity)
                 .toList();
         event.setActivities(activities);
-        sendUpdateNotifications(event, "Event " + event.getName() + " had its agenda updated");
+        sendUpdateNotifications(event, "Event *" + event.getName() + "* had its agenda updated");
         eventRepository.save(event);
         return true;
-    }
-
-    public List<PurchaseDto> getPurchases(long id) {
-        return purchaseService.getAll()
-                .stream()
-                .filter(purchase -> purchase.getEvent().getId() == id)
-                .toList();
-    }
-
-    public List<BookingDto> getBookings(long id) {
-        return bookingService.getAll()
-                .stream()
-                .filter(booking -> booking.getEvent().getId() == id)
-                .toList();
     }
 
     public List<Integer> getMaxAttendancesRange() {
@@ -258,7 +253,7 @@ public class EventService {
         if (activity.getName() == null || activity.getName().isEmpty()) return false;
         if (!isTimeValid(event.getActivities(), activity.getActivityStart(), activity.getActivityEnd(), null)) return false;
         event.getActivities().add(ActivityMapper.toEntity(activity));
-        sendUpdateNotifications(event, "Event " + event.getName() + " had its agenda updated");
+        sendUpdateNotifications(event, "Event *" + event.getName() + "* had its agenda updated");
         eventRepository.save(event);
         return true;
     }
@@ -293,7 +288,7 @@ public class EventService {
         activity.setDescription(dto.getDescription());
         activity.setLocation(dto.getLocation());
 
-        sendUpdateNotifications(event, "Event " + event.getName() + " had its agenda updated");
+        sendUpdateNotifications(event, "Event *" + event.getName() + "* had its agenda updated");
 
         eventRepository.save(event);
         return true;
@@ -305,9 +300,15 @@ public class EventService {
         if (activity != null) {
             activity.setActive(false);
         }
-        sendUpdateNotifications(event, "Event " + event.getName() + " had its agenda updated");
+        sendUpdateNotifications(event, "Event *" + event.getName() + "* had its agenda updated");
         eventRepository.save(event);
         return activity != null;
+    }
+
+    public Page<ReviewDto> getEventReviews(Long id, Pageable pageable) {
+        Event event = eventRepository.getReferenceById(id);
+        return eventReviewRepository.findAllByEventAndReviewStatus(event, ReviewStatus.APPROVED, pageable)
+                .map(ReviewMapper::toDto);
     }
 
     private boolean isTimeValid(List<Activity> activities, Long start, Long end, Long activityId) {
@@ -328,8 +329,15 @@ public class EventService {
         return true;
     }
 
+    @Transactional
+    public void addBudgetToEvent(Long eventId, Budget budget) {
+        Event event = getAuthorizedEvent(eventId);
+        event.getBudgets().add(budget);
+        eventRepository.save(event);
+    }
+
     private void sendUpdateNotifications(Event event) {
-        sendUpdateNotifications(event, "Event " + event.getName() + " has been updated");
+        sendUpdateNotifications(event, "Event *" + event.getName() + "* has been updated");
     }
     private void sendUpdateNotifications(Event event, String message) {
         sendEventNotifications(event, "Event updated", message);

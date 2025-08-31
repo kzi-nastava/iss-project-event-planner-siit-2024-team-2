@@ -1,6 +1,6 @@
 package com.example.eventplanner.controllers.user;
 
-import com.example.eventplanner.dto.user.user.RegisterServiceProductProviderDto;
+import com.example.eventplanner.dto.user.user.ServiceProductProviderDto;
 import com.example.eventplanner.dto.user.user.UpdateServiceProductProviderDto;
 import com.example.eventplanner.services.user.ServiceProductProviderService;
 import lombok.RequiredArgsConstructor;
@@ -14,10 +14,10 @@ public class ServiceProductProviderController {
     private final ServiceProductProviderService serviceProductProviderService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<RegisterServiceProductProviderDto> getServiceProductProviderById(@PathVariable long id) {
-        RegisterServiceProductProviderDto registerServiceProductProviderDto = serviceProductProviderService.getServiceProductProviderById(id);
-        return registerServiceProductProviderDto != null ?
-                ResponseEntity.ok(registerServiceProductProviderDto) :
+    public ResponseEntity<ServiceProductProviderDto> getServiceProductProviderById(@PathVariable long id) {
+        ServiceProductProviderDto dto = serviceProductProviderService.getServiceProductProviderById(id);
+        return dto != null ?
+                ResponseEntity.ok(dto) :
                 ResponseEntity.notFound().build();
     }
 
