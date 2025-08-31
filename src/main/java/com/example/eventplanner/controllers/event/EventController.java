@@ -8,6 +8,7 @@ import com.example.eventplanner.dto.event.event.EventNoIdDto;
 import com.example.eventplanner.dto.event.event.EventSummaryDto;
 import com.example.eventplanner.dto.order.booking.BookingDto;
 import com.example.eventplanner.dto.order.purchase.PurchaseDto;
+import com.example.eventplanner.dto.order.review.ReviewDto;
 import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.user.EventOrganizer;
 import com.example.eventplanner.model.utils.AttendanceResult;
@@ -18,6 +19,8 @@ import com.example.eventplanner.services.event.EventService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -267,5 +270,16 @@ public class EventController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Event not found");
         else
             return ResponseEntity.ok().build();
+    }
+
+    @GetMapping(value = "/{id}/reviews")
+    public ResponseEntity<Page<ReviewDto>> getServiceProductReviews(
+            @PathVariable("id") Long id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) Integer size) {
+        Pageable pageable = PageRequest.of(page, size != null ? size : 10)
+                .withSort(Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<ReviewDto> result = eventService.getEventReviews(id, pageable);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

@@ -1,4 +1,4 @@
-package com.example.eventplanner.dto.serviceproduct.serviceproductreview;
+package com.example.eventplanner.dto.order.review;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ServiceProductReviewCommentDto {
+public class ReviewCommentDto {
     private long id;
     private String comment;
 }

@@ -11,6 +11,8 @@ import com.example.eventplanner.dto.event.event.EventNoIdDto;
 import com.example.eventplanner.dto.event.event.EventSummaryDto;
 import com.example.eventplanner.dto.order.booking.BookingDto;
 import com.example.eventplanner.dto.order.purchase.PurchaseDto;
+import com.example.eventplanner.dto.order.review.ReviewDto;
+import com.example.eventplanner.dto.order.review.ReviewMapper;
 import com.example.eventplanner.exception.ForbiddenException;
 import com.example.eventplanner.exception.NotFoundException;
 import com.example.eventplanner.exception.UnauthorizedException;
@@ -21,9 +23,11 @@ import com.example.eventplanner.model.event.EventType;
 import com.example.eventplanner.model.event.Invitation;
 import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.user.EventOrganizer;
+import com.example.eventplanner.model.utils.ReviewStatus;
 import com.example.eventplanner.model.utils.UserRole;
 import com.example.eventplanner.repositories.event.EventRepository;
 import com.example.eventplanner.repositories.event.EventTypeRepository;
+import com.example.eventplanner.repositories.order.EventReviewRepository;
 import com.example.eventplanner.repositories.user.UserRepository;
 import com.example.eventplanner.services.communication.NotificationService;
 import com.example.eventplanner.services.order.BookingService;
@@ -33,6 +37,7 @@ import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,6 +61,7 @@ public class EventService {
     private final UserService userService;
     private final NotificationService notificationService;
     private final AuthUtil authUtil;
+    private final EventReviewRepository eventReviewRepository;
 
     public List<EventDto> getAll() {
         return eventRepository.findAll()
@@ -133,11 +139,13 @@ public class EventService {
         return EventMapper.toDto(updatedEvent);
     }
 
+    @Transactional
     public boolean delete(long id) {
         Event event = getAuthorizedEvent(id);
         sendEventNotifications(event, "Event deleted", "Event *" + event.getName() + "* has been deleted");
         event.getAttendees().forEach(attendee -> attendee.getAttendingEvents().remove(event));
         userRepository.saveAll(event.getAttendees());
+        eventReviewRepository.deleteByEvent(id);
         eventRepository.deleteById(id);
         return true;
     }
@@ -308,6 +316,12 @@ public class EventService {
         sendUpdateNotifications(event, "Event *" + event.getName() + "* had its agenda updated");
         eventRepository.save(event);
         return activity != null;
+    }
+
+    public Page<ReviewDto> getEventReviews(Long id, Pageable pageable) {
+        Event event = eventRepository.getReferenceById(id);
+        return eventReviewRepository.findAllByEventAndReviewStatus(event, ReviewStatus.APPROVED, pageable)
+                .map(ReviewMapper::toDto);
     }
 
     private boolean isTimeValid(List<Activity> activities, Long start, Long end, Long activityId) {

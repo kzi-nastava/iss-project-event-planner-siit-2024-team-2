@@ -3,7 +3,7 @@ package com.example.eventplanner.controllers.serviceproduct;
 import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductDto;
 import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductFilteringValuesDto;
 import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductSummaryDto;
-import com.example.eventplanner.dto.serviceproduct.serviceproductreview.ServiceProductReviewDto;
+import com.example.eventplanner.dto.order.review.ReviewDto;
 import com.example.eventplanner.model.utils.ServiceProductDType;
 import com.example.eventplanner.services.serviceproduct.ServiceProductService;
 import lombok.RequiredArgsConstructor;
@@ -111,13 +111,13 @@ public class ServiceProductController {
     }
 
     @GetMapping(value = "/{id}/reviews")
-    public ResponseEntity<Page<ServiceProductReviewDto>> getServiceProductReviews(
+    public ResponseEntity<Page<ReviewDto>> getServiceProductReviews(
             @PathVariable("id") Long id,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(required = false) Integer size) {
         Pageable pageable = PageRequest.of(page, size != null ? size : 10)
                 .withSort(Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<ServiceProductReviewDto> result = serviceProductService.getServiceProductReviews(id, pageable);
+        Page<ReviewDto> result = serviceProductService.getServiceProductReviews(id, pageable);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

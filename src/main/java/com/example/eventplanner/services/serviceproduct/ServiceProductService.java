@@ -8,17 +8,18 @@ import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProduct
 import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductSummaryDto;
 import com.example.eventplanner.dto.serviceproduct.serviceproductcategory.ServiceProductCategoryDto;
 import com.example.eventplanner.dto.serviceproduct.serviceproductcategory.ServiceProductCategoryMapper;
-import com.example.eventplanner.dto.serviceproduct.serviceproductreview.ServiceProductReviewDto;
-import com.example.eventplanner.dto.serviceproduct.serviceproductreview.ServiceProductReviewMapper;
+import com.example.eventplanner.dto.order.review.ReviewDto;
+import com.example.eventplanner.dto.order.review.ReviewMapper;
 import com.example.eventplanner.exception.NotFoundException;
 import com.example.eventplanner.model.serviceproduct.Product;
 import com.example.eventplanner.model.serviceproduct.ServiceProduct;
 import com.example.eventplanner.model.utils.ReviewStatus;
 import com.example.eventplanner.model.utils.ServiceProductDType;
 import com.example.eventplanner.repositories.event.EventTypeRepository;
+import com.example.eventplanner.repositories.order.ServiceProductReviewRepository;
 import com.example.eventplanner.repositories.serviceproduct.ServiceProductCategoryRepository;
 import com.example.eventplanner.repositories.serviceproduct.ServiceProductRepository;
-import com.example.eventplanner.repositories.serviceproduct.ServiceProductReviewRepository;
+import com.example.eventplanner.repositories.order.ReviewRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -120,9 +121,9 @@ public class ServiceProductService {
         );
     }
 
-    public Page<ServiceProductReviewDto> getServiceProductReviews(Long id, Pageable pageable) {
+    public Page<ReviewDto> getServiceProductReviews(Long id, Pageable pageable) {
         ServiceProduct serviceProduct = serviceProductRepository.getReferenceById(id);
         return serviceProductReviewRepository.findAllByServiceProductAndReviewStatus(serviceProduct, ReviewStatus.APPROVED, pageable)
-                .map(ServiceProductReviewMapper::toDto);
+                .map(ReviewMapper::toDto);
     }
 }

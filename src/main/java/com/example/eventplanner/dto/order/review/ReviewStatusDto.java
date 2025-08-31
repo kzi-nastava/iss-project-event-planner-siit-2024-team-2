@@ -1,6 +1,5 @@
-package com.example.eventplanner.dto.event.eventreview;
+package com.example.eventplanner.dto.order.review;
 
-import com.example.eventplanner.dto.event.event.EventDto;
 import com.example.eventplanner.model.utils.ReviewStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,10 +10,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class EventReviewDto {
+public class ReviewStatusDto {
     private long id;
-    private int grade;
-    private String comment;
-    private EventDto event;
     private ReviewStatus reviewStatus;
 }
