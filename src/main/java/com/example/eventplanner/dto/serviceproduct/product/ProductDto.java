@@ -16,6 +16,7 @@ public class ProductDto {
     private long id;
     private ServiceProductProviderDto serviceProductProvider;
     private boolean available;
+    private boolean visible;
     private double price;
     private double discount;
     private String name;

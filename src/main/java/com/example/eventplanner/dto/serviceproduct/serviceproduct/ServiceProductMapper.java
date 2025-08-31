@@ -31,7 +31,8 @@ public class ServiceProductMapper {
                 serviceProduct.getDescription(),
                 serviceProduct.getImages().stream().map(ImageService::encodePath).toList(),
                 serviceProduct.getAvailableEventTypes().stream().map(EventTypeMapper::toDto).toList(),
-                UserMapper.toServiceProductProviderDto(serviceProduct.getServiceProductProvider())
+                UserMapper.toServiceProductProviderDto(serviceProduct.getServiceProductProvider()),
+                serviceProduct.getDtype()
         );
     }
 
@@ -49,7 +50,8 @@ public class ServiceProductMapper {
                 serviceProduct.getDescription(),
                 serviceProduct.getImages().stream().map(ImageService::encodePath).toList(),
                 serviceProduct.getAvailableEventTypes().stream().map(EventType::getId).toList(),
-                serviceProduct.getServiceProductProvider().getId()
+                serviceProduct.getServiceProductProvider().getId(),
+                serviceProduct.getDtype()
         );
     }
 
@@ -95,7 +97,8 @@ public class ServiceProductMapper {
                 dto.getDescription(),
                 dto.getImages().stream().map(ImageService::decodePath).toList(),
                 availableEventTypes,
-                serviceProductProvider);
+                serviceProductProvider,
+                dto.getDtype());
     }
 
     public static PriceListDto toPriceListItemDto(ServiceProduct sp) {

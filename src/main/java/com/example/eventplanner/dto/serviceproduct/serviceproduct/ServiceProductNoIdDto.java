@@ -22,4 +22,5 @@ public class ServiceProductNoIdDto {
     private List<String> images;
     private List<Long> availableEventTypeIds;
     private long serviceProductProviderId;
+    private String dtype;
 }

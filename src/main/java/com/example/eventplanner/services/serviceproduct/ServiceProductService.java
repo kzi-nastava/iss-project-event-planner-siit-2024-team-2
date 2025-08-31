@@ -64,7 +64,7 @@ public class ServiceProductService {
     public <T> Page<T> getAllFiltered(
             Class<T> clazz, ServiceProductDType type,
             int page, Integer size, Sort sort, String name, String description, List<Long> categoryIds,
-            Boolean available, Boolean visible, Integer minPrice, Integer maxPrice,
+            Boolean available, Integer minPrice, Integer maxPrice,
             List<Long> availableEventTypeIds, Long serviceProductProviderId,
             Float minDuration, Float maxDuration, Boolean automaticReserved) {
         PageRequest pageRequest = PageRequest.of(page, size != null ? size : 10, sort);
@@ -77,7 +77,7 @@ public class ServiceProductService {
             spType = null;
         Page<ServiceProduct> serviceProducts =
                 serviceProductRepository.findAllFiltered(spType, name, description, categoryIds, available,
-                        visible, minPrice, maxPrice, availableEventTypeIds, serviceProductProviderId,
+                        minPrice, maxPrice, availableEventTypeIds, serviceProductProviderId,
                         minDuration, maxDuration, automaticReserved, pageRequest);
         if (clazz == ServiceProductDto.class)
             return serviceProducts.map(ServiceProductMapper::toDto).map(clazz::cast);
