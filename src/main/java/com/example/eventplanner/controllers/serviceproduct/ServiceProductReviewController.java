@@ -71,7 +71,7 @@ public class ServiceProductReviewController {
 
     @PostMapping(value = "/approve")
     public ResponseEntity<ServiceProductReviewStatusDto> approveServiceProductReview(@RequestBody Long id) {
-         ServiceProductReviewStatusDto result = serviceProductReviewService.updateStatus(id, ReviewStatus.APPROVED);
+         ServiceProductReviewStatusDto result = serviceProductReviewService.approve(id);
          return result != null ?
                  new ResponseEntity<>(result, HttpStatus.OK) :
                  new ResponseEntity<>(HttpStatus.NOT_FOUND);

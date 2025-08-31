@@ -135,7 +135,7 @@ public class EventService {
 
     public boolean delete(long id) {
         Event event = getAuthorizedEvent(id);
-        sendEventNotifications(event, "Event deleted", "Event " + event.getName() + " has been deleted");
+        sendEventNotifications(event, "Event deleted", "Event *" + event.getName() + "* has been deleted");
         event.getAttendees().forEach(attendee -> attendee.getAttendingEvents().remove(event));
         userRepository.saveAll(event.getAttendees());
         eventRepository.deleteById(id);
@@ -227,7 +227,7 @@ public class EventService {
                 .map(ActivityMapper::toEntity)
                 .toList();
         event.setActivities(activities);
-        sendUpdateNotifications(event, "Event " + event.getName() + " had its agenda updated");
+        sendUpdateNotifications(event, "Event *" + event.getName() + "* had its agenda updated");
         eventRepository.save(event);
         return true;
     }
@@ -258,7 +258,7 @@ public class EventService {
         if (activity.getName() == null || activity.getName().isEmpty()) return false;
         if (!isTimeValid(event.getActivities(), activity.getActivityStart(), activity.getActivityEnd(), null)) return false;
         event.getActivities().add(ActivityMapper.toEntity(activity));
-        sendUpdateNotifications(event, "Event " + event.getName() + " had its agenda updated");
+        sendUpdateNotifications(event, "Event *" + event.getName() + "* had its agenda updated");
         eventRepository.save(event);
         return true;
     }
@@ -293,7 +293,7 @@ public class EventService {
         activity.setDescription(dto.getDescription());
         activity.setLocation(dto.getLocation());
 
-        sendUpdateNotifications(event, "Event " + event.getName() + " had its agenda updated");
+        sendUpdateNotifications(event, "Event *" + event.getName() + "* had its agenda updated");
 
         eventRepository.save(event);
         return true;
@@ -305,7 +305,7 @@ public class EventService {
         if (activity != null) {
             activity.setActive(false);
         }
-        sendUpdateNotifications(event, "Event " + event.getName() + " had its agenda updated");
+        sendUpdateNotifications(event, "Event *" + event.getName() + "* had its agenda updated");
         eventRepository.save(event);
         return activity != null;
     }
@@ -329,7 +329,7 @@ public class EventService {
     }
 
     private void sendUpdateNotifications(Event event) {
-        sendUpdateNotifications(event, "Event " + event.getName() + " has been updated");
+        sendUpdateNotifications(event, "Event *" + event.getName() + "* has been updated");
     }
     private void sendUpdateNotifications(Event event, String message) {
         sendEventNotifications(event, "Event updated", message);
