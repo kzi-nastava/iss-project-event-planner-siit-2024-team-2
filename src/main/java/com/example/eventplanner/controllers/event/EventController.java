@@ -263,7 +263,7 @@ public class EventController {
     }
 
     @GetMapping(value = "/{id}/reviews")
-    public ResponseEntity<Page<ReviewDto>> getServiceProductReviews(
+    public ResponseEntity<Page<ReviewDto>> getEventReviews(
             @PathVariable("id") Long id,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(required = false) Integer size) {
