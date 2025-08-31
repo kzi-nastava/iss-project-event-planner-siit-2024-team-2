@@ -1,6 +1,5 @@
 package com.example.eventplanner.services.user;
 
-import com.example.eventplanner.dto.user.user.RegisterServiceProductProviderDto;
 import com.example.eventplanner.dto.user.user.ServiceProductProviderDto;
 import com.example.eventplanner.dto.user.user.ServiceProductProviderMapper;
 import com.example.eventplanner.dto.user.user.UpdateServiceProductProviderDto;

@@ -4,8 +4,6 @@ package com.example.eventplanner.controllers.user;
 import com.example.eventplanner.controllers.utils.AuthUtil;
 import com.example.eventplanner.dto.event.event.EventDto;
 import com.example.eventplanner.dto.user.user.*;
-import com.example.eventplanner.model.user.BaseUser;
-import com.example.eventplanner.model.utils.UserRole;
 import com.example.eventplanner.services.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
