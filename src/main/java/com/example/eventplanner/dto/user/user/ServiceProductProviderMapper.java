@@ -51,13 +51,12 @@ public class ServiceProductProviderMapper {
         return entity;
     }
 
-    public static RegisterServiceProductProviderDto toDto(ServiceProductProvider entity) {
+    public static ServiceProductProviderDto toDto(ServiceProductProvider entity) {
         if (entity == null)
             return null;
         
-        RegisterServiceProductProviderDto dto = new RegisterServiceProductProviderDto();
+        ServiceProductProviderDto dto = new ServiceProductProviderDto();
         dto.setId(entity.getId());
-        dto.setPassword(entity.getPassword());
         dto.setEmail(entity.getEmail());
         dto.setFirstName(entity.getFirstName());
         dto.setLastName(entity.getLastName());

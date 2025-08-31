@@ -16,6 +16,7 @@ import java.util.List;
 public class ProductDetailsDto {
     private ServiceProductProviderDto serviceProductProvider;
     private boolean available;
+    private boolean visible;
     private double price;
     private double discount;
     private String name;

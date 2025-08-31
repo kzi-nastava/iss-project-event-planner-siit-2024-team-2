@@ -23,6 +23,7 @@ public class ProductMapper {
         dto.setId(entity.getId());
         dto.setName(entity.getName());
         dto.setAvailable(entity.isAvailable());
+        dto.setVisible(entity.isVisible());
         dto.setDescription(entity.getDescription());
         dto.setPrice(entity.getPrice());
         dto.setDiscount(entity.getDiscount());
@@ -39,6 +40,7 @@ public class ProductMapper {
         ProductDetailsDto dto = new ProductDetailsDto();
         dto.setName(entity.getName());
         dto.setAvailable(entity.isAvailable());
+        dto.setVisible(entity.isVisible());
         dto.setDescription(entity.getDescription());
         dto.setPrice(entity.getPrice());
         dto.setDiscount(entity.getDiscount());
@@ -57,6 +59,7 @@ public class ProductMapper {
         Product entity = new Product();
         entity.setName(dto.getName());
         entity.setAvailable(dto.isAvailable());
+        entity.setVisible(dto.isVisible());
         entity.setDescription(dto.getDescription());
         entity.setPrice(dto.getPrice());
         entity.setDiscount(dto.getDiscount());
@@ -72,6 +75,7 @@ public class ProductMapper {
         CreateProductDto dto = new CreateProductDto();
         dto.setName(entity.getName());
         dto.setAvailable(entity.isAvailable());
+        dto.setVisible(entity.isVisible());
         dto.setDescription(entity.getDescription());
         dto.setPrice(entity.getPrice());
         dto.setDiscount(entity.getDiscount());

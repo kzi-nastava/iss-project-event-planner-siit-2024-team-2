@@ -16,7 +16,7 @@ public class CreateProductDto {
     private double discount;
     private String name;
     private String description;
-    private List<Long> availableEventTypesIds;
+    private List<Long> availableEventTypeIds;
     private Long categoryId;
     private boolean available;
     private boolean visible;
