@@ -6,6 +6,8 @@ import com.example.eventplanner.model.serviceproduct.ServiceProduct;
 import com.example.eventplanner.model.serviceproduct.ServiceProductReview;
 import com.example.eventplanner.model.user.BaseUser;
 
+import java.time.Instant;
+
 public class ServiceProductReviewMapper {
     private ServiceProductReviewMapper() {}
 
@@ -19,7 +21,8 @@ public class ServiceProductReviewMapper {
                 serviceProductReview.getComment(),
                 ServiceProductMapper.toDto(serviceProductReview.getServiceProduct()),
                 UserMapper.toBaseUserDto(serviceProductReview.getUser()),
-                serviceProductReview.getReviewStatus()
+                serviceProductReview.getReviewStatus(),
+                serviceProductReview.getCreatedAt()
         );
     }
 
@@ -47,6 +50,7 @@ public class ServiceProductReviewMapper {
                 dto.getComment(),
                 serviceProduct,
                 user,
-                dto.getReviewStatus());
+                dto.getReviewStatus(),
+                Instant.now());
     }
 }

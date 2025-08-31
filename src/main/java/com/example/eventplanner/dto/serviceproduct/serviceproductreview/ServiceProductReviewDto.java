@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.Instant;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -19,4 +21,5 @@ public class ServiceProductReviewDto {
     private ServiceProductDto serviceProduct;
     private BaseUserDto user;
     private ReviewStatus reviewStatus;
+    private Instant createdAt;
 }

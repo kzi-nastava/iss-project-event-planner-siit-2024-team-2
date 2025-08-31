@@ -8,19 +8,26 @@ import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProduct
 import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductSummaryDto;
 import com.example.eventplanner.dto.serviceproduct.serviceproductcategory.ServiceProductCategoryDto;
 import com.example.eventplanner.dto.serviceproduct.serviceproductcategory.ServiceProductCategoryMapper;
+import com.example.eventplanner.dto.serviceproduct.serviceproductreview.ServiceProductReviewDto;
+import com.example.eventplanner.dto.serviceproduct.serviceproductreview.ServiceProductReviewMapper;
+import com.example.eventplanner.exception.NotFoundException;
 import com.example.eventplanner.model.serviceproduct.Product;
 import com.example.eventplanner.model.serviceproduct.ServiceProduct;
+import com.example.eventplanner.model.utils.ReviewStatus;
 import com.example.eventplanner.model.utils.ServiceProductDType;
 import com.example.eventplanner.repositories.event.EventTypeRepository;
 import com.example.eventplanner.repositories.serviceproduct.ServiceProductCategoryRepository;
 import com.example.eventplanner.repositories.serviceproduct.ServiceProductRepository;
+import com.example.eventplanner.repositories.serviceproduct.ServiceProductReviewRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
@@ -33,6 +40,7 @@ public class ServiceProductService {
     private final ServiceProductRepository serviceProductRepository;
     private final ServiceProductCategoryRepository serviceProductCategoryRepository;
     private final EventTypeRepository eventTypeRepository;
+    private final ServiceProductReviewRepository serviceProductReviewRepository;
 
     public Collection<ServiceProductSummaryDto> getTop5() {
         return serviceProductRepository.findTop5()
@@ -54,9 +62,11 @@ public class ServiceProductService {
                 .orElse(null);
     }
 
+    @Transactional
     public boolean delete(long id) {
         if (!serviceProductRepository.existsById(id))
-            return false;
+            throw new NotFoundException("Service product not found");
+        serviceProductReviewRepository.deleteByServiceProduct(id);
         serviceProductRepository.deleteById(id);
         return true;
     }
@@ -108,5 +118,11 @@ public class ServiceProductService {
                 categories,
                 types
         );
+    }
+
+    public Page<ServiceProductReviewDto> getServiceProductReviews(Long id, Pageable pageable) {
+        ServiceProduct serviceProduct = serviceProductRepository.getReferenceById(id);
+        return serviceProductReviewRepository.findAllByServiceProductAndReviewStatus(serviceProduct, ReviewStatus.APPROVED, pageable)
+                .map(ServiceProductReviewMapper::toDto);
     }
 }

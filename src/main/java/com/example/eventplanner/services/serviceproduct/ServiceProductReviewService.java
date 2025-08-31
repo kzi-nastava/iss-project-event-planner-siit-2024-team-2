@@ -11,6 +11,8 @@ import com.example.eventplanner.repositories.user.UserRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -70,9 +72,9 @@ public class ServiceProductReviewService {
 
     public ServiceProductReviewStatusDto updateStatus(Long id, ReviewStatus status) {
         return serviceProductReviewRepository.findById(id)
-                .map(e -> {
-                    ServiceProductReview serviceProductReview = new ServiceProductReview();
-                    serviceProductReview.setReviewStatus(status);
+                .map(spr -> {
+                    spr.setReviewStatus(status);
+                    serviceProductReviewRepository.save(spr);
                     return new ServiceProductReviewStatusDto(id, status);
                 })
                 .orElse(null);
@@ -80,11 +82,16 @@ public class ServiceProductReviewService {
 
     public ServiceProductReviewCommentDto updateComment(Long id, String comment) {
         return serviceProductReviewRepository.findById(id)
-                .map(e -> {
-                    ServiceProductReview serviceProductReview = new ServiceProductReview();
-                    serviceProductReview.setComment(comment);
+                .map(spr -> {
+                    spr.setComment(comment);
+                    serviceProductReviewRepository.save(spr);
                     return new ServiceProductReviewCommentDto(id, comment);
                 })
                 .orElse(null);
+    }
+
+    public Page<ServiceProductReviewDto> getAllPending(Pageable pageable) {
+        return serviceProductReviewRepository.findAllByReviewStatus(ReviewStatus.PENDING, pageable)
+                .map(ServiceProductReviewMapper::toDto);
     }
 }

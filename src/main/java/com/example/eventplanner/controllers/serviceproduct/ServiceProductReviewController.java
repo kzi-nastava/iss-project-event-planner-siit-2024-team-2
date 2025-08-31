@@ -7,6 +7,10 @@ import com.example.eventplanner.dto.serviceproduct.serviceproductreview.ServiceP
 import com.example.eventplanner.model.utils.ReviewStatus;
 import com.example.eventplanner.services.serviceproduct.ServiceProductReviewService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Collection;
 
 @RestController
-@RequestMapping("/api/service-product-reviews")
+@RequestMapping("/api/reviews")
 @RequiredArgsConstructor()
 public class ServiceProductReviewController {
     private final ServiceProductReviewService serviceProductReviewService;
@@ -22,6 +26,16 @@ public class ServiceProductReviewController {
     @GetMapping
     public ResponseEntity<Collection<ServiceProductReviewDto>> getAllServiceProductReviews() {
         Collection<ServiceProductReviewDto> result = serviceProductReviewService.getAll();
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping("/pending")
+    public ResponseEntity<Page<ServiceProductReviewDto>> getAllPending(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) Integer size) {
+        Pageable pageable = PageRequest.of(page, size != null ? size : 10)
+                .withSort(Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<ServiceProductReviewDto> result = serviceProductReviewService.getAllPending(pageable);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -48,16 +62,16 @@ public class ServiceProductReviewController {
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<ServiceProductReviewDto> deleteServiceProductReview(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> deleteServiceProductReview(@PathVariable("id") Long id) {
         boolean success = serviceProductReviewService.delete(id);
         return success ?
                 new ResponseEntity<>(HttpStatus.NO_CONTENT) :
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @PutMapping(value = "/{id}/status")
-    public ResponseEntity<ServiceProductReviewStatusDto> updateServiceProductReviewStatus(@PathVariable("id") Long id, @RequestBody ReviewStatus status) {
-         ServiceProductReviewStatusDto result = serviceProductReviewService.updateStatus(id, status);
+    @PostMapping(value = "/approve")
+    public ResponseEntity<ServiceProductReviewStatusDto> approveServiceProductReview(@RequestBody Long id) {
+         ServiceProductReviewStatusDto result = serviceProductReviewService.updateStatus(id, ReviewStatus.APPROVED);
          return result != null ?
                  new ResponseEntity<>(result, HttpStatus.OK) :
                  new ResponseEntity<>(HttpStatus.NOT_FOUND);
