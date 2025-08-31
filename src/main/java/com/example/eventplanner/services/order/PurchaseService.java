@@ -3,7 +3,6 @@ package com.example.eventplanner.services.order;
 import com.example.eventplanner.dto.order.purchase.PurchaseDto;
 import com.example.eventplanner.dto.order.purchase.PurchaseMapper;
 import com.example.eventplanner.dto.order.purchase.PurchaseNoIdDto;
-import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.order.Purchase;
 import com.example.eventplanner.model.serviceproduct.Product;
 import com.example.eventplanner.repositories.event.EventRepository;
@@ -38,9 +37,8 @@ public class PurchaseService {
     }
 
     public PurchaseDto create(PurchaseNoIdDto dto) {
-        Event event = eventRepository.getReferenceById(dto.getEventId());
         Product product = productRepository.getReferenceById(dto.getProductId());
-        Purchase purchase = PurchaseMapper.toEntity(dto, event, product);
+        Purchase purchase = PurchaseMapper.toEntity(dto, product);
         return PurchaseMapper.toDto(purchaseRepository.save(purchase));
     }
 
@@ -49,10 +47,8 @@ public class PurchaseService {
         if (purchase == null)
             return null;
 
-        Event event = eventRepository.getReferenceById(dto.getEventId());
         Product product = productRepository.getReferenceById(dto.getProductId());
 
-        purchase.setEvent(event);
         purchase.setProduct(product);
         purchase.setPrice(dto.getPrice());
         return PurchaseMapper.toDto(purchaseRepository.save(purchase));

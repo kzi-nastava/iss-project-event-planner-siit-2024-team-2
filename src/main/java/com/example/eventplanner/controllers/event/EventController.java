@@ -8,6 +8,7 @@ import com.example.eventplanner.dto.event.event.EventNoIdDto;
 import com.example.eventplanner.dto.event.event.EventSummaryDto;
 import com.example.eventplanner.dto.order.booking.BookingDto;
 import com.example.eventplanner.dto.order.purchase.PurchaseDto;
+import com.example.eventplanner.model.event.Budget;
 import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.user.EventOrganizer;
 import com.example.eventplanner.model.utils.AttendanceResult;
@@ -215,22 +216,6 @@ public class EventController {
                 : ResponseEntity.notFound().build();
     }
 
-    @GetMapping(value = "/{id}/purchases")
-    public ResponseEntity<List<PurchaseDto>> getPurchases(@PathVariable("id") Long id) {
-        List<PurchaseDto> result = eventService.getPurchases(id);
-        return result != null ?
-            new ResponseEntity<>(result, HttpStatus.OK) :
-            new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
-
-    @GetMapping(value = "/{id}/bookings")
-    public ResponseEntity<List<BookingDto>> getBookings(@PathVariable("id") Long id) {
-        List<BookingDto> result = eventService.getBookings(id);
-        return result != null ?
-                new ResponseEntity<>(result, HttpStatus.OK) :
-                new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
-
     @GetMapping(value = "/max-attendances-range")
     public ResponseEntity<List<Integer>> getMaxAttendancesRange() {
         List<Integer> result = eventService.getMaxAttendancesRange();
@@ -239,6 +224,13 @@ public class EventController {
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    @PostMapping("/{id}/budgets")
+    public void addBudgetToEvent(
+            @PathVariable Long id,
+            @RequestBody Budget budget) {
+        eventService.addBudgetToEvent(id, budget);
+    }
+  
     @PostMapping("/{id}/attend")
     public ResponseEntity<String> attendEvent(@PathVariable long id) {
         BaseUser user = authUtil.getAuthenticatedUser();

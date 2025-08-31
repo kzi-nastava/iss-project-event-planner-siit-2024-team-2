@@ -1,8 +1,6 @@
 package com.example.eventplanner.dto.order.booking;
 
-import com.example.eventplanner.dto.event.event.EventMapper;
 import com.example.eventplanner.dto.serviceproduct.service.ServiceMapper;
-import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.order.Booking;
 import com.example.eventplanner.model.serviceproduct.Service;
 
@@ -17,7 +15,6 @@ public class BookingMapper {
 
         return new BookingDto(
                 booking.getId(),
-                EventMapper.toDto(booking.getEvent()),
                 ServiceMapper.toDto(booking.getService()),
                 booking.getPrice(),
                 booking.getDate().getTime(),
@@ -25,12 +22,11 @@ public class BookingMapper {
         );
     }
 
-    public static Booking toEntity(BookingNoIdDto dto, Event event, Service service) {
+    public static Booking toEntity(BookingNoIdDto dto, Service service) {
         if (dto == null)
             return null;
 
         return new Booking(
-                event,
                 service,
                 dto.getPrice(),
                 new Date(dto.getDate()),

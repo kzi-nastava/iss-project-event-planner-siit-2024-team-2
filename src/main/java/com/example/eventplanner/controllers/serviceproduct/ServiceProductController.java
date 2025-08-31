@@ -106,4 +106,9 @@ public class ServiceProductController {
                 new ResponseEntity<>(result, HttpStatus.OK) :
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+
+    @GetMapping("/sp-categories/by-event-type")
+    public ResponseEntity<List<String>> getCategoriesByEventType(@RequestParam Long eventTypeId) {
+        return ResponseEntity.ok(serviceProductService.getCategoriesByAvailableEventType(eventTypeId));
+    }
 }

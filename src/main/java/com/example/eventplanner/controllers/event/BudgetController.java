@@ -34,9 +34,9 @@ public class BudgetController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<BudgetDto> updateBudget(@PathVariable("id") Long id, @RequestBody BudgetNoIdDto dto) {
-        BudgetDto budgetDto = budgetService.update(id, dto);
-        return budgetDto != null ? ResponseEntity.ok(budgetDto) : ResponseEntity.notFound().build();
+    public ResponseEntity<?> setNewAmount(@PathVariable("id") Long id, @RequestBody Double newAmount) {
+        budgetService.setNewAmount(id, newAmount);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
