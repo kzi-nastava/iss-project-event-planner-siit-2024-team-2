@@ -2,6 +2,7 @@ package com.example.eventplanner.controllers.user;
 
 import com.example.eventplanner.controllers.utils.AuthUtil;
 import com.example.eventplanner.dto.event.event.EventDto;
+import com.example.eventplanner.dto.event.event.EventSummaryDto;
 import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.utils.UserRole;
 import com.example.eventplanner.services.user.FavoriteEventsService;
@@ -21,7 +22,7 @@ public class FavoriteEventsController {
     private final AuthUtil authUtil;
 
     @GetMapping
-    public ResponseEntity<Collection<EventDto>> getFavorites(@PathVariable long userId) {
+    public ResponseEntity<Collection<EventSummaryDto>> getFavorites(@PathVariable long userId) {
         BaseUser user = authUtil.getAuthenticatedUser();
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -30,7 +31,7 @@ public class FavoriteEventsController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
-        Collection<EventDto> favorites = favoriteEventsService.getFavorites(userId);
+        Collection<EventSummaryDto> favorites = favoriteEventsService.getFavorites(userId);
         return ResponseEntity.ok(favorites);
     }
 

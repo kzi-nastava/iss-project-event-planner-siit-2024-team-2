@@ -2,6 +2,7 @@ package com.example.eventplanner.services.user;
 
 import com.example.eventplanner.dto.event.event.EventDto;
 import com.example.eventplanner.dto.event.event.EventMapper;
+import com.example.eventplanner.dto.event.event.EventSummaryDto;
 import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.repositories.event.EventRepository;
@@ -22,14 +23,14 @@ public class FavoriteEventsService {
     private final EventRepository eventRepository;
 
     @Transactional
-    public List<EventDto> getFavorites(Long userId) {
+    public List<EventSummaryDto> getFavorites(Long userId) {
         Optional<BaseUser> userOpt = userRepository.findById(userId);
         if (userOpt.isEmpty()) return null;
 
         BaseUser user = userOpt.get();
         return user.getFavoriteEvents()
                 .stream()
-                .map(EventMapper::toDto)
+                .map(EventMapper::toSummaryDto)
                 .collect(Collectors.toList());
     }
 
