@@ -11,7 +11,9 @@ import org.hibernate.annotations.SQLRestriction;
 
 import java.util.List;
 
+
 @SQLRestriction("active = true")
 @Entity
 public class EventOrganizer extends BaseUser {
+
 }

@@ -3,14 +3,22 @@ package com.example.eventplanner.services.event;
 import com.example.eventplanner.dto.event.budget.BudgetDto;
 import com.example.eventplanner.dto.event.budget.BudgetMapper;
 import com.example.eventplanner.dto.event.budget.BudgetNoIdDto;
+import com.example.eventplanner.dto.order.booking.BookingMapper;
+import com.example.eventplanner.dto.order.booking.BookingNoIdDto;
+import com.example.eventplanner.dto.order.purchase.PurchaseMapper;
+import com.example.eventplanner.dto.order.purchase.PurchaseNoIdDto;
 import com.example.eventplanner.model.event.Budget;
+import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.order.Booking;
 import com.example.eventplanner.model.order.Purchase;
+import com.example.eventplanner.model.serviceproduct.Product;
 import com.example.eventplanner.model.serviceproduct.ServiceProductCategory;
 import com.example.eventplanner.repositories.event.BudgetRepository;
 import com.example.eventplanner.repositories.order.BookingRepository;
 import com.example.eventplanner.repositories.order.PurchaseRepository;
+import com.example.eventplanner.repositories.serviceproduct.ProductRepository;
 import com.example.eventplanner.repositories.serviceproduct.ServiceProductCategoryRepository;
+import com.example.eventplanner.repositories.serviceproduct.ServiceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +33,8 @@ public class BudgetService {
     private final ServiceProductCategoryRepository serviceProductCategoryRepository;
     private final BookingRepository bookingRepository;
     private final PurchaseRepository purchaseRepository;
+    private final ServiceRepository serviceRepository;
+    private final ProductRepository productRepository;
 
     public List<BudgetDto> getAll() {
         return budgetRepository.findAll()
@@ -53,29 +63,33 @@ public class BudgetService {
         budgetRepository.setNewAmount(id, newAmount);
     }
 
-//    public BudgetDto update(Long id, BudgetNoIdDto dto) {
-//        return budgetRepository.findById(id)
-//                .map(budget -> {
-//                    budget.setId(id);
-//                    budget.setActive(true);
-//                    budget.setName(dto.getName());
-//                    budget.setCurrentSpent(dto.getCurrentSpent());
-//                    budget.setPlannedSpending(dto.getPlannedSpending());
-//                    serviceProductCategoryRepository.findById(dto.getServiceProductCategoryId()).ifPresent(budget::setServiceProductCategory);
-//
-//                    budget.setBookings(dto.getBookingIds().stream()
-//                            .map(bookid -> bookingRepository.findById(bookid)
-//                                    .orElseThrow(() -> new RuntimeException("Booking not found: " + bookid)))
-//                            .collect(Collectors.toList()));
-//
-//                    budget.setPurchases(dto.getPurchaseIds().stream()
-//                            .map(purid -> purchaseRepository.findById(purid)
-//                                    .orElseThrow(() -> new RuntimeException("Purchase not found: " + purid)))
-//                            .collect(Collectors.toList()));
-//                    return BudgetMapper.toDto(budgetRepository.save(budget));
-//                })
-//                .orElse(null);
-//    }
+    @Transactional
+    public void addBookingToBudget(Long budgetId, BookingNoIdDto bookingDto) {
+        // create new booking
+        com.example.eventplanner.model.serviceproduct.Service service = serviceRepository.getReferenceById(bookingDto.getServiceId());
+        Booking booking = BookingMapper.toEntity(bookingDto, service);
+        bookingRepository.save(booking);
+
+        // add booking to the budget
+        Budget budget = budgetRepository.findById(budgetId).orElse(null);
+        budget.getBookings().add(booking);
+        budget.setCurrentSpent(budget.getCurrentSpent() + booking.getPrice());
+        budgetRepository.save(budget);
+    }
+
+    @Transactional
+    public void addPurchaseToBudget(Long budgetId, PurchaseNoIdDto purchaseDto) {
+        // create new purchase
+        Product product = productRepository.getReferenceById(purchaseDto.getProductId());
+        Purchase purchase = PurchaseMapper.toEntity(purchaseDto, product);
+        purchaseRepository.save(purchase);
+
+        // add purchase to the budget
+        Budget budget = budgetRepository.findById(budgetId).orElse(null);
+        budget.getPurchases().add(purchase);
+        budget.setCurrentSpent(budget.getCurrentSpent() + purchase.getPrice());
+        budgetRepository.save(budget);
+    }
 
     public boolean delete(long id) {
         if (!budgetRepository.existsById(id)) {

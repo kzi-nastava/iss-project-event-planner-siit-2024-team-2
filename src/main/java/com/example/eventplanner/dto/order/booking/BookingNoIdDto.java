@@ -12,6 +12,5 @@ import lombok.Setter;
 public class BookingNoIdDto {
     private long serviceId;
     private double price;
-    private long date;
     private double duration;
 }

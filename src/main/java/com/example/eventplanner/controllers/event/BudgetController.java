@@ -2,6 +2,9 @@ package com.example.eventplanner.controllers.event;
 
 import com.example.eventplanner.dto.event.budget.BudgetDto;
 import com.example.eventplanner.dto.event.budget.BudgetNoIdDto;
+import com.example.eventplanner.dto.order.booking.BookingDto;
+import com.example.eventplanner.dto.order.booking.BookingNoIdDto;
+import com.example.eventplanner.dto.order.purchase.PurchaseNoIdDto;
 import com.example.eventplanner.services.event.BudgetService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -36,6 +39,18 @@ public class BudgetController {
     @PutMapping("/{id}")
     public ResponseEntity<?> setNewAmount(@PathVariable("id") Long id, @RequestBody Double newAmount) {
         budgetService.setNewAmount(id, newAmount);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{id}/new-booking")
+    public ResponseEntity<?> addNewBooking(@PathVariable("id") Long id, @RequestBody BookingNoIdDto bookingDto) {
+        budgetService.addBookingToBudget(id, bookingDto);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{id}/new-purchase")
+    public ResponseEntity<?> addNewPurchase(@PathVariable("id") Long id, @RequestBody PurchaseNoIdDto purchaseDto) {
+        budgetService.addPurchaseToBudget(id, purchaseDto);
         return ResponseEntity.ok().build();
     }
 
