@@ -111,4 +111,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     @Query("SELECT MIN(e.maxAttendances), MAX(e.maxAttendances) FROM Event e WHERE e.open = true")
     List<Object[]> findMaxAttendancesRange();
+
+    @Query("SELECT e FROM Event e WHERE e.eventOrganizer.id = :organizerId")
+    List<Event> findByOrganizerId(@Param("organizerId") Long organizerId);
 }
