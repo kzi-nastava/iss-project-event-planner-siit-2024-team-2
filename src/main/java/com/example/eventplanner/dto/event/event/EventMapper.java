@@ -75,8 +75,8 @@ public class EventMapper {
                 event.getLongitude(),
                 event.getLatitude(),
                 event.getDate().getTime(),
-                organizer != null ? organizer.getFirstName() + " " + organizer.getLastName() : "",
-                organizer != null ? organizer.getEmail() : "",
+                organizer != null ? organizer.getFirstName() + " " + organizer.getLastName() : null,
+                organizer != null ? organizer.getEmail() : null,
                 ImageService.encodePath(organizer != null ? organizer.getImage() : null)
         );
     }

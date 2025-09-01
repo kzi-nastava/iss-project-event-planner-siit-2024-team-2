@@ -7,6 +7,7 @@ import com.example.eventplanner.dto.event.event.EventDto;
 import com.example.eventplanner.dto.event.event.EventNoIdDto;
 import com.example.eventplanner.dto.event.event.EventSummaryDto;
 import com.example.eventplanner.dto.order.review.ReviewDto;
+import com.example.eventplanner.dto.order.review.ReviewSummaryDto;
 import com.example.eventplanner.model.event.Budget;
 import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.user.EventOrganizer;
@@ -263,13 +264,13 @@ public class EventController {
     }
 
     @GetMapping(value = "/{id}/reviews")
-    public ResponseEntity<Page<ReviewDto>> getEventReviews(
+    public ResponseEntity<Page<ReviewSummaryDto>> getEventReviews(
             @PathVariable("id") Long id,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(required = false) Integer size) {
         Pageable pageable = PageRequest.of(page, size != null ? size : 10)
                 .withSort(Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<ReviewDto> result = eventService.getEventReviews(id, pageable);
+        Page<ReviewSummaryDto> result = eventService.getEventReviews(id, pageable);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

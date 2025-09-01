@@ -23,7 +23,7 @@ import java.time.Instant;
 @jakarta.persistence.Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class Review extends Entity {
-    private int grade;
+    private double grade;
     @Column(columnDefinition = "TEXT")
     private String comment;
     @ManyToOne

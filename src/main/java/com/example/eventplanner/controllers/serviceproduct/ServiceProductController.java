@@ -1,5 +1,6 @@
 package com.example.eventplanner.controllers.serviceproduct;
 
+import com.example.eventplanner.dto.order.review.ReviewSummaryDto;
 import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductDto;
 import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductFilteringValuesDto;
 import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductSummaryDto;
@@ -116,13 +117,13 @@ public class ServiceProductController {
     }
 
     @GetMapping(value = "/{id}/reviews")
-    public ResponseEntity<Page<ReviewDto>> getServiceProductReviews(
+    public ResponseEntity<Page<ReviewSummaryDto>> getServiceProductReviews(
             @PathVariable("id") Long id,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(required = false) Integer size) {
         Pageable pageable = PageRequest.of(page, size != null ? size : 10)
                 .withSort(Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<ReviewDto> result = serviceProductService.getServiceProductReviews(id, pageable);
+        Page<ReviewSummaryDto> result = serviceProductService.getServiceProductReviews(id, pageable);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

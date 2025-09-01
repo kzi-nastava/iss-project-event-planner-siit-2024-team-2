@@ -59,7 +59,7 @@ public class ReviewService {
             event = eventRepository.getReferenceById(dto.getEntityId());
         BaseUser user = userRepository.getReferenceById(dto.getUserId());
 
-        Review review = ReviewMapper.toEntity(dto, serviceProduct, event, user);
+        Review review = ReviewMapper.toEntity(dto, serviceProduct, event, user, ReviewStatus.PENDING);
         reviewRepository.save(review);
         return ReviewMapper.toDto(review);
     }
@@ -67,7 +67,6 @@ public class ReviewService {
     public ReviewDto update(ReviewNoIdDto dto, long id) {
         return reviewRepository.findById(id)
                 .map(review -> {
-                    review.setReviewStatus(dto.getReviewStatus());
                     review.setComment(dto.getComment());
                     review.setGrade(dto.getGrade());
                     BaseUser user = userRepository.getReferenceById(dto.getUserId());

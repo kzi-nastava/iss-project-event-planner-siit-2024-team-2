@@ -42,7 +42,11 @@ public class WebSecurityConfiguration {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/events", "/api/events/summaries", "/api/events/top5").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/events/{id}", "/api/events/{id}/agenda").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/events/{id}"
+                                , "/api/events/{id}/agenda"
+                                , "/api/events/max-attendances-range"
+                                , "/api/events/top5"
+                                , "/api/events/{id}/reviews").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/service-products/top5"
                                 , "/api/service-products/summaries"
                                 , "/api/service-products/filtering-values"
