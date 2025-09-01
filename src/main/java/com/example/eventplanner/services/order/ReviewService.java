@@ -1,7 +1,9 @@
 package com.example.eventplanner.services.order;
 
+import com.example.eventplanner.controllers.utils.AuthUtil;
 import com.example.eventplanner.dto.communication.notification.NotificationNoIdDto;
 import com.example.eventplanner.dto.order.review.*;
+import com.example.eventplanner.exception.UnauthorizedException;
 import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.order.EventReview;
 import com.example.eventplanner.model.order.Review;
@@ -36,6 +38,7 @@ public class ReviewService {
     private final UserRepository userRepository;
     private final NotificationService notificationService;
     private final EventRepository eventRepository;
+    private final AuthUtil authUtil;
 
     public List<ReviewDto> getAll() {
         return reviewRepository.findAll()
@@ -51,13 +54,15 @@ public class ReviewService {
     }
 
     public ReviewDto create(ReviewNoIdDto dto) {
+        BaseUser user = authUtil.getAuthenticatedUser();
+        if (user == null)
+            throw new UnauthorizedException("User not authenticated");
         ServiceProduct serviceProduct = null;
         Event event = null;
         if (dto.getReviewType() == ReviewType.SERVICE_PRODUCT)
             serviceProduct = serviceProductRepository.getReferenceById(dto.getEntityId());
         else if (dto.getReviewType() == ReviewType.EVENT)
             event = eventRepository.getReferenceById(dto.getEntityId());
-        BaseUser user = userRepository.getReferenceById(dto.getUserId());
 
         Review review = ReviewMapper.toEntity(dto, serviceProduct, event, user, ReviewStatus.PENDING);
         reviewRepository.save(review);
@@ -69,8 +74,6 @@ public class ReviewService {
                 .map(review -> {
                     review.setComment(dto.getComment());
                     review.setGrade(dto.getGrade());
-                    BaseUser user = userRepository.getReferenceById(dto.getUserId());
-                    review.setUser(user);
                     if (dto.getReviewType() == ReviewType.SERVICE_PRODUCT) {
                         ServiceProduct serviceProduct = serviceProductRepository.getReferenceById(dto.getEntityId());
                         ServiceProductReview spr = (ServiceProductReview) review;

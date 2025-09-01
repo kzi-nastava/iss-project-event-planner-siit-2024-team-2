@@ -20,8 +20,6 @@ public class ReviewNoIdDto {
     @Size(min = 1, max = 1000)
     private String comment;
     @NotEmpty
-    private long userId;
-    @NotEmpty
     private long entityId;
     @NotEmpty
     private ReviewType reviewType;

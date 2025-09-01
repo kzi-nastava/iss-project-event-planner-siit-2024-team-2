@@ -115,8 +115,8 @@ public class WebSecurityConfiguration {
                         // UserReports
                         .requestMatchers(HttpMethod.POST, "/api/user-reports").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/user-reports").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/user-reports/{id}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/user-reports/approve").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/user-reports/{id}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/user-reports/{id}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/user-reports/{id}").hasRole("ADMIN")
 
@@ -124,11 +124,11 @@ public class WebSecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/api/users/{email}/suspend").hasRole("ADMIN")
 
                         // ServiceProductReviews
+                        .requestMatchers(HttpMethod.POST, "/api/reviews").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/api/reviews/{id}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/reviews/{id}/status").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/reviews/{id}/comment").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/reviews/{id}").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/api/reviews").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/reviews").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/reviews/{id}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/reviews/pending").hasRole("ADMIN")
