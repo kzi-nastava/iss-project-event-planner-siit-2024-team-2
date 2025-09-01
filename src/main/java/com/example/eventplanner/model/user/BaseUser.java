@@ -2,6 +2,7 @@ package com.example.eventplanner.model.user;
 
 import com.example.eventplanner.model.Entity;
 import com.example.eventplanner.model.event.Event;
+import com.example.eventplanner.model.serviceproduct.ServiceProduct;
 import com.example.eventplanner.model.utils.UserRole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -11,8 +12,7 @@ import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.time.Instant;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Getter
 @Setter
@@ -40,4 +40,8 @@ public class BaseUser extends Entity {
             inverseJoinColumns = @JoinColumn(name = "event_id"))
     private List<Event> attendingEvents;
     private Instant suspendedAt = null;
+    @ManyToMany
+    private List<Event> favoriteEvents = new ArrayList<>();
+    @ManyToMany
+    private List<ServiceProduct> favoriteServiceProducts = new ArrayList<>();
 }

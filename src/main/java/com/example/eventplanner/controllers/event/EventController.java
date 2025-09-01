@@ -6,8 +6,7 @@ import com.example.eventplanner.dto.event.activity.ActivityIdDto;
 import com.example.eventplanner.dto.event.event.EventDto;
 import com.example.eventplanner.dto.event.event.EventNoIdDto;
 import com.example.eventplanner.dto.event.event.EventSummaryDto;
-import com.example.eventplanner.dto.order.booking.BookingDto;
-import com.example.eventplanner.dto.order.purchase.PurchaseDto;
+import com.example.eventplanner.dto.order.review.ReviewDto;
 import com.example.eventplanner.model.event.Budget;
 import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.user.EventOrganizer;
@@ -19,6 +18,8 @@ import com.example.eventplanner.services.event.EventService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -230,7 +231,7 @@ public class EventController {
             @RequestBody Budget budget) {
         eventService.addBudgetToEvent(id, budget);
     }
-  
+
     @PostMapping("/{id}/attend")
     public ResponseEntity<String> attendEvent(@PathVariable long id) {
         BaseUser user = authUtil.getAuthenticatedUser();
@@ -259,5 +260,34 @@ public class EventController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Event not found");
         else
             return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{id}/attend")
+    public ResponseEntity<Boolean> isUserAttending(@PathVariable long id) {
+        BaseUser user = authUtil.getAuthenticatedUser();
+        if (user == null)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+        return ResponseEntity.ok(eventAttendanceService.isUserAttending(id, user));
+    }
+
+    @GetMapping("attendances")
+    public ResponseEntity<List<Long>> getAttendedEvents() {
+        BaseUser user = authUtil.getAuthenticatedUser();
+        if (user == null)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+        return ResponseEntity.ok(eventAttendanceService.getAttendingEvents(user));
+    }
+
+    @GetMapping(value = "/{id}/reviews")
+    public ResponseEntity<Page<ReviewDto>> getEventReviews(
+            @PathVariable("id") Long id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) Integer size) {
+        Pageable pageable = PageRequest.of(page, size != null ? size : 10)
+                .withSort(Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<ReviewDto> result = eventService.getEventReviews(id, pageable);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

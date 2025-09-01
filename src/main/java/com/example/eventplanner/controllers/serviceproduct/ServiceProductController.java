@@ -3,10 +3,13 @@ package com.example.eventplanner.controllers.serviceproduct;
 import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductDto;
 import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductFilteringValuesDto;
 import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductSummaryDto;
+import com.example.eventplanner.dto.order.review.ReviewDto;
 import com.example.eventplanner.model.utils.ServiceProductDType;
 import com.example.eventplanner.services.serviceproduct.ServiceProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -110,5 +113,16 @@ public class ServiceProductController {
     @GetMapping("/sp-categories/by-event-type")
     public ResponseEntity<List<String>> getCategoriesByEventType(@RequestParam Long eventTypeId) {
         return ResponseEntity.ok(serviceProductService.getCategoriesByAvailableEventType(eventTypeId));
+    }
+
+    @GetMapping(value = "/{id}/reviews")
+    public ResponseEntity<Page<ReviewDto>> getServiceProductReviews(
+            @PathVariable("id") Long id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) Integer size) {
+        Pageable pageable = PageRequest.of(page, size != null ? size : 10)
+                .withSort(Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<ReviewDto> result = serviceProductService.getServiceProductReviews(id, pageable);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

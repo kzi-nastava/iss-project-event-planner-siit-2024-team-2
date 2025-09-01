@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class EventAttendanceService {
@@ -53,6 +55,14 @@ public class EventAttendanceService {
         return AttendanceResult.SUCCESS;
     }
 
+    @Transactional
+    public boolean isUserAttending(long id, BaseUser user) {
+        Event event = eventRepository.findById(id).orElse(null);
+        if (event == null)
+            return false;
+        return event.getAttendees().contains(user);
+    }
+
     public boolean eventFull(long eventId, String email) {
         Event event = eventRepository.findById(eventId).orElse(null);
         if (event == null)
@@ -60,6 +70,18 @@ public class EventAttendanceService {
         if (event.getAttendees().stream().anyMatch(attendee -> attendee.getEmail().equals(email)))
             return false; // User is already attending
         return event.getAttendees().size() >= event.getMaxAttendances();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Long> getAttendingEvents(BaseUser user) {
+        if (user == null || user.getAttendingEvents() == null) {
+            return List.of();
+        }
+
+        return user.getAttendingEvents()
+                .stream()
+                .map(Event::getId)
+                .toList();
     }
 
 }

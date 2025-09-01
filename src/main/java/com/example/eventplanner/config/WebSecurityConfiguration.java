@@ -46,7 +46,8 @@ public class WebSecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/api/service-products/top5"
                                 , "/api/service-products/summaries"
                                 , "/api/service-products/filtering-values"
-                                , "/api/service-products/{id}").permitAll()
+                                , "/api/service-products/{id}"
+                                , "/api/service-products/{id}/reviews").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/services/{id}").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/users/{id}").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/users/company/{id}").permitAll()
@@ -117,6 +118,16 @@ public class WebSecurityConfiguration {
 
                         // Users
                         .requestMatchers(HttpMethod.POST, "/api/users/{email}/suspend").hasRole("ADMIN")
+
+                        // ServiceProductReviews
+                        .requestMatchers(HttpMethod.DELETE, "/api/reviews/{id}").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/reviews/{id}/status").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/reviews/{id}/comment").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/reviews/{id}").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/reviews").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/reviews").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/reviews/{id}").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/reviews/pending").hasRole("ADMIN")
 
                         // Everything else requires authentication
                         .anyRequest().permitAll())
