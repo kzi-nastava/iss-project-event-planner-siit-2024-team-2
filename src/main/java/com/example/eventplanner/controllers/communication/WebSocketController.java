@@ -25,7 +25,6 @@ public class WebSocketController {
     // Both of the endpoints will send the message to the publisher and subscriber if toId isn't null
     // Else, it behaves like a broadcast message (sent to all)
     // REST endpoint
-    @CrossOrigin(origins = "http://localhost:4200")
     @RequestMapping(value="/send-message-rest", method = RequestMethod.POST)
     public ResponseEntity<?> sendMessage(@RequestBody MessageDto message) {
         if (webSocketService.trySend(message))

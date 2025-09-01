@@ -3,6 +3,7 @@ package com.example.eventplanner.config;
 //import com.example.eventplanner.config.jwt.JwtRequestFilter;
 import com.example.eventplanner.config.jwt.JwtRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -33,6 +34,8 @@ public class WebSecurityConfiguration {
 
     @Autowired
     private JwtRequestFilter jwtRequestFilter;
+    @Value("${frontend.url}")
+    private String frontendUrl;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -146,7 +149,7 @@ public class WebSecurityConfiguration {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:4200")); // frontend
+        configuration.setAllowedOrigins(List.of(frontendUrl)); // frontend
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
