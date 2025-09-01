@@ -13,6 +13,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
+
 public interface EventReviewRepository extends JpaRepository<EventReview, Long> {
     Page<Review> findAllByEventAndReviewStatus(
             Event event,
@@ -22,4 +24,5 @@ public interface EventReviewRepository extends JpaRepository<EventReview, Long> 
     @Modifying
     @Query("UPDATE EventReview e SET e.active = false WHERE e.event.id = :eventId")
     void deleteByEvent(@Param("eventId") long eventId);
+    Optional<Review> findFirstByUserIdAndEventId(Long userId, Long eventId);
 }

@@ -1,11 +1,13 @@
 package com.example.eventplanner.controllers.serviceproduct;
 
+import com.example.eventplanner.dto.order.review.ReviewEligibilityDto;
 import com.example.eventplanner.dto.order.review.ReviewSummaryDto;
 import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductDto;
 import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductFilteringValuesDto;
 import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductSummaryDto;
 import com.example.eventplanner.dto.order.review.ReviewDto;
 import com.example.eventplanner.model.utils.ServiceProductDType;
+import com.example.eventplanner.services.order.ReviewService;
 import com.example.eventplanner.services.serviceproduct.ServiceProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -24,6 +26,7 @@ import java.util.List;
 @RequiredArgsConstructor()
 public class ServiceProductController {
     private final ServiceProductService serviceProductService;
+    private final ReviewService reviewService;
 
     @GetMapping(value = "/top5")
     public ResponseEntity<Collection<ServiceProductSummaryDto>> getTop5() {
@@ -124,6 +127,12 @@ public class ServiceProductController {
         Pageable pageable = PageRequest.of(page, size != null ? size : 10)
                 .withSort(Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<ReviewSummaryDto> result = serviceProductService.getServiceProductReviews(id, pageable);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/{id}/review-eligibility")
+    public ResponseEntity<ReviewEligibilityDto> getServiceProductReviewEligibility(@PathVariable("id") Long id) {
+        ReviewEligibilityDto result = reviewService.canReviewServiceProduct(id);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

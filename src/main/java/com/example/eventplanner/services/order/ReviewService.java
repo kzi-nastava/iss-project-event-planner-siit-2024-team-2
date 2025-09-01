@@ -3,6 +3,7 @@ package com.example.eventplanner.services.order;
 import com.example.eventplanner.controllers.utils.AuthUtil;
 import com.example.eventplanner.dto.communication.notification.NotificationNoIdDto;
 import com.example.eventplanner.dto.order.review.*;
+import com.example.eventplanner.exception.ForbiddenException;
 import com.example.eventplanner.exception.UnauthorizedException;
 import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.order.EventReview;
@@ -14,6 +15,8 @@ import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.utils.ReviewStatus;
 import com.example.eventplanner.model.utils.ReviewType;
 import com.example.eventplanner.repositories.event.EventRepository;
+import com.example.eventplanner.repositories.order.EventReviewRepository;
+import com.example.eventplanner.repositories.order.ServiceProductReviewRepository;
 import com.example.eventplanner.repositories.serviceproduct.ServiceProductRepository;
 import com.example.eventplanner.repositories.order.ReviewRepository;
 import com.example.eventplanner.repositories.user.UserRepository;
@@ -26,6 +29,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -39,6 +43,8 @@ public class ReviewService {
     private final NotificationService notificationService;
     private final EventRepository eventRepository;
     private final AuthUtil authUtil;
+    private final EventReviewRepository eventReviewRepository;
+    private final ServiceProductReviewRepository serviceProductReviewRepository;
 
     public List<ReviewDto> getAll() {
         return reviewRepository.findAll()
@@ -59,10 +65,16 @@ public class ReviewService {
             throw new UnauthorizedException("User not authenticated");
         ServiceProduct serviceProduct = null;
         Event event = null;
-        if (dto.getReviewType() == ReviewType.SERVICE_PRODUCT)
+        if (dto.getReviewType() == ReviewType.SERVICE_PRODUCT) {
             serviceProduct = serviceProductRepository.getReferenceById(dto.getEntityId());
-        else if (dto.getReviewType() == ReviewType.EVENT)
+            if (!canReviewServiceProduct(serviceProduct.getId()).isCanReview())
+                throw new ForbiddenException("This user cannot review this service product");
+        }
+        else if (dto.getReviewType() == ReviewType.EVENT) {
             event = eventRepository.getReferenceById(dto.getEntityId());
+            if (!canReviewEvent(event.getId()).isCanReview())
+                throw new ForbiddenException("This user cannot review this event");
+        }
 
         Review review = ReviewMapper.toEntity(dto, serviceProduct, event, user, ReviewStatus.PENDING);
         reviewRepository.save(review);
@@ -146,5 +158,41 @@ public class ReviewService {
     public Page<ReviewDto> getAllPending(Pageable pageable) {
         return reviewRepository.findAllByReviewStatus(ReviewStatus.PENDING, pageable)
                 .map(ReviewMapper::toDto);
+    }
+
+    public ReviewEligibilityDto canReviewEvent(Long eventId) {
+        BaseUser user = authUtil.getAuthenticatedUser();
+        if (user == null)
+            return new ReviewEligibilityDto(false, "You are not logged in");
+        Event event = eventRepository.findById(eventId).orElse(null);
+        if (event == null)
+            return new ReviewEligibilityDto(false, "Event not found");
+        if (event.getEventOrganizer() == null)
+            return new ReviewEligibilityDto(false, "Event organizer was deleted");
+        if (event.getEventOrganizer().getId() == user.getId())
+            return new ReviewEligibilityDto(false, "You can't review your own event");
+        Review review = eventReviewRepository.findFirstByUserIdAndEventId(user.getId(), eventId).orElse(null);
+        if (review != null)
+            return new ReviewEligibilityDto(false, "You have already reviewed this event");
+        if (event.getAttendees().stream().noneMatch(attendee -> attendee.getId() == user.getId()))
+            return new ReviewEligibilityDto(false, "You are not attending this event");
+        return new ReviewEligibilityDto(true, "");
+    }
+
+    public ReviewEligibilityDto canReviewServiceProduct(Long serviceProductId) {
+        BaseUser user = authUtil.getAuthenticatedUser();
+        if (user == null)
+            return new ReviewEligibilityDto(false, "You are not logged in");
+        ServiceProduct serviceProduct = serviceProductRepository.findById(serviceProductId).orElse(null);
+        if (serviceProduct == null)
+            return new ReviewEligibilityDto(false, "Service/product not found");
+        if (serviceProduct.getServiceProductProvider() == null)
+            return new ReviewEligibilityDto(false, "Service/product provider was deleted");
+        if (serviceProduct.getServiceProductProvider().getId() == user.getId())
+            return new ReviewEligibilityDto(false, "You can't review your own service/product");
+        Review review = serviceProductReviewRepository.findFirstByUserIdAndServiceProductId(user.getId(), serviceProductId).orElse(null);
+        if (review != null)
+            return new ReviewEligibilityDto(false, "You have already reviewed this service/product");
+        return new ReviewEligibilityDto(true, "");
     }
 }
