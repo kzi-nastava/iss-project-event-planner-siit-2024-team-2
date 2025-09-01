@@ -13,6 +13,7 @@ import com.example.eventplanner.dto.order.booking.BookingDto;
 import com.example.eventplanner.dto.order.purchase.PurchaseDto;
 import com.example.eventplanner.dto.order.review.ReviewDto;
 import com.example.eventplanner.dto.order.review.ReviewMapper;
+import com.example.eventplanner.dto.order.review.ReviewSummaryDto;
 import com.example.eventplanner.exception.ForbiddenException;
 import com.example.eventplanner.exception.NotFoundException;
 import com.example.eventplanner.exception.UnauthorizedException;
@@ -305,10 +306,10 @@ public class EventService {
         return activity != null;
     }
 
-    public Page<ReviewDto> getEventReviews(Long id, Pageable pageable) {
+    public Page<ReviewSummaryDto> getEventReviews(Long id, Pageable pageable) {
         Event event = eventRepository.getReferenceById(id);
         return eventReviewRepository.findAllByEventAndReviewStatus(event, ReviewStatus.APPROVED, pageable)
-                .map(ReviewMapper::toDto);
+                .map(ReviewMapper::toSummaryDto);
     }
 
     private boolean isTimeValid(List<Activity> activities, Long start, Long end, Long activityId) {

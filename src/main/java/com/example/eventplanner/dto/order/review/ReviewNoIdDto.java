@@ -1,7 +1,9 @@
 package com.example.eventplanner.dto.order.review;
 
-import com.example.eventplanner.model.utils.ReviewStatus;
 import com.example.eventplanner.model.utils.ReviewType;
+import com.example.eventplanner.validators.ValidRating;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,10 +14,13 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReviewNoIdDto {
-    private int grade;
+    @ValidRating
+    private double grade;
+    @NotEmpty
+    @Size(min = 1, max = 1000)
     private String comment;
-    private long userId;
-    private ReviewStatus reviewStatus;
+    @NotEmpty
     private long entityId;
+    @NotEmpty
     private ReviewType reviewType;
 }

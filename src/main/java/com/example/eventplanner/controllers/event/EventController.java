@@ -6,7 +6,8 @@ import com.example.eventplanner.dto.event.activity.ActivityIdDto;
 import com.example.eventplanner.dto.event.event.EventDto;
 import com.example.eventplanner.dto.event.event.EventNoIdDto;
 import com.example.eventplanner.dto.event.event.EventSummaryDto;
-import com.example.eventplanner.dto.order.review.ReviewDto;
+import com.example.eventplanner.dto.order.review.ReviewEligibilityDto;
+import com.example.eventplanner.dto.order.review.ReviewSummaryDto;
 import com.example.eventplanner.model.event.Budget;
 import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.user.EventOrganizer;
@@ -15,6 +16,7 @@ import com.example.eventplanner.model.utils.UserRole;
 import com.example.eventplanner.services.event.EventAttendanceService;
 import com.example.eventplanner.services.event.EventReportService;
 import com.example.eventplanner.services.event.EventService;
+import com.example.eventplanner.services.order.ReviewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -38,6 +40,7 @@ public class EventController {
     private final AuthUtil authUtil;
     private final EventReportService eventReportService;
     private final EventAttendanceService eventAttendanceService;
+    private final ReviewService reviewService;
 
     @GetMapping
     public ResponseEntity<Page<EventDto>> getAllEvents(
@@ -281,13 +284,19 @@ public class EventController {
     }
 
     @GetMapping(value = "/{id}/reviews")
-    public ResponseEntity<Page<ReviewDto>> getEventReviews(
+    public ResponseEntity<Page<ReviewSummaryDto>> getEventReviews(
             @PathVariable("id") Long id,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(required = false) Integer size) {
         Pageable pageable = PageRequest.of(page, size != null ? size : 10)
                 .withSort(Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<ReviewDto> result = eventService.getEventReviews(id, pageable);
+        Page<ReviewSummaryDto> result = eventService.getEventReviews(id, pageable);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/{id}/review-eligibility")
+    public ResponseEntity<ReviewEligibilityDto> getEventReviewEligibility(@PathVariable("id") Long id) {
+        ReviewEligibilityDto result = reviewService.canReviewEvent(id);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

@@ -2,6 +2,7 @@ package com.example.eventplanner.services.serviceproduct;
 
 import com.example.eventplanner.dto.event.eventtype.EventTypeDto;
 import com.example.eventplanner.dto.event.eventtype.EventTypeMapper;
+import com.example.eventplanner.dto.order.review.ReviewSummaryDto;
 import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductDto;
 import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductFilteringValuesDto;
 import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductMapper;
@@ -126,9 +127,9 @@ public class ServiceProductService {
         return serviceProductRepository.getCategoriesByAvailableEventType((eventType));
     }
 
-    public Page<ReviewDto> getServiceProductReviews(Long id, Pageable pageable) {
+    public Page<ReviewSummaryDto> getServiceProductReviews(Long id, Pageable pageable) {
         ServiceProduct serviceProduct = serviceProductRepository.getReferenceById(id);
         return serviceProductReviewRepository.findAllByServiceProductAndReviewStatus(serviceProduct, ReviewStatus.APPROVED, pageable)
-                .map(ReviewMapper::toDto);
+                .map(ReviewMapper::toSummaryDto);
     }
 }

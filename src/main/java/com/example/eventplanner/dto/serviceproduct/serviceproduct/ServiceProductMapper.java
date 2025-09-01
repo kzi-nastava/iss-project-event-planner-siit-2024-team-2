@@ -68,8 +68,8 @@ public class ServiceProductMapper {
                 serviceProduct.getDiscount(),
                 serviceProduct.getName(),
                 serviceProduct.getDescription(),
-                provider != null ? provider.getCompanyName() : "",
-                provider != null ? provider.getEmail() : "",
+                provider != null ? provider.getCompanyName() : null,
+                provider != null ? provider.getEmail() : null,
                 ImageService.encodePath(provider != null ? provider.getImage() : null),
                 ImageService.encodePath(
                         serviceProduct.getImages()

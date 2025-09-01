@@ -20,11 +20,11 @@ public interface ServiceProductRepository extends JpaRepository<ServiceProduct, 
     @Query(value = """
     SELECT sp.*
     FROM serviceproduct sp
-    LEFT JOIN serviceproductreview spr
-      ON sp.id = spr.serviceproduct_id AND spr.reviewstatus = 1
+    LEFT JOIN review r
+      ON sp.id = r.serviceproduct_id AND r.reviewstatus = 1
     WHERE sp.visible = true AND sp.active = true
     GROUP BY sp.id
-    ORDER BY COALESCE(AVG(spr.grade), 0) DESC
+    ORDER BY COALESCE(AVG(r.grade), 0) DESC
     LIMIT 5
     """, nativeQuery = true)
     List<ServiceProduct> findTop5();

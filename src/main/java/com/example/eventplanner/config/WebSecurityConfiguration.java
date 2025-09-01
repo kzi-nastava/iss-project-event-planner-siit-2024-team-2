@@ -3,6 +3,7 @@ package com.example.eventplanner.config;
 //import com.example.eventplanner.config.jwt.JwtRequestFilter;
 import com.example.eventplanner.config.jwt.JwtRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -33,6 +34,8 @@ public class WebSecurityConfiguration {
 
     @Autowired
     private JwtRequestFilter jwtRequestFilter;
+    @Value("${frontend.url}")
+    private String frontendUrl;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -42,7 +45,11 @@ public class WebSecurityConfiguration {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/events", "/api/events/summaries", "/api/events/top5").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/events/{id}", "/api/events/{id}/agenda").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/events/{id}"
+                                , "/api/events/{id}/agenda"
+                                , "/api/events/max-attendances-range"
+                                , "/api/events/top5"
+                                , "/api/events/{id}/reviews").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/service-products/top5"
                                 , "/api/service-products/summaries"
                                 , "/api/service-products/filtering-values"
@@ -111,8 +118,8 @@ public class WebSecurityConfiguration {
                         // UserReports
                         .requestMatchers(HttpMethod.POST, "/api/user-reports").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/user-reports").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/user-reports/{id}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/user-reports/approve").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/user-reports/{id}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/user-reports/{id}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/user-reports/{id}").hasRole("ADMIN")
 
@@ -120,11 +127,11 @@ public class WebSecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/api/users/{email}/suspend").hasRole("ADMIN")
 
                         // ServiceProductReviews
+                        .requestMatchers(HttpMethod.POST, "/api/reviews").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/api/reviews/{id}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/reviews/{id}/status").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/reviews/{id}/comment").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/reviews/{id}").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/api/reviews").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/reviews").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/reviews/{id}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/reviews/pending").hasRole("ADMIN")
@@ -142,7 +149,7 @@ public class WebSecurityConfiguration {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:4200")); // frontend
+        configuration.setAllowedOrigins(List.of(frontendUrl)); // frontend
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

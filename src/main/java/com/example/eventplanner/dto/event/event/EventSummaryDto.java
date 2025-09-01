@@ -16,7 +16,7 @@ public class EventSummaryDto {
     private String description;
     private EventTypeDto type;
     private int maxAttendances;
-    private boolean isOpen;
+    private boolean open;
     private double longitude;
     private double latitude;
     private long date;

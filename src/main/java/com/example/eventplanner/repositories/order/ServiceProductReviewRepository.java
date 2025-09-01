@@ -11,6 +11,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
+
 public interface ServiceProductReviewRepository extends JpaRepository<ServiceProductReview, Long> {
     Page<Review> findAllByServiceProductAndReviewStatus(
             ServiceProduct serviceProduct,
@@ -20,4 +22,6 @@ public interface ServiceProductReviewRepository extends JpaRepository<ServicePro
     @Modifying
     @Query("UPDATE ServiceProductReview e SET e.active = false WHERE e.serviceProduct.id = :serviceProductId")
     void deleteByServiceProduct(@Param("serviceProductId") long serviceProductId);
+
+    Optional<Review> findFirstByUserIdAndServiceProductId(Long userId, Long serviceProductId);
 }

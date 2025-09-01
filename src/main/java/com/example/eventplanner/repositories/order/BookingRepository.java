@@ -13,6 +13,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("UPDATE Booking e SET e.active = false WHERE e.id = :id")
     void deleteById(@Param("id") long id);
 
-    @Query("SELECT b FROM Booking b WHERE b.service.id = :providerId")
+    @Query("SELECT b FROM Booking b WHERE b.service.serviceProductProvider.id = :providerId")
     List<Booking> findByProviderId(@Param("providerId") Long providerId);
 }

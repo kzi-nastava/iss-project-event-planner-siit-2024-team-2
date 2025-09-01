@@ -9,7 +9,9 @@ import com.example.eventplanner.model.order.Review;
 import com.example.eventplanner.model.serviceproduct.ServiceProduct;
 import com.example.eventplanner.model.order.ServiceProductReview;
 import com.example.eventplanner.model.user.BaseUser;
+import com.example.eventplanner.model.utils.ReviewStatus;
 import com.example.eventplanner.model.utils.ReviewType;
+import com.example.eventplanner.services.serviceproduct.ImageService;
 
 import java.time.Instant;
 
@@ -47,14 +49,15 @@ public class ReviewMapper {
     public static Review toEntity(ReviewNoIdDto dto,
                                     ServiceProduct serviceProduct,
                                     Event event,
-                                    BaseUser user) {
+                                    BaseUser user,
+                                    ReviewStatus reviewStatus) {
         if (dto == null)
             return null;
         Review review = new Review(
                 dto.getGrade(),
                 dto.getComment(),
                 user,
-                dto.getReviewStatus(),
+                reviewStatus,
                 Instant.now()
         );
 
@@ -64,5 +67,22 @@ public class ReviewMapper {
             return new EventReview(review, event);
         else
             return review;
+    }
+
+    public static ReviewSummaryDto toSummaryDto(Review review) {
+        if (review == null)
+            return null;
+        return new ReviewSummaryDto(
+                review.getGrade(),
+                review.getComment(),
+                review.getCreatedAt(),
+                review.getUser() != null
+                        ? review.getUser().getFirstName() + " " + review.getUser().getLastName()
+                        : null,
+                review.getUser() != null ? review.getUser().getEmail() : null,
+                review.getUser() != null
+                        ? ImageService.encodePath(review.getUser().getImage())
+                        : null
+        );
     }
 }

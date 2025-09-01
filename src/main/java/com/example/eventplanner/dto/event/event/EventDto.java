@@ -22,7 +22,7 @@ public class EventDto {
     private EventTypeDto type;
     private BaseUserDto eventOrganizerDto;
     private int maxAttendances;
-    private boolean isOpen;
+    private boolean open;
     private double longitude;
     private double latitude;
     private long date;
