@@ -11,13 +11,7 @@ import org.hibernate.annotations.SQLRestriction;
 
 import java.util.List;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @SQLRestriction("active = true")
 @Entity
 public class EventOrganizer extends BaseUser {
-    @ManyToMany
-    private List<ServiceProduct> favoriteServiceProducts;
 }

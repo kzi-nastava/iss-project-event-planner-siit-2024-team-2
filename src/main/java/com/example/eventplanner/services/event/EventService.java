@@ -365,4 +365,12 @@ public class EventService {
             throw new ForbiddenException("You are not authorized to access this event");
         return event;
     }
+
+
+    public Collection<EventDto> getEventsByOrganizer(Long organizerId) {
+        List<Event> events = eventRepository.findByOrganizerId(organizerId);
+        return events.stream()
+                .map(EventMapper::toDto)
+                .toList();
+    }
 }

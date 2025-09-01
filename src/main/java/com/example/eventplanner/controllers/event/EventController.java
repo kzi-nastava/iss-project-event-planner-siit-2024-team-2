@@ -262,6 +262,24 @@ public class EventController {
             return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/{id}/attend")
+    public ResponseEntity<Boolean> isUserAttending(@PathVariable long id) {
+        BaseUser user = authUtil.getAuthenticatedUser();
+        if (user == null)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+        return ResponseEntity.ok(eventAttendanceService.isUserAttending(id, user));
+    }
+
+    @GetMapping("attendances")
+    public ResponseEntity<List<Long>> getAttendedEvents() {
+        BaseUser user = authUtil.getAuthenticatedUser();
+        if (user == null)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+
+        return ResponseEntity.ok(eventAttendanceService.getAttendingEvents(user));
+    }
+
     @GetMapping(value = "/{id}/reviews")
     public ResponseEntity<Page<ReviewDto>> getEventReviews(
             @PathVariable("id") Long id,

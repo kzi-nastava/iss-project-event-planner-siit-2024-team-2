@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -62,5 +63,12 @@ public class BookingService {
             return false;
         bookingRepository.deleteById(id);
         return true;
+    }
+
+    public Collection<BookingDto> getBookingsByProvider(Long providerId) {
+        List<Booking> bookings = bookingRepository.findByProviderId(providerId);
+        return bookings.stream()
+                .map(BookingMapper::toDto)
+                .toList();
     }
 }
