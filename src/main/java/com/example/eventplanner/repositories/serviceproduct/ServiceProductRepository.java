@@ -18,7 +18,7 @@ public interface ServiceProductRepository extends JpaRepository<ServiceProduct, 
     void deleteById(@Param("id") long id);
 
     @Query(value = """
-    SELECT sp.*, AVG(r.grade) AS grade
+    SELECT sp.*
     FROM serviceproduct sp
     LEFT JOIN review r
       ON sp.id = r.serviceproduct_id AND r.reviewstatus = 1
