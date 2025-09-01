@@ -12,7 +12,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
 import java.util.List;
 
 @org.springframework.stereotype.Service
@@ -52,7 +51,6 @@ public class BookingService {
 
         booking.setService(service);
         booking.setPrice(dto.getPrice());
-        booking.setDate(new Date(dto.getDate()));
         booking.setDuration(dto.getDuration());
         return BookingMapper.toDto(bookingRepository.save(booking));
     }
