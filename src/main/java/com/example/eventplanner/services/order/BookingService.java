@@ -139,7 +139,9 @@ public class BookingService {
                 condensed.add(dateRange);
                 last = dateRange;
             } else {
-                if (dateRange.getStart() - last.getEnd() >= durationMs) {
+                if (dateRange.getStart() <= last.getEnd()) // Overlapping
+                    last.setEnd(Math.max(last.getEnd(), dateRange.getEnd()));
+                else if (dateRange.getStart() - last.getEnd() >= durationMs) {
                     condensed.add(dateRange); // Usable range
                     last = dateRange;
                 } else
