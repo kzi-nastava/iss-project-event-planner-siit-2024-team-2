@@ -16,6 +16,5 @@ public class BookingNoIdDto {
     private long serviceId;
     private double price;
     private double duration;
-    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date date;
 }
