@@ -71,8 +71,6 @@ public class ServiceController {
 
     @GetMapping("/{id}/availability")
     public ResponseEntity<List<DateRangeDto>> getAvailableDates(@PathVariable("id") Long id, @RequestParam Long eventId) {
-        if (eventId == null)
-            return ResponseEntity.badRequest().build();
-        return ResponseEntity.ok(bookingService.getAvailableDates(id, eventId));
+        return ResponseEntity.ok(serviceService.getAvailableDates(id, eventId));
     }
 }

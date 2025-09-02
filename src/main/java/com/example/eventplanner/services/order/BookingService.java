@@ -4,6 +4,9 @@ import com.example.eventplanner.dto.order.booking.BookingDto;
 import com.example.eventplanner.dto.order.booking.BookingMapper;
 import com.example.eventplanner.dto.order.booking.BookingNoIdDto;
 import com.example.eventplanner.dto.util.DateRangeDto;
+import com.example.eventplanner.exception.ConflictException;
+import com.example.eventplanner.exception.ForbiddenException;
+import com.example.eventplanner.exception.NotFoundException;
 import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.order.Booking;
 import com.example.eventplanner.model.serviceproduct.Service;
@@ -75,19 +78,37 @@ public class BookingService {
                 .toList();
     }
 
-    public boolean isAvailable(Long serviceId, Long eventId, DateRangeDto dateRange) {
-        List<DateRangeDto> availableDates = getAvailableDates(serviceId, eventId);
-        return availableDates.stream()
-                .anyMatch(d -> d.getStart() <= dateRange.getStart() && d.getEnd() >= dateRange.getEnd());
+    public Booking book(BookingNoIdDto bookingDto, Event event) throws NotFoundException, ConflictException, ForbiddenException{
+        Service service = serviceRepository.findById(bookingDto.getServiceId())
+                                            .orElseThrow(() -> new NotFoundException("Service not found"));
+        checkServiceAcceptingBookings(service);
+
+        bookingDto.setPrice(Math.max(service.getPrice() - service.getDiscount(), 0));
+
+        if (service.getDuration() > 0 && bookingDto.getDuration() != service.getDuration())
+            throw new ConflictException("Booking duration must be equal to service duration");
+        if (service.getMinEngagementDuration() > 0 &&
+                (bookingDto.getDuration() < service.getMinEngagementDuration() ||
+                        bookingDto.getDuration() > service.getMaxEngagementDuration()))
+            throw new ConflictException("Booking duration must be between " +
+                    service.getMinEngagementDuration() + " and " + service.getMaxEngagementDuration());
+
+        long startDate = bookingDto.getDate();
+        long endDate = startDate + (long)(HOUR_MS * bookingDto.getDuration());
+        if (!isAvailable(service, event, startDate, endDate))
+            throw new ConflictException("Booking period is not available");
+
+        Booking booking = BookingMapper.toEntity(bookingDto, service);
+        return bookingRepository.save(booking);
     }
 
-    public List<DateRangeDto> getAvailableDates(Long serviceId, Long eventId) {
-        Event event = eventRepository.findById(eventId).orElse(null);
-        if (event == null)
-            return new ArrayList<>();
-        Service service = serviceRepository.findById(serviceId).orElse(null);
-        if (service == null)
-            return new ArrayList<>();
+    public boolean isAvailable(Service service, Event event, long startDate, long endDate) {
+        List<DateRangeDto> availableDates = getAvailableDates(service, event);
+        return availableDates.stream()
+                .anyMatch(d -> d.getStart() <= startDate && d.getEnd() >= endDate);
+    }
+
+    public List<DateRangeDto> getAvailableDates(Service service, Event event) {
         Long startDate = new Date().getTime() + service.getReservationDaysDeadline() * DAY_MS;
         Long endDate = event.getDate().getTime() + DAY_MS;
         List<DateRangeDto> bookedDates = getBookedDates(service, startDate, endDate);
@@ -156,5 +177,12 @@ public class BookingService {
             available.add(new DateRangeDto(bookedDates.get(bookedDates.size() - 1).getEnd(), endDate));
 
         return available;
+    }
+
+    public void checkServiceAcceptingBookings(Service service) throws NotFoundException, ForbiddenException {
+        if (!service.isAvailable() || !service.isVisible())
+            throw new ForbiddenException("Service is not available");
+        if (service.getServiceProductProvider() == null)
+            throw new ForbiddenException("Service provider is deleted");
     }
 }

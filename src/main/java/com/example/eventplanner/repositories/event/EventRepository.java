@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long> {
@@ -114,4 +115,12 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     @Query("SELECT e FROM Event e WHERE e.eventOrganizer.id = :organizerId")
     List<Event> findByOrganizerId(@Param("organizerId") Long organizerId);
+
+    @Query("""
+        SELECT e
+        FROM Event e
+        JOIN e.budgets b
+        WHERE b.id = :budgetId
+    """)
+    Optional<Event> findByBudgetId(Long budgetId);
 }

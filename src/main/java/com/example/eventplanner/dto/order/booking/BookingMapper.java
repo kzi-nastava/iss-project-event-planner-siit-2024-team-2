@@ -29,7 +29,7 @@ public class BookingMapper {
         return new Booking(
                 service,
                 dto.getPrice(),
-                new Date(),
+                new Date(dto.getDate()),
                 dto.getDuration());
     }
 }

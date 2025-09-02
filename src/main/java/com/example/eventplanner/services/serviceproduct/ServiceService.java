@@ -122,18 +122,12 @@ public class ServiceService {
 	@Transactional
 	public List<DateRangeDto> getAvailableDates(Long serviceId, Long eventId) {
 		Long userId = authUtil.getAuthenticatedUserId();
-		if (userId == null)
-			throw new UnauthorizedException("User not authenticated");
-
 		Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Event not found"));
 		if (event.getEventOrganizer().getId() != userId)
 			throw new ForbiddenException("User is not authorized to access this event");
 
 		Service service = serviceRepository.findById(serviceId).orElseThrow(() -> new NotFoundException("Service not found"));
-		if (!service.isAvailable() || !service.isVisible())
-			throw new ForbiddenException("Service is not available");
-		if (service.getServiceProductProvider() == null)
-			throw new ForbiddenException("Service provider is deleted");
-		return bookingService.getAvailableDates(serviceId, eventId);
+		bookingService.checkServiceAcceptingBookings(service);
+		return bookingService.getAvailableDates(service, event);
 	}
 }

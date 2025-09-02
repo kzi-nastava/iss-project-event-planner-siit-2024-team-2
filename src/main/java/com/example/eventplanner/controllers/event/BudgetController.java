@@ -42,13 +42,13 @@ public class BudgetController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/{id}/new-booking")
+    @PostMapping("/{id}/bookings")
     public ResponseEntity<?> addNewBooking(@PathVariable("id") Long id, @RequestBody BookingNoIdDto bookingDto) {
         budgetService.addBookingToBudget(id, bookingDto);
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/{id}/new-purchase")
+    @PostMapping("/{id}/purchases")
     public ResponseEntity<?> addNewPurchase(@PathVariable("id") Long id, @RequestBody PurchaseNoIdDto purchaseDto) {
         budgetService.addPurchaseToBudget(id, purchaseDto);
         return ResponseEntity.ok().build();

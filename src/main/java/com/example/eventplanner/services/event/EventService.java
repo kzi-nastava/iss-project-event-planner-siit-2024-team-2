@@ -355,9 +355,7 @@ public class EventService {
 
     @NotNull
     public Event getAuthorizedEvent(long id) {
-        Event event = eventRepository.findById(id).orElse(null);
-        if (event == null)
-            throw new NotFoundException("Event not found");
+        Event event = eventRepository.findById(id).orElseThrow(() -> new NotFoundException("Event not found"));
         BaseUser user = authUtil.getAuthenticatedUser();
         if (user == null)
             throw new UnauthorizedException("User not found");

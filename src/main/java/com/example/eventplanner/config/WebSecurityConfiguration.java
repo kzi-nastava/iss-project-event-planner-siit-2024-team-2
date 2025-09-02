@@ -126,7 +126,7 @@ public class WebSecurityConfiguration {
                         // Users
                         .requestMatchers(HttpMethod.POST, "/api/users/{email}/suspend").hasRole("ADMIN")
 
-                        // ServiceProductReviews
+                        // Reviews
                         .requestMatchers(HttpMethod.POST, "/api/reviews").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/api/reviews/{id}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/reviews/{id}/status").hasRole("ADMIN")
@@ -135,6 +135,15 @@ public class WebSecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/api/reviews").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/reviews/{id}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/reviews/pending").hasRole("ADMIN")
+
+                        // Budgets
+                        .requestMatchers(HttpMethod.POST, "/api/budgets").hasRole("EVENT_ORGANIZER")
+                        .requestMatchers(HttpMethod.POST, "/api/budgets/{id}/bookings").hasRole("EVENT_ORGANIZER")
+                        .requestMatchers(HttpMethod.POST, "/api/budgets/{id}/purchases").hasRole("EVENT_ORGANIZER")
+                        .requestMatchers(HttpMethod.PUT, "/api/budgets/{id}").hasRole("EVENT_ORGANIZER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/budgets/{id}").hasRole("EVENT_ORGANIZER")
+                        .requestMatchers(HttpMethod.GET, "/api/budgets").hasRole("EVENT_ORGANIZER")
+                        .requestMatchers(HttpMethod.GET, "/api/budgets/{id}").hasRole("EVENT_ORGANIZER")
 
                         // Everything else requires authentication
                         .anyRequest().permitAll())

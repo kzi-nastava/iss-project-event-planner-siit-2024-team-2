@@ -13,4 +13,5 @@ public class BookingNoIdDto {
     private long serviceId;
     private double price;
     private double duration;
+    private long date;
 }
