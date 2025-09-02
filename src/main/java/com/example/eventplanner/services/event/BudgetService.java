@@ -38,9 +38,7 @@ import java.util.List;
 public class BudgetService {
     private final BudgetRepository budgetRepository;
     private final ServiceProductCategoryRepository serviceProductCategoryRepository;
-    private final BookingRepository bookingRepository;
     private final PurchaseRepository purchaseRepository;
-    private final ServiceRepository serviceRepository;
     private final ProductRepository productRepository;
     private final BookingService bookingService;
     private final EventRepository eventRepository;

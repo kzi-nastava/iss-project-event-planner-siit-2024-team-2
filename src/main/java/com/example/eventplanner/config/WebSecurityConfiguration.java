@@ -44,7 +44,7 @@ public class WebSecurityConfiguration {
                 .csrf(csrf -> csrf.disable()) // Disable CSRF for simplicity (not recommended for production)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/events", "/api/events/summaries", "/api/events/top5").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/events/summaries", "/api/events/top5").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/events/{id}"
                                 , "/api/events/{id}/agenda"
                                 , "/api/events/max-attendances-range"
@@ -67,6 +67,7 @@ public class WebSecurityConfiguration {
 
                         // Protected endpoints (JWT required)
                         // Events
+                        .requestMatchers(HttpMethod.GET, "/api/events").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/events").hasRole("EVENT_ORGANIZER")
                         .requestMatchers(HttpMethod.PUT, "/api/events/{id}").hasRole("EVENT_ORGANIZER")
                         .requestMatchers(HttpMethod.DELETE, "/api/events/{id}").hasRole("EVENT_ORGANIZER")

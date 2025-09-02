@@ -62,7 +62,7 @@ public class EventController {
         Page<EventDto> result = eventService.getAllFiltered(
                 EventDto.class,
                 page, size, sort, name, description, types, minMaxAttendances, maxMaxAttendances,
-                open, latitudes, longitudes, maxDistance, startDate, endDate);
+                open, latitudes, longitudes, maxDistance, startDate, endDate, null);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -88,10 +88,10 @@ public class EventController {
         if (organizer == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        Page<EventDto> result = eventService.getAllFilteredByOrganizer(
-                EventDto.class, organizer.getId(),
+        Page<EventDto> result = eventService.getAllFiltered(
+                EventDto.class,
                 page, size, sort, name, description, types, minMaxAttendances, maxMaxAttendances,
-                open, latitudes, longitudes, maxDistance, startDate, endDate);
+                open, latitudes, longitudes, maxDistance, startDate, endDate, organizer.getId());
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -119,7 +119,7 @@ public class EventController {
         Page<EventSummaryDto> result = eventService.getAllFiltered(
                 EventSummaryDto.class,
                 page, size, sort, name, description, types, minMaxAttendances, maxMaxAttendances,
-                open, latitudes, longitudes, maxDistance, startDate, endDate);
+                open, latitudes, longitudes, maxDistance, startDate, endDate, null);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

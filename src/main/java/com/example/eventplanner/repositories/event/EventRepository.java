@@ -47,7 +47,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     @Query(value = "SELECT e.id, e.active, e.name, e.description, e.type_id, e.maxattendances, e.latitude, e.longitude, e.open, e.date, e.eventorganizer_id " +
             "FROM Event e " +
-            "WHERE (:name = '' OR e.name ILIKE CONCAT('%', :name, '%')) " +
+            "WHERE (:organizerId IS NULL OR e.eventorganizer_id = :organizerId) " +
+            "AND (:name = '' OR e.name ILIKE CONCAT('%', :name, '%')) " +
             "AND (e.active = true)" +
             "AND (:description = '' OR LOWER(e.description) LIKE LOWER(CONCAT('%', :description, '%'))) " +
             "AND (COALESCE(array_length(:types, 1), 0) = 0 OR e.type_id = ANY(:types)) " +
@@ -55,8 +56,8 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "AND (:maxMaxAttendances IS NULL OR e.maxAttendances <= :maxMaxAttendances) " +
             "AND (:open IS NULL OR e.open = :open) " +
             "AND (e.date >= CAST(:startDate as timestamp)) " +
-            "AND (e.date <= CAST(:endDate as timestamp)) "
-          + "AND (:maxDistance = 0 " +
+            "AND (e.date <= CAST(:endDate as timestamp)) " +
+            "AND (:maxDistance = 0 " +
             "       OR any_location_within_distance(:latitudes, :longitudes, :maxDistance, e.latitude, e.longitude))"
             , nativeQuery = true)
     Page<Event> findAllFiltered(
@@ -71,40 +72,9 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             @Param("maxDistance") double maxDistance,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate,
+            @Param("organizerId") Long organizerId,
             Pageable pageable
     );
-
-    @Query(value = "SELECT e.id, e.active, e.name, e.description, e.type_id, e.maxattendances, e.latitude, e.longitude, e.open, e.date, e.eventorganizer_id " +
-            "FROM Event e " +
-            "WHERE e.eventorganizer_id = :organizerId " +
-            "AND (:name = '' OR e.name ILIKE CONCAT('%', :name, '%')) " +
-            "AND (e.active = true) " +
-            "AND (:description = '' OR LOWER(e.description) LIKE LOWER(CONCAT('%', :description, '%'))) " +
-            "AND (COALESCE(array_length(:types, 1), 0) = 0 OR e.type_id = ANY(:types)) " +
-            "AND (:minMaxAttendances IS NULL OR e.maxAttendances >= :minMaxAttendances) " +
-            "AND (:maxMaxAttendances IS NULL OR e.maxAttendances <= :maxMaxAttendances) " +
-            "AND (:open IS NULL OR e.open = :open) " +
-            "AND (e.date >= CAST(:startDate as timestamp)) " +
-            "AND (e.date <= CAST(:endDate as timestamp)) " +
-            "AND (:maxDistance = 0 " +
-            "       OR any_location_within_distance(:latitudes, :longitudes, :maxDistance, e.latitude, e.longitude))",
-            nativeQuery = true)
-    Page<Event> findAllFilteredByOrganizer(
-            @Param("organizerId") long organizerId,
-            @Param("name") String name,
-            @Param("description") String description,
-            @Param("types") Long[] types,
-            @Param("minMaxAttendances") Integer minMaxAttendances,
-            @Param("maxMaxAttendances") Integer maxMaxAttendances,
-            @Param("open") Boolean open,
-            @Param("latitudes") Double[] latitudes,
-            @Param("longitudes") Double[] longitudes,
-            @Param("maxDistance") double maxDistance,
-            @Param("startDate") LocalDateTime startDate,
-            @Param("endDate") LocalDateTime endDate,
-            Pageable pageable
-    );
-
 
     @Modifying
     @Query("UPDATE Event e SET e.active = false WHERE e.id = :id")
