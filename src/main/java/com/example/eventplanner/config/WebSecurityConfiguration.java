@@ -129,12 +129,12 @@ public class WebSecurityConfiguration {
                         // Reviews
                         .requestMatchers(HttpMethod.POST, "/api/reviews").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/api/reviews/{id}").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/reviews/{id}/status").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/reviews/{id}/comment").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/reviews/{id}").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/reviews").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/reviews/{id}").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/reviews/pending").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/reviews/{id}/status",
+                                                        "/api/reviews/{id}/comment",
+                                                        "/api/reviews/{id}").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/reviews",
+                                                        "/api/reviews/{id}",
+                                                        "/api/reviews/pending").hasRole("ADMIN")
 
                         // Budgets
                         .requestMatchers(HttpMethod.POST, "/api/budgets").hasRole("EVENT_ORGANIZER")
@@ -144,6 +144,10 @@ public class WebSecurityConfiguration {
                         .requestMatchers(HttpMethod.DELETE, "/api/budgets/{id}").hasRole("EVENT_ORGANIZER")
                         .requestMatchers(HttpMethod.GET, "/api/budgets").hasRole("EVENT_ORGANIZER")
                         .requestMatchers(HttpMethod.GET, "/api/budgets/{id}").hasRole("EVENT_ORGANIZER")
+
+                        // Budgets / purchases
+                        .requestMatchers("/api/bookings", "/api/bookings/{id}").hasRole("ADMIN")
+                        .requestMatchers("/api/purchases", "/api/purchases/{id}").hasRole("ADMIN")
 
                         // Everything else requires authentication
                         .anyRequest().permitAll())

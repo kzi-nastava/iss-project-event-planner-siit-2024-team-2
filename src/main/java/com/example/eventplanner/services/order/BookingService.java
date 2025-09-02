@@ -93,7 +93,7 @@ public class BookingService {
             throw new ConflictException("Booking duration must be between " +
                     service.getMinEngagementDuration() + " and " + service.getMaxEngagementDuration());
 
-        long startDate = bookingDto.getDate();
+        long startDate = bookingDto.getDate().getTime();
         long endDate = startDate + (long)(HOUR_MS * bookingDto.getDuration());
         if (!isAvailable(service, event, startDate, endDate))
             throw new ConflictException("Booking period is not available");

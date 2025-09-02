@@ -1,9 +1,12 @@
 package com.example.eventplanner.dto.order.booking;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.Date;
 
 @Getter
 @Setter
@@ -13,5 +16,6 @@ public class BookingNoIdDto {
     private long serviceId;
     private double price;
     private double duration;
-    private long date;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date date;
 }
