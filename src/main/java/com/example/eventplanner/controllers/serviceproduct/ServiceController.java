@@ -3,6 +3,8 @@ package com.example.eventplanner.controllers.serviceproduct;
 import com.example.eventplanner.dto.serviceproduct.service.CreateServiceDto;
 import com.example.eventplanner.dto.serviceproduct.service.ServiceCardDto;
 import com.example.eventplanner.dto.serviceproduct.service.ServiceDto;
+import com.example.eventplanner.dto.util.DateRangeDto;
+import com.example.eventplanner.services.order.BookingService;
 import com.example.eventplanner.services.serviceproduct.ServiceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,6 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor()
 public class ServiceController {
     private final ServiceService serviceService;
+    private final BookingService bookingService;
 
     @GetMapping("/all")
     public ResponseEntity<Page<ServiceDto>> getAll(@RequestParam(defaultValue = "0") int page,
@@ -64,5 +67,12 @@ public class ServiceController {
         return success
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/{id}/availability")
+    public ResponseEntity<List<DateRangeDto>> getAvailableDates(@PathVariable("id") Long id, @RequestParam Long eventId) {
+        if (eventId == null)
+            return ResponseEntity.badRequest().build();
+        return ResponseEntity.ok(bookingService.getAvailableDates(id, eventId));
     }
 }
