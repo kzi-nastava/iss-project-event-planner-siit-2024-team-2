@@ -9,27 +9,22 @@ import com.example.eventplanner.dto.event.event.EventDto;
 import com.example.eventplanner.dto.event.event.EventMapper;
 import com.example.eventplanner.dto.event.event.EventNoIdDto;
 import com.example.eventplanner.dto.event.event.EventSummaryDto;
-import com.example.eventplanner.dto.order.booking.BookingDto;
-import com.example.eventplanner.dto.order.purchase.PurchaseDto;
-import com.example.eventplanner.dto.order.review.ReviewDto;
 import com.example.eventplanner.dto.order.review.ReviewMapper;
 import com.example.eventplanner.dto.order.review.ReviewSummaryDto;
 import com.example.eventplanner.exception.ForbiddenException;
 import com.example.eventplanner.exception.NotFoundException;
 import com.example.eventplanner.exception.UnauthorizedException;
 import com.example.eventplanner.model.Entity;
-import com.example.eventplanner.model.event.Activity;
-import com.example.eventplanner.model.event.Budget;
-import com.example.eventplanner.model.event.Event;
-import com.example.eventplanner.model.event.EventType;
-import com.example.eventplanner.model.event.Invitation;
+import com.example.eventplanner.model.event.*;
 import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.user.EventOrganizer;
 import com.example.eventplanner.model.utils.ReviewStatus;
 import com.example.eventplanner.model.utils.UserRole;
+import com.example.eventplanner.repositories.event.BudgetRepository;
 import com.example.eventplanner.repositories.event.EventRepository;
 import com.example.eventplanner.repositories.event.EventTypeRepository;
 import com.example.eventplanner.repositories.order.EventReviewRepository;
+import com.example.eventplanner.repositories.serviceproduct.ServiceProductCategoryRepository;
 import com.example.eventplanner.repositories.user.UserRepository;
 import com.example.eventplanner.services.communication.NotificationService;
 import com.example.eventplanner.services.order.BookingService;
@@ -64,6 +59,8 @@ public class EventService {
     private final NotificationService notificationService;
     private final AuthUtil authUtil;
     private final EventReviewRepository eventReviewRepository;
+    private final ServiceProductCategoryRepository serviceProductCategoryRepository;
+    private final BudgetRepository budgetRepository;
 
     public List<EventDto> getAll() {
         return eventRepository.findAll()
@@ -331,8 +328,9 @@ public class EventService {
     }
 
     @Transactional
-    public void addBudgetToEvent(Long eventId, Budget budget) {
+    public void addBudgetToEvent(Long eventId, Long budgetId) {
         Event event = getAuthorizedEvent(eventId);
+        Budget budget = budgetRepository.getReferenceById(budgetId);
         event.getBudgets().add(budget);
         eventRepository.save(event);
     }

@@ -8,7 +8,6 @@ import com.example.eventplanner.dto.event.event.EventNoIdDto;
 import com.example.eventplanner.dto.event.event.EventSummaryDto;
 import com.example.eventplanner.dto.order.review.ReviewEligibilityDto;
 import com.example.eventplanner.dto.order.review.ReviewSummaryDto;
-import com.example.eventplanner.model.event.Budget;
 import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.user.EventOrganizer;
 import com.example.eventplanner.model.utils.AttendanceResult;
@@ -231,8 +230,8 @@ public class EventController {
     @PostMapping("/{id}/budgets")
     public void addBudgetToEvent(
             @PathVariable Long id,
-            @RequestBody Budget budget) {
-        eventService.addBudgetToEvent(id, budget);
+            @RequestBody Long budgetId) {
+        eventService.addBudgetToEvent(id, budgetId);
     }
 
     @PostMapping("/{id}/attend")
