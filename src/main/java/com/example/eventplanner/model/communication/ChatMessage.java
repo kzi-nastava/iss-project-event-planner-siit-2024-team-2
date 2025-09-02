@@ -19,7 +19,7 @@ import java.time.Instant;
 @AllArgsConstructor
 @SQLRestriction("active = true")
 @jakarta.persistence.Entity
-public class Message extends Entity {
+public class ChatMessage extends Entity {
     @Column(columnDefinition = "TEXT")
     private String text;
     private Instant sentAt;
@@ -28,7 +28,7 @@ public class Message extends Entity {
     @ManyToOne
     private BaseUser fromUser;
 
-    public Message(String text, boolean seen, BaseUser fromUser) {
+    public ChatMessage(String text, boolean seen, BaseUser fromUser) {
         this.text = text;
         this.seen = seen;
         this.fromUser = fromUser;

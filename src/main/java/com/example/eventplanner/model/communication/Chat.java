@@ -32,7 +32,7 @@ public class Chat extends Entity {
     private BaseUser user2;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Message> messages = new ArrayList<>();
+    private List<ChatMessage> messages = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     private ChatStatus status;  // who got new (unseen) messages

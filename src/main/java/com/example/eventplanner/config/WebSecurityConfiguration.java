@@ -59,7 +59,6 @@ public class WebSecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/api/users/{id}").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/users/company/{id}").permitAll()
 
-
                         .requestMatchers(HttpMethod.GET, "/api/event-types").permitAll()
                         .requestMatchers("/socket", "/socket/**", "/send-message-rest", "/send/message").permitAll()
                         .requestMatchers("/api/images/{path}", "/api/images").permitAll()
@@ -125,6 +124,12 @@ public class WebSecurityConfiguration {
 
                         // Users
                         .requestMatchers(HttpMethod.POST, "/api/users/{email}/suspend").hasRole("ADMIN")
+
+                        // Chat
+                        .requestMatchers(HttpMethod.GET, "/api/chat/{id}").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/chat/mine").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/chat/mine-and/{id2}").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/chat").authenticated()
 
                         // ServiceProductReviews
                         .requestMatchers(HttpMethod.POST, "/api/reviews").authenticated()
