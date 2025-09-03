@@ -3,11 +3,15 @@ package com.example.eventplanner.controllers.serviceproduct;
 import com.example.eventplanner.dto.serviceproduct.service.CreateServiceDto;
 import com.example.eventplanner.dto.serviceproduct.service.ServiceCardDto;
 import com.example.eventplanner.dto.serviceproduct.service.ServiceDto;
+import com.example.eventplanner.dto.util.DateRangeDto;
+import com.example.eventplanner.services.order.BookingService;
 import com.example.eventplanner.services.serviceproduct.ServiceService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -16,8 +20,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/services")
 @RequiredArgsConstructor()
+@Validated
 public class ServiceController {
     private final ServiceService serviceService;
+    private final BookingService bookingService;
 
     @GetMapping("/all")
     public ResponseEntity<Page<ServiceDto>> getAll(@RequestParam(defaultValue = "0") int page,
@@ -46,12 +52,12 @@ public class ServiceController {
     }
 
     @PostMapping()
-    public ResponseEntity<ServiceDto> createService(@RequestBody CreateServiceDto serviceDto) {
+    public ResponseEntity<ServiceDto> createService(@Valid @RequestBody CreateServiceDto serviceDto) {
         return new ResponseEntity<>(serviceService.create(serviceDto), HttpStatus.CREATED);
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<ServiceDto> updateService(@RequestBody CreateServiceDto serviceDto, @PathVariable("id") Long id) {
+    public ResponseEntity<ServiceDto> updateService(@Valid @RequestBody CreateServiceDto serviceDto, @PathVariable("id") Long id) {
         ServiceDto updatedServiceDto = serviceService.update(id, serviceDto);
         return updatedServiceDto != null ?
                 ResponseEntity.ok(updatedServiceDto) :
@@ -64,5 +70,10 @@ public class ServiceController {
         return success
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/{id}/availability")
+    public ResponseEntity<List<DateRangeDto>> getAvailableDates(@PathVariable("id") Long id, @RequestParam Long eventId) {
+        return ResponseEntity.ok(serviceService.getAvailableDates(id, eventId));
     }
 }

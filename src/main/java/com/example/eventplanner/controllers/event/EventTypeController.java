@@ -5,11 +5,13 @@ import com.example.eventplanner.dto.event.eventtype.CreateEventTypeDto;
 import com.example.eventplanner.dto.event.eventtype.EventTypeDto;
 import com.example.eventplanner.dto.event.eventtype.EventTypeSimpleDto;
 import com.example.eventplanner.services.event.EventTypeService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,6 +19,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/event-types")
+@Validated
 public class EventTypeController {
 
     private final EventTypeService eventTypeService;
@@ -45,12 +48,12 @@ public class EventTypeController {
     }
 
     @PostMapping()
-    public ResponseEntity<EventTypeDto> createEventType(@RequestBody CreateEventTypeDto eventTypeDto) {
+    public ResponseEntity<EventTypeDto> createEventType(@Valid @RequestBody CreateEventTypeDto eventTypeDto) {
         EventTypeDto dto = eventTypeService.create(eventTypeDto);
         return new ResponseEntity<>(dto, HttpStatus.CREATED);
     }
     @PutMapping("/{id}")
-    public ResponseEntity<EventTypeDto> updateEventType(@PathVariable long id, @RequestBody CreateEventTypeDto eventTypeDto){
+    public ResponseEntity<EventTypeDto> updateEventType(@PathVariable long id, @Valid @RequestBody CreateEventTypeDto eventTypeDto) {
         EventTypeDto eventTypeDto1 = eventTypeService.update(eventTypeDto, id);
         return eventTypeDto1 != null ?
                 ResponseEntity.ok(eventTypeDto1) :

@@ -14,6 +14,7 @@ import com.example.eventplanner.model.utils.UserRole;
 import com.example.eventplanner.services.event.InvitationService;
 import com.example.eventplanner.services.user.UserReportService;
 import com.example.eventplanner.services.user.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
@@ -30,6 +32,7 @@ import java.time.temporal.ChronoUnit;
 @RequiredArgsConstructor
 @CrossOrigin(origins="*")
 @RequestMapping("/api/auth")
+@Validated
 public class AuthController {
     private final UserService userService;
 
@@ -64,20 +67,20 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<Boolean> registerUser (@RequestBody RegisterUserDto registerUserDto) {
+    public ResponseEntity<Boolean> registerUser (@Valid @RequestBody RegisterUserDto registerUserDto) {
         return userService.registerUser(registerUserDto)
                 ? ResponseEntity.ok(true)
                 : ResponseEntity.badRequest().build();
     }
 
     @PostMapping("/signup/company")
-    public ResponseEntity<Boolean> registerCompany(@RequestBody RegisterServiceProductProviderDto registerCompanyDto) {
+    public ResponseEntity<Boolean> registerCompany(@Valid @RequestBody RegisterServiceProductProviderDto registerCompanyDto) {
         return userService.registerCompany(registerCompanyDto)
                 ? ResponseEntity.ok(true)
                 : ResponseEntity.badRequest().build();
     }
     @PostMapping("/reset-password/{id}")
-    public ResponseEntity<Void> resetPassword(@PathVariable long id, @RequestBody ResetPasswordDto resetPasswordDto) {
+    public ResponseEntity<Void> resetPassword(@PathVariable long id, @Valid @RequestBody ResetPasswordDto resetPasswordDto) {
         BaseUser user = authUtil.getAuthenticatedUser();
         if (user == null)
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

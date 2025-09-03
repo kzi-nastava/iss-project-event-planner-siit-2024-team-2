@@ -34,9 +34,20 @@ public interface EventOrganizerRepository extends JpaRepository<EventOrganizer, 
             JOIN b.bookings bb
             WHERE eo.id = :organizerId
               AND bb.service.id = :serviceId
+              AND bb.status = 0
               ) THEN true ELSE false END
         """)
     boolean hasBooked(
             @Param("organizerId") long organizerId,
             @Param("serviceId") long serviceId);
+
+    @Query("""
+        SELECT eo
+        FROM EventOrganizer eo
+        JOIN Event e ON eo.id = e.eventOrganizer.id
+        JOIN e.budgets b
+        JOIN b.bookings bb
+        WHERE bb.id = :bookingId
+        """)
+    EventOrganizer findByBookingId(long bookingId);
 }
