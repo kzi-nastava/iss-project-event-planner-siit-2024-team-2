@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.Instant;
 import java.util.Date;
 
 @Getter
@@ -16,5 +17,5 @@ public class BookingNoIdDto {
     private long serviceId;
     private double price;
     private double duration;
-    private Date date;
+    private Instant date;
 }

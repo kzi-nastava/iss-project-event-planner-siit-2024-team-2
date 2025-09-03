@@ -93,4 +93,13 @@ public interface EventRepository extends JpaRepository<Event, Long> {
         WHERE b.id = :budgetId
     """)
     Optional<Event> findByBudgetId(Long budgetId);
+
+    @Query("""
+        SELECT e
+        FROM Event e
+        JOIN e.budgets b
+        JOIN b.bookings bb
+        WHERE bb.id = :bookingId
+    """)
+    Event findByBookingId(Long bookingId);
 }

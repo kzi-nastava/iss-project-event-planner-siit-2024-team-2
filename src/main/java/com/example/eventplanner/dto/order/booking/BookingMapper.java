@@ -20,7 +20,7 @@ public class BookingMapper {
                 booking.getId(),
                 ServiceMapper.toDto(booking.getService()),
                 booking.getPrice(),
-                booking.getDate().getTime(),
+                booking.getDate().toEpochMilli(),
                 booking.getDuration(),
                 booking.getStatus(),
                 booking.getCreatedAt()
@@ -37,7 +37,8 @@ public class BookingMapper {
                 dto.getDate(),
                 dto.getDuration(),
                 service.isAutomaticReserved() ? BookingStatus.ACCEPTED : BookingStatus.PENDING,
-                Instant.now());
+                Instant.now(),
+                false);
     }
 
     public static PendingBookingDto toPendingDto(Booking booking, EventOrganizer eventOrganizer) {
@@ -48,7 +49,7 @@ public class BookingMapper {
                 booking.getId(),
                 ServiceMapper.toDto(booking.getService()),
                 booking.getPrice(),
-                booking.getDate().getTime(),
+                booking.getDate().toEpochMilli(),
                 booking.getDuration(),
                 booking.getCreatedAt(),
                 eventOrganizer != null ? eventOrganizer.getFirstName() + " " + eventOrganizer.getLastName() : null,
