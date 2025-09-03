@@ -98,16 +98,16 @@ public class UserService implements UserDetailsService {
         return true;
     }
 
-    public List<RegisterUserDto> getAllUsers() {
+    public List<BaseUserDto> getAllUsers() {
         return userRepository.findAll()
                 .stream()
-                .map(UserMapper::toDto)
+                .map(UserMapper::toBaseUserDto)
                 .toList();
     }
 
-    public RegisterUserDto getUserById(long id) {
+    public BaseUserDto getUserById(long id) {
         return userRepository.findById(id)
-                .map(UserMapper::toDto)
+                .map(UserMapper::toBaseUserDto)
                 .orElse(null);
     }
 

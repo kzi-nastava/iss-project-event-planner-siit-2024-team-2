@@ -25,15 +25,15 @@ public class UserController {
     private final AuthUtil authUtil;
 
     @GetMapping()
-    public ResponseEntity<List<RegisterUserDto>> getAllUsers() {
+    public ResponseEntity<List<BaseUserDto>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RegisterUserDto> getUserById(@PathVariable long id) {
-        RegisterUserDto registerUserDto = userService.getUserById(id);
-        return registerUserDto != null ?
-                ResponseEntity.ok(registerUserDto) :
+    public ResponseEntity<BaseUserDto> getUserById(@PathVariable long id) {
+        BaseUserDto userDto = userService.getUserById(id);
+        return userDto != null ?
+                ResponseEntity.ok(userDto) :
                 ResponseEntity.notFound().build();
     }
 
