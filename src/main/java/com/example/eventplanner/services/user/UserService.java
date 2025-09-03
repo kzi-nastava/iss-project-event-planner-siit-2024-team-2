@@ -1,10 +1,13 @@
 package com.example.eventplanner.services.user;
 
+import com.example.eventplanner.controllers.utils.AuthUtil;
 import com.example.eventplanner.dto.auth.ResetPasswordDto;
 import com.example.eventplanner.dto.event.event.EventDto;
 import com.example.eventplanner.dto.event.event.EventMapper;
 import com.example.eventplanner.dto.user.user.*;
+import com.example.eventplanner.exception.ForbiddenException;
 import com.example.eventplanner.exception.NotFoundException;
+import com.example.eventplanner.exception.UnauthorizedException;
 import com.example.eventplanner.model.user.AuthenticatedUser;
 import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.user.ServiceProductProvider;
@@ -33,6 +36,7 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final UserUpgradeService userUpgradeService;
     private final UserReportRepository userReportRepository;
+    private final AuthUtil authUtil;
 
     public boolean registerUser(RegisterUserDto registerUserDto) {
         if (!validateUser(registerUserDto))
@@ -229,5 +233,15 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
     }
 
+    public void blockUser(long id) {
+        BaseUser currentUser = authUtil.getAuthenticatedUser();
+        if (currentUser == null)
+            throw new UnauthorizedException("User not found");
+        BaseUser userToBlock = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found"));
+        if (userToBlock.getId() == currentUser.getId())
+            throw new ForbiddenException("You cannot block yourself");
+        currentUser.getBlockedUsers().add(userToBlock);
+        userRepository.save(currentUser);
+    }
 }
 

@@ -112,4 +112,10 @@ public class UserController {
         userService.suspendUser(email);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/{id}/block")
+    public ResponseEntity<Void> blockUser(@PathVariable long id) {
+        userService.blockUser(id);
+        return ResponseEntity.noContent().build();
+    }
 }
