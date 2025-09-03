@@ -47,8 +47,8 @@ public class EmailFormatUtil {
         }
 
         String formattedDate = DateUtil.formatDate(eventSummary.getDate());
-        String formattedTimePeriod = DateUtil.formatTimePeriod(booking.getDate().getTime(),
-                booking.getDate().getTime() + (long)(HOUR_MS * booking.getDuration())) + " UTC";
+        String formattedTimePeriod = DateUtil.formatTimePeriod(booking.getDate().toEpochMilli(),
+                booking.getDate().toEpochMilli() + (long)(HOUR_MS * booking.getDuration())) + " UTC";
         String mapUrl = String.format("https://www.openstreetmap.org/?mlat=%s&mlon=%s&zoom=16", eventSummary.getLatitude(), eventSummary.getLongitude());
 
         Service service = booking.getService();
@@ -80,8 +80,8 @@ public class EmailFormatUtil {
         }
 
         String formattedDate = DateUtil.formatDate(eventSummary.getDate());
-        String formattedTimePeriod = DateUtil.formatTimePeriod(booking.getDate().getTime(),
-                booking.getDate().getTime() + (long)(HOUR_MS * booking.getDuration())) + " UTC";
+        String formattedTimePeriod = DateUtil.formatTimePeriod(booking.getDate().toEpochMilli(),
+                booking.getDate().toEpochMilli() + (long)(HOUR_MS * booking.getDuration())) + " UTC";
         String mapUrl = String.format("https://www.openstreetmap.org/?mlat=%s&mlon=%s&zoom=16", eventSummary.getLatitude(), eventSummary.getLongitude());
 
         Service service = booking.getService();

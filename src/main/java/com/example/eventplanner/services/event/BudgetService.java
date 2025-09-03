@@ -85,6 +85,8 @@ public class BudgetService {
         budget.getBookings().add(booking);
         budget.setCurrentSpent(budget.getCurrentSpent() + booking.getPrice());
         budgetRepository.save(budget);
+
+        bookingService.sendBookingEmails(booking, event);
     }
 
     @Transactional

@@ -1,11 +1,11 @@
 package com.example.eventplanner.services.order;
 
 import com.example.eventplanner.controllers.utils.AuthUtil;
-import com.example.eventplanner.dto.order.booking.BookingDto;
-import com.example.eventplanner.dto.order.booking.BookingMapper;
-import com.example.eventplanner.dto.order.booking.BookingNoIdDto;
-import com.example.eventplanner.dto.order.booking.PendingBookingDto;
+import com.example.eventplanner.dto.communication.notification.NotificationNoIdDto;
+import com.example.eventplanner.dto.event.event.EventMapper;
+import com.example.eventplanner.dto.order.booking.*;
 import com.example.eventplanner.dto.util.DateRangeDto;
+import com.example.eventplanner.dto.util.EmailDetails;
 import com.example.eventplanner.exception.ConflictException;
 import com.example.eventplanner.exception.ForbiddenException;
 import com.example.eventplanner.exception.NotFoundException;
@@ -20,11 +20,17 @@ import com.example.eventplanner.repositories.event.EventRepository;
 import com.example.eventplanner.repositories.order.BookingRepository;
 import com.example.eventplanner.repositories.serviceproduct.ServiceRepository;
 import com.example.eventplanner.repositories.user.EventOrganizerRepository;
+import com.example.eventplanner.services.communication.NotificationService;
+import com.example.eventplanner.services.util.DateUtil;
+import com.example.eventplanner.services.util.EmailFormatUtil;
+import com.example.eventplanner.services.util.EmailService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.transaction.annotation.Transactional;
 
 
 import java.util.*;
@@ -42,6 +48,8 @@ public class BookingService {
     static final long DAY_MS = 24 * HOUR_MS;
     private final AuthUtil authUtil;
     private final EventOrganizerRepository eventOrganizerRepository;
+    private final EmailService emailService;
+    private final NotificationService notificationService;
 
     public List<BookingDto> getAll() {
         return bookingRepository.findAll()
@@ -108,7 +116,7 @@ public class BookingService {
             throw new ConflictException("Booking duration must be between " +
                     service.getMinEngagementDuration() + " and " + service.getMaxEngagementDuration());
 
-        long startDate = bookingDto.getDate().getTime();
+        long startDate = bookingDto.getDate().toEpochMilli();
         long endDate = startDate + (long)(HOUR_MS * bookingDto.getDuration());
         if (!isAvailable(service, event, startDate, endDate))
             throw new ConflictException("Booking period is not available");
@@ -135,8 +143,8 @@ public class BookingService {
                         .stream()
                         .filter(b -> b.getStatus() == BookingStatus.ACCEPTED)
                         .map(b -> new DateRangeDto(
-                                b.getDate().getTime(),
-                                b.getDate().getTime() + (long)(HOUR_MS * b.getDuration())))
+                                b.getDate().toEpochMilli(),
+                                b.getDate().toEpochMilli() + (long)(HOUR_MS * b.getDuration())))
                         .sorted(Comparator.comparing(DateRangeDto::getStart))
                         .filter(bd -> bd.getEnd() >= startDate && bd.getStart() <= endDate)
                         .toList();
@@ -212,6 +220,12 @@ public class BookingService {
         if (booking.getService().getServiceProductProvider().getId() != user.getId())
             throw new ForbiddenException("User is not authorized to accept this booking");
         booking.setStatus(BookingStatus.ACCEPTED);
+
+        Event event = eventRepository.findByBookingId(id);
+        if (event == null)
+            throw new NotFoundException("Event not found");
+
+        sendConfirmationEmails(booking, event);
         return BookingMapper.toDto(bookingRepository.save(booking));
     }
 
@@ -224,5 +238,54 @@ public class BookingService {
                     EventOrganizer organizer = eventOrganizerRepository.findByBookingId(b.getId());
                     return BookingMapper.toPendingDto(b, organizer);
                 });
+    }
+
+    public void sendBookingEmails(Booking booking, Event event) {
+        if (booking.getService().isAutomaticReserved()) {
+            sendConfirmationEmails(booking, event);
+        } else {
+            String body = EmailFormatUtil.formatEOBookingRequestEmail(EventMapper.toSummaryDto(event), booking);
+            if (event.getEventOrganizer() != null)
+                emailService.sendMimeMessage(new EmailDetails(
+                        event.getEventOrganizer().getEmail(),
+                        "Event Planner - Booking Request",
+                        body).withHtml(true));
+        }
+    }
+
+    public void sendConfirmationEmails(Booking booking, Event event) {
+        String body = EmailFormatUtil.formatBookingConfirmationEmail(EventMapper.toSummaryDto(event), booking);
+        if (booking.getService().getServiceProductProvider() != null)
+            emailService.sendMimeMessage(new EmailDetails(
+                    booking.getService().getServiceProductProvider().getEmail(),
+                    "Event Planner - Booking Confirmation",
+                    body).withHtml(true));
+        if (event.getEventOrganizer() != null)
+            emailService.sendMimeMessage(new EmailDetails(
+                    event.getEventOrganizer().getEmail(),
+                    "Event Planner - Booking Confirmation",
+                    body).withHtml(true));
+    }
+
+    @Transactional
+    @Scheduled(fixedDelay = 1000 * 60 * 5, initialDelay = 1000 * 30) // Every 5 minutes, 30 seconds after startup
+    public void sendReminderNotifications() {
+        List<BookingReminderDto> bookings = bookingRepository.findBookingsStartingInOneHour();
+        System.out.println(bookings.size());
+        if (bookings.isEmpty())
+            return;
+        for (BookingReminderDto booking : bookings) {
+            String formattedDate = DateUtil.formatDate(booking.getStartTime().getTime());
+            String formattedTime = DateUtil.formatTime(booking.getStartTime().getTime());
+            notificationService.sendNotification(new NotificationNoIdDto(
+                    "Reminder: Your booking for **" + booking.getServiceName() + "** starts in 1 hour",
+                    "The service *" + booking.getServiceName() + "* for your event *" + booking.getEventName() + "* is starting at " +
+                            formattedDate + " " + formattedTime + " UTC.",
+                    false,
+                    false,
+                    booking.getOrganizerId()
+            ));
+        }
+        bookingRepository.updateSentReminders(bookings.stream().map(BookingReminderDto::getBookingId).toList());
     }
 }
