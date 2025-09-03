@@ -1,5 +1,6 @@
 package com.example.eventplanner.controllers.serviceproduct;
 
+import com.example.eventplanner.dto.order.OrderEligibilityDto;
 import com.example.eventplanner.dto.order.review.ReviewEligibilityDto;
 import com.example.eventplanner.dto.order.review.ReviewSummaryDto;
 import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductDto;
@@ -135,6 +136,12 @@ public class ServiceProductController {
     @GetMapping(value = "/{id}/review-eligibility")
     public ResponseEntity<ReviewEligibilityDto> getServiceProductReviewEligibility(@PathVariable("id") Long id) {
         ReviewEligibilityDto result = reviewService.canReviewServiceProduct(id);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}/order-eligibility")
+    public ResponseEntity<OrderEligibilityDto> getServiceProductOrderEligibility(@PathVariable("id") Long id) {
+        OrderEligibilityDto result = serviceProductService.canOrderServiceProduct(id);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

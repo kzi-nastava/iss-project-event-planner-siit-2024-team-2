@@ -36,7 +36,6 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final UserUpgradeService userUpgradeService;
     private final UserReportRepository userReportRepository;
-    private final AuthUtil authUtil;
 
     public boolean registerUser(RegisterUserDto registerUserDto) {
         if (!validateUser(registerUserDto))
@@ -233,15 +232,16 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
     }
 
-    public void blockUser(long id) {
-        BaseUser currentUser = authUtil.getAuthenticatedUser();
-        if (currentUser == null)
-            throw new UnauthorizedException("User not found");
+    public void blockUser(BaseUser currentUser, long id) {
         BaseUser userToBlock = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found"));
         if (userToBlock.getId() == currentUser.getId())
             throw new ForbiddenException("You cannot block yourself");
         currentUser.getBlockedUsers().add(userToBlock);
         userRepository.save(currentUser);
+    }
+
+    public boolean hasBlocked(long id, long blockedUserId) {
+        return userRepository.hasBlocked(id, blockedUserId);
     }
 }
 

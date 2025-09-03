@@ -4,6 +4,7 @@ package com.example.eventplanner.controllers.user;
 import com.example.eventplanner.controllers.utils.AuthUtil;
 import com.example.eventplanner.dto.event.event.EventDto;
 import com.example.eventplanner.dto.user.user.*;
+import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.services.user.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
@@ -115,7 +116,8 @@ public class UserController {
 
     @PostMapping("/{id}/block")
     public ResponseEntity<Void> blockUser(@PathVariable long id) {
-        userService.blockUser(id);
+        BaseUser user = authUtil.getAuthenticatedUser();
+        userService.blockUser(user, id);
         return ResponseEntity.noContent().build();
     }
 }
