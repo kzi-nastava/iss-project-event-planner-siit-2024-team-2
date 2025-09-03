@@ -17,7 +17,7 @@ public class ChatMessageMapper {
                 chatMessage.getText(),
                 chatMessage.getSentAt(),
                 chatMessage.isSeen(),
-                UserMapper.toBaseUserDto(chatMessage.getFromUser())
+                UserMapper.toBaseUserDto(chatMessage.getToUser())
         );
     }
 

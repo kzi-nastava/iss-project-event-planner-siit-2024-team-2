@@ -3,6 +3,9 @@ package com.example.eventplanner.services.communication;
 import com.example.eventplanner.dto.communication.chat.ChatDto;
 import com.example.eventplanner.dto.communication.chat.ChatMapper;
 import com.example.eventplanner.dto.communication.chat.ChatNoIdDto;
+import com.example.eventplanner.dto.communication.chatmessage.ChatMessageDto;
+import com.example.eventplanner.dto.communication.chatmessage.ChatMessageMapper;
+import com.example.eventplanner.dto.communication.chatmessage.ChatMessageNoIdDto;
 import com.example.eventplanner.model.communication.Chat;
 import com.example.eventplanner.model.communication.ChatMessage;
 import com.example.eventplanner.model.user.BaseUser;
@@ -14,7 +17,9 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -35,6 +40,7 @@ public class ChatService {
         OrderedUsers users = getOrderedUsers(myId, dto.getToId());
         List<ChatMessage> messages = new ArrayList<>();
         dto.setStatus(ChatStatus.ALL_SEEN);
+        dto.setSentAt(Instant.now());
         Chat chat = ChatMapper.toEntity(dto, users.user1(), users.user2(), messages);
         return ChatMapper.toDto(chatRepository.save(chat));
     }
@@ -70,5 +76,16 @@ public class ChatService {
     public Page<ChatDto> getAllByUser(Long userId, Pageable pageable) {
         return chatRepository.findAllMine(userId, pageable)
                 .map(ChatMapper::toDto);
+    }
+
+    @Transactional
+    public ChatDto sendMessage(long chatId, ChatMessage message) {
+        Chat chat = chatRepository.findById(chatId).orElseThrow();
+        chat.getMessages().add(message);
+        if  (chat.getUser1().getId() == message.getToUser().getId()) {
+            chat.setStatus(ChatStatus.UNSEEN1);
+        }
+        else chat.setStatus(ChatStatus.UNSEEN2);
+        return ChatMapper.toDto(chatRepository.save(chat));
     }
 }

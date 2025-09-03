@@ -17,5 +17,5 @@ public class ChatMessageDto {
     String text;
     Instant sentAt;
     boolean seen;
-    BaseUserDto fromUser;
+    BaseUserDto toUser;
 }

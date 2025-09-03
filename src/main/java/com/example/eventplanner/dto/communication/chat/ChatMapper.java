@@ -18,12 +18,14 @@ public class ChatMapper {
                 UserMapper.toBaseUserDto(chat.getUser1()),
                 UserMapper.toBaseUserDto(chat.getUser2()),
                 chat.getMessages().stream().map(ChatMessageMapper::toDto).toList(),
-                chat.getStatus()
+                chat.getStatus(),
+                chat.getSentAt()
+
         );
     }
 
     public static Chat toEntity(ChatNoIdDto dto, BaseUser user1, BaseUser user2, List<ChatMessage> messages) {
         if (dto == null) return null;
-        return new Chat(user1, user2, messages, dto.getStatus());
+        return new Chat(user1, user2, messages, dto.getStatus(),  dto.getSentAt());
     }
 }

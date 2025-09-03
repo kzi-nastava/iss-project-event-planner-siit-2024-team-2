@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,4 +37,6 @@ public class Chat extends Entity {
 
     @Enumerated(EnumType.STRING)
     private ChatStatus status;  // who got new (unseen) messages
+
+    private Instant sentAt;
 }

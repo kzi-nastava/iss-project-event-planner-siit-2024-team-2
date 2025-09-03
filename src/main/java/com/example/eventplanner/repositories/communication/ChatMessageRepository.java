@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface MessageRepository extends JpaRepository<ChatMessage, Long> {
+public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> {
     @Modifying
     @Query("UPDATE ChatMessage m SET m.active = false WHERE m.id = :id")
     void deleteById(@Param("id") long id);
@@ -17,6 +17,6 @@ public interface MessageRepository extends JpaRepository<ChatMessage, Long> {
     @Query("UPDATE ChatMessage m " +
             "SET m.seen = true " +
             "WHERE m.id IN :ids " +
-            "AND m.fromUser.id = :fromId ")
-    void seen(@Param("ids") Long[] ids, @Param("fromId") Long fromId);
+            "AND m.toUser.id = :myId")
+    void seen(@Param("ids") Long[] ids,  @Param("myId") Long myId);
 }

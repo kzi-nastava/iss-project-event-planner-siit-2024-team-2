@@ -14,14 +14,12 @@ import java.time.Instant;
 @AllArgsConstructor
 public class ChatMessageNoIdDto {
     String text;
-    Instant sentAt;
     boolean seen;
-    Long fromUserId;
+    Long toUserId;
 
-    public ChatMessageNoIdDto(String text, Instant sentAt, Long fromUserId) {
+    public ChatMessageNoIdDto(String text, Boolean seen, Long toUserId) {
         this.text = text;
-        this.sentAt = Instant.now();
-        this.seen = false;
-        this.fromUserId = fromUserId;
+        this.seen = seen;
+        this.toUserId = toUserId;
     }
 }

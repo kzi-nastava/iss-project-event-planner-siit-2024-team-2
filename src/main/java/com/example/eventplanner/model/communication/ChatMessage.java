@@ -26,12 +26,12 @@ public class ChatMessage extends Entity {
     @ColumnDefault("false")
     private boolean seen;
     @ManyToOne
-    private BaseUser fromUser;
+    private BaseUser toUser;
 
-    public ChatMessage(String text, boolean seen, BaseUser fromUser) {
+    public ChatMessage(String text, boolean seen, BaseUser toUser) {
         this.text = text;
         this.seen = seen;
-        this.fromUser = fromUser;
+        this.toUser = toUser;
         this.sentAt = Instant.now();
     }
 }

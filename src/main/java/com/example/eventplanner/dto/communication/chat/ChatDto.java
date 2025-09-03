@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.Instant;
 import java.util.List;
 
 @Getter
@@ -20,4 +21,5 @@ public class ChatDto {
     BaseUserDto user2;
     List<ChatMessageDto> messages;
     ChatStatus status;
+    Instant sentAt;
 }

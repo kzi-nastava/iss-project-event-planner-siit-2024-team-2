@@ -3,7 +3,10 @@ package com.example.eventplanner.controllers.communication;
 import com.example.eventplanner.controllers.utils.AuthUtil;
 import com.example.eventplanner.dto.communication.chat.ChatDto;
 import com.example.eventplanner.dto.communication.chat.ChatNoIdDto;
+import com.example.eventplanner.dto.communication.chatmessage.ChatMessageDto;
+import com.example.eventplanner.dto.communication.chatmessage.ChatMessageNoIdDto;
 import com.example.eventplanner.dto.communication.notification.NotificationDto;
+import com.example.eventplanner.model.communication.ChatMessage;
 import com.example.eventplanner.services.communication.ChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -29,7 +32,7 @@ public class ChatController {
             @RequestParam(required = false) Integer size) {
         Long userId = authUtil.getAuthenticatedUserId();
         if (userId == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "sentAt"));
         Page<ChatDto> result = chatService.getAllByUser(userId, pageable);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
@@ -55,6 +58,11 @@ public class ChatController {
         Long myId = authUtil.getAuthenticatedUserId();
         ChatDto chat = chatService.create(myId, dto);
         return new ResponseEntity<>(chat, HttpStatus.CREATED);
+    }
+
+    @PutMapping("{id}/send-message")
+    public ResponseEntity<ChatDto> sendMessage(@PathVariable("id") long id, @RequestBody ChatMessage message) {
+        return new ResponseEntity<>(chatService.sendMessage(id, message), HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
