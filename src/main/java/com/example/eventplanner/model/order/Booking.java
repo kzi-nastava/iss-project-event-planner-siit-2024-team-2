@@ -1,7 +1,6 @@
 package com.example.eventplanner.model.order;
 
 import com.example.eventplanner.model.Entity;
-import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.serviceproduct.Service;
 import com.example.eventplanner.model.utils.BookingStatus;
 import jakarta.persistence.Index;
@@ -15,7 +14,6 @@ import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.time.Instant;
-import java.util.Date;
 
 @Getter
 @Setter

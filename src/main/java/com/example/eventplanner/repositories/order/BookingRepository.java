@@ -1,6 +1,5 @@
 package com.example.eventplanner.repositories.order;
 
-import com.example.eventplanner.dto.order.booking.BookingDto;
 import com.example.eventplanner.dto.order.booking.BookingReminderDto;
 import com.example.eventplanner.model.order.Booking;
 import org.springframework.data.domain.Page;

@@ -7,7 +7,6 @@ import com.example.eventplanner.model.user.EventOrganizer;
 import com.example.eventplanner.model.utils.BookingStatus;
 
 import java.time.Instant;
-import java.util.Date;
 
 public class BookingMapper {
     private BookingMapper() {}
