@@ -13,12 +13,13 @@ import java.time.Instant;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class BookingDto {
+public class PendingBookingDto {
     private long id;
     private ServiceDto service;
     private double price;
     private long date;
     private double duration;
-    private BookingStatus status;
     private Instant createdAt;
+    private String bookerName;
+    private String bookerEmail;
 }

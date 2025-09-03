@@ -3,8 +3,10 @@ package com.example.eventplanner.dto.order.booking;
 import com.example.eventplanner.dto.serviceproduct.service.ServiceMapper;
 import com.example.eventplanner.model.order.Booking;
 import com.example.eventplanner.model.serviceproduct.Service;
+import com.example.eventplanner.model.user.EventOrganizer;
+import com.example.eventplanner.model.utils.BookingStatus;
 
-import java.util.Date;
+import java.time.Instant;
 
 public class BookingMapper {
     private BookingMapper() {}
@@ -17,8 +19,10 @@ public class BookingMapper {
                 booking.getId(),
                 ServiceMapper.toDto(booking.getService()),
                 booking.getPrice(),
-                booking.getDate().getTime(),
-                booking.getDuration()
+                booking.getDate().toEpochMilli(),
+                booking.getDuration(),
+                booking.getStatus(),
+                booking.getCreatedAt()
         );
     }
 
@@ -29,7 +33,26 @@ public class BookingMapper {
         return new Booking(
                 service,
                 dto.getPrice(),
-                new Date(),
-                dto.getDuration());
+                dto.getDate(),
+                dto.getDuration(),
+                service.isAutomaticReserved() ? BookingStatus.ACCEPTED : BookingStatus.PENDING,
+                Instant.now(),
+                false);
+    }
+
+    public static PendingBookingDto toPendingDto(Booking booking, EventOrganizer eventOrganizer) {
+        if (booking == null)
+            return null;
+
+        return new PendingBookingDto(
+                booking.getId(),
+                ServiceMapper.toDto(booking.getService()),
+                booking.getPrice(),
+                booking.getDate().toEpochMilli(),
+                booking.getDuration(),
+                booking.getCreatedAt(),
+                eventOrganizer != null ? eventOrganizer.getFirstName() + " " + eventOrganizer.getLastName() : null,
+                eventOrganizer != null ? eventOrganizer.getEmail() : null
+        );
     }
 }

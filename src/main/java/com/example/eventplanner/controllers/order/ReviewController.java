@@ -5,6 +5,7 @@ import com.example.eventplanner.dto.order.review.ReviewDto;
 import com.example.eventplanner.dto.order.review.ReviewNoIdDto;
 import com.example.eventplanner.dto.order.review.ReviewStatusDto;
 import com.example.eventplanner.services.order.ReviewService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -49,13 +50,13 @@ public class ReviewController {
     }
 
     @PostMapping
-    public ResponseEntity<ReviewDto> createReview(@RequestBody ReviewNoIdDto dto) {
+    public ResponseEntity<ReviewDto> createReview(@Valid @RequestBody ReviewNoIdDto dto) {
         ReviewDto result = reviewService.create(dto);
         return new ResponseEntity<>(result, HttpStatus.CREATED);
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<ReviewDto> updateReview(@PathVariable("id") Long id, @RequestBody ReviewNoIdDto dto) {
+    public ResponseEntity<ReviewDto> updateReview(@PathVariable("id") Long id, @Valid @RequestBody ReviewNoIdDto dto) {
         ReviewDto result = reviewService.update(dto, id);
         return result != null ?
                 new ResponseEntity<>(result, HttpStatus.OK) :
@@ -70,8 +71,8 @@ public class ReviewController {
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @PostMapping(value = "/approve")
-    public ResponseEntity<ReviewStatusDto> approveReview(@RequestBody Long id) {
+    @PostMapping(value = "/{id}/approve")
+    public ResponseEntity<ReviewStatusDto> approveReview(@PathVariable("id") Long id) {
          ReviewStatusDto result = reviewService.approve(id);
          return result != null ?
                  new ResponseEntity<>(result, HttpStatus.OK) :

@@ -6,9 +6,11 @@ import com.example.eventplanner.dto.order.booking.BookingDto;
 import com.example.eventplanner.dto.order.booking.BookingNoIdDto;
 import com.example.eventplanner.dto.order.purchase.PurchaseNoIdDto;
 import com.example.eventplanner.services.event.BudgetService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -16,6 +18,7 @@ import java.util.Collection;
 @RestController
 @RequestMapping("/api/budgets")
 @RequiredArgsConstructor()
+@Validated
 public class BudgetController {
     private final BudgetService budgetService;
 
@@ -31,7 +34,7 @@ public class BudgetController {
     }
 
     @PostMapping
-    public ResponseEntity<BudgetDto> createBudget(@RequestBody BudgetNoIdDto dto) {
+    public ResponseEntity<BudgetDto> createBudget(@Valid @RequestBody BudgetNoIdDto dto) {
         BudgetDto budgetDto = budgetService.create(dto);
         return new ResponseEntity<>(budgetDto, HttpStatus.CREATED);
     }
@@ -42,14 +45,14 @@ public class BudgetController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/{id}/new-booking")
-    public ResponseEntity<?> addNewBooking(@PathVariable("id") Long id, @RequestBody BookingNoIdDto bookingDto) {
+    @PostMapping("/{id}/bookings")
+    public ResponseEntity<Void> addNewBooking(@PathVariable("id") Long id, @Valid @RequestBody BookingNoIdDto bookingDto) {
         budgetService.addBookingToBudget(id, bookingDto);
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/{id}/new-purchase")
-    public ResponseEntity<?> addNewPurchase(@PathVariable("id") Long id, @RequestBody PurchaseNoIdDto purchaseDto) {
+    @PostMapping("/{id}/purchases")
+    public ResponseEntity<Void> addNewPurchase(@PathVariable("id") Long id, @Valid @RequestBody PurchaseNoIdDto purchaseDto) {
         budgetService.addPurchaseToBudget(id, purchaseDto);
         return ResponseEntity.ok().build();
     }

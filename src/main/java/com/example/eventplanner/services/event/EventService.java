@@ -9,27 +9,22 @@ import com.example.eventplanner.dto.event.event.EventDto;
 import com.example.eventplanner.dto.event.event.EventMapper;
 import com.example.eventplanner.dto.event.event.EventNoIdDto;
 import com.example.eventplanner.dto.event.event.EventSummaryDto;
-import com.example.eventplanner.dto.order.booking.BookingDto;
-import com.example.eventplanner.dto.order.purchase.PurchaseDto;
-import com.example.eventplanner.dto.order.review.ReviewDto;
 import com.example.eventplanner.dto.order.review.ReviewMapper;
 import com.example.eventplanner.dto.order.review.ReviewSummaryDto;
 import com.example.eventplanner.exception.ForbiddenException;
 import com.example.eventplanner.exception.NotFoundException;
 import com.example.eventplanner.exception.UnauthorizedException;
 import com.example.eventplanner.model.Entity;
-import com.example.eventplanner.model.event.Activity;
-import com.example.eventplanner.model.event.Budget;
-import com.example.eventplanner.model.event.Event;
-import com.example.eventplanner.model.event.EventType;
-import com.example.eventplanner.model.event.Invitation;
+import com.example.eventplanner.model.event.*;
 import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.user.EventOrganizer;
 import com.example.eventplanner.model.utils.ReviewStatus;
 import com.example.eventplanner.model.utils.UserRole;
+import com.example.eventplanner.repositories.event.BudgetRepository;
 import com.example.eventplanner.repositories.event.EventRepository;
 import com.example.eventplanner.repositories.event.EventTypeRepository;
 import com.example.eventplanner.repositories.order.EventReviewRepository;
+import com.example.eventplanner.repositories.serviceproduct.ServiceProductCategoryRepository;
 import com.example.eventplanner.repositories.user.UserRepository;
 import com.example.eventplanner.services.communication.NotificationService;
 import com.example.eventplanner.services.order.BookingService;
@@ -64,6 +59,8 @@ public class EventService {
     private final NotificationService notificationService;
     private final AuthUtil authUtil;
     private final EventReviewRepository eventReviewRepository;
+    private final ServiceProductCategoryRepository serviceProductCategoryRepository;
+    private final BudgetRepository budgetRepository;
 
     public List<EventDto> getAll() {
         return eventRepository.findAll()
@@ -163,8 +160,12 @@ public class EventService {
             Class<T> clazz, int page, Integer size, Sort sort, String name, String description, List<Long> types,
             Integer minMaxAttendances, Integer maxMaxAttendances, Boolean open,
             List<Double> latitudes, List<Double> longitudes, Double maxDistance,
-            Long startDate, Long endDate) {
-        PageRequest pageRequest = PageRequest.of(page, size != null ? size : 10, sort);
+            Long startDate, Long endDate, Long organizerId) {
+        Pageable pageRequest;
+        if (size == null || size >= 0)
+            pageRequest = PageRequest.of(page, size != null ? size : 10, sort);
+        else
+            pageRequest = Pageable.unpaged();
         LocalDateTime startDateTime = startDate != null ?
                 LocalDateTime.ofInstant(Instant.ofEpochMilli(startDate), TimeZone.getDefault().toZoneId()) :
                 LocalDateTime.of(-4711, 1, 1, 0, 0);
@@ -183,46 +184,12 @@ public class EventService {
         Long[] eventTypeIdsArray = types == null ?
                 new Long[0] :
                 types.toArray(new Long[0]);
-        Page<Event> events = eventRepository.findAllFiltered(
+        Page<Event> events;
+        events = eventRepository.findAllFiltered(
                 name, description, eventTypeIdsArray, minMaxAttendances, maxMaxAttendances, open,
                 latitudesArray, longitudesArray,
                 maxDistance,
-                startDateTime, endDateTime, pageRequest);
-        if (clazz == EventDto.class)
-            return events.map(EventMapper::toDto).map(clazz::cast);
-        else
-            return events.map(EventMapper::toSummaryDto)
-                    .map(clazz::cast);
-    }
-    public <T> Page<T> getAllFilteredByOrganizer(
-            Class<T> clazz, long organizerId, int page, Integer size, Sort sort, String name, String description, List<Long> types,
-            Integer minMaxAttendances, Integer maxMaxAttendances, Boolean open,
-            List<Double> latitudes, List<Double> longitudes, Double maxDistance,
-            Long startDate, Long endDate) {
-        PageRequest pageRequest = PageRequest.of(page, size != null ? size : 10, sort);
-        LocalDateTime startDateTime = startDate != null ?
-                LocalDateTime.ofInstant(Instant.ofEpochMilli(startDate), TimeZone.getDefault().toZoneId()) :
-                LocalDateTime.of(-4711, 1, 1, 0, 0);
-        LocalDateTime endDateTime = endDate != null ?
-                LocalDateTime.ofInstant(Instant.ofEpochMilli(endDate), TimeZone.getDefault().toZoneId()) :
-                LocalDateTime.of(294275, 12, 31, 23, 59);
-        Double[] latitudesArray, longitudesArray;
-        if (latitudes == null || longitudes == null || maxDistance == null  || maxDistance == 0) {
-            latitudesArray = new Double[0];
-            longitudesArray = new Double[0];
-            maxDistance = 0D;
-        } else {
-            latitudesArray = latitudes.toArray(new Double[0]);
-            longitudesArray = longitudes.toArray(new Double[0]);
-        }
-        Long[] eventTypeIdsArray = types == null ?
-                new Long[0] :
-                types.toArray(new Long[0]);
-        Page<Event> events = eventRepository.findAllFilteredByOrganizer(
-                organizerId, name, description, eventTypeIdsArray, minMaxAttendances, maxMaxAttendances, open,
-                latitudesArray, longitudesArray,
-                maxDistance,
-                startDateTime, endDateTime, pageRequest);
+                startDateTime, endDateTime, organizerId, pageRequest);
         if (clazz == EventDto.class)
             return events.map(EventMapper::toDto).map(clazz::cast);
         else
@@ -331,8 +298,9 @@ public class EventService {
     }
 
     @Transactional
-    public void addBudgetToEvent(Long eventId, Budget budget) {
+    public void addBudgetToEvent(Long eventId, Long budgetId) {
         Event event = getAuthorizedEvent(eventId);
+        Budget budget = budgetRepository.getReferenceById(budgetId);
         event.getBudgets().add(budget);
         eventRepository.save(event);
     }
@@ -355,9 +323,7 @@ public class EventService {
 
     @NotNull
     public Event getAuthorizedEvent(long id) {
-        Event event = eventRepository.findById(id).orElse(null);
-        if (event == null)
-            throw new NotFoundException("Event not found");
+        Event event = eventRepository.findById(id).orElseThrow(() -> new NotFoundException("Event not found"));
         BaseUser user = authUtil.getAuthenticatedUser();
         if (user == null)
             throw new UnauthorizedException("User not found");

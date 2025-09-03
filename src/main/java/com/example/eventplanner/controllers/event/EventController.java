@@ -8,7 +8,6 @@ import com.example.eventplanner.dto.event.event.EventNoIdDto;
 import com.example.eventplanner.dto.event.event.EventSummaryDto;
 import com.example.eventplanner.dto.order.review.ReviewEligibilityDto;
 import com.example.eventplanner.dto.order.review.ReviewSummaryDto;
-import com.example.eventplanner.model.event.Budget;
 import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.user.EventOrganizer;
 import com.example.eventplanner.model.utils.AttendanceResult;
@@ -27,6 +26,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -35,6 +35,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/events")
 @RequiredArgsConstructor()
+@Validated
 public class EventController {
     private final EventService eventService;
     private final AuthUtil authUtil;
@@ -63,7 +64,7 @@ public class EventController {
         Page<EventDto> result = eventService.getAllFiltered(
                 EventDto.class,
                 page, size, sort, name, description, types, minMaxAttendances, maxMaxAttendances,
-                open, latitudes, longitudes, maxDistance, startDate, endDate);
+                open, latitudes, longitudes, maxDistance, startDate, endDate, null);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -89,10 +90,10 @@ public class EventController {
         if (organizer == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        Page<EventDto> result = eventService.getAllFilteredByOrganizer(
-                EventDto.class, organizer.getId(),
+        Page<EventDto> result = eventService.getAllFiltered(
+                EventDto.class,
                 page, size, sort, name, description, types, minMaxAttendances, maxMaxAttendances,
-                open, latitudes, longitudes, maxDistance, startDate, endDate);
+                open, latitudes, longitudes, maxDistance, startDate, endDate, organizer.getId());
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -120,7 +121,7 @@ public class EventController {
         Page<EventSummaryDto> result = eventService.getAllFiltered(
                 EventSummaryDto.class,
                 page, size, sort, name, description, types, minMaxAttendances, maxMaxAttendances,
-                open, latitudes, longitudes, maxDistance, startDate, endDate);
+                open, latitudes, longitudes, maxDistance, startDate, endDate, null);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -148,7 +149,7 @@ public class EventController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<EventDto> updateEvent(@Valid @PathVariable("id") Long id, @RequestBody EventNoIdDto dto) {
+    public ResponseEntity<EventDto> updateEvent(@PathVariable("id") Long id, @Valid @RequestBody EventNoIdDto dto) {
         EventDto result = eventService.update(dto, id);
         return result != null ?
                 new ResponseEntity<>(result, HttpStatus.OK) :
@@ -181,7 +182,7 @@ public class EventController {
     }
 
     @PostMapping("/{id}/agenda")
-    public ResponseEntity<List<ActivityDto>> createAgenda(@PathVariable long id, @RequestBody List<ActivityDto> activities) {
+    public ResponseEntity<List<ActivityDto>> createAgenda(@PathVariable long id, @Valid @RequestBody List<ActivityDto> activities) {
         boolean success = eventService.createAgenda(id, activities);
         return success
                 ? ResponseEntity.ok(activities)
@@ -189,7 +190,7 @@ public class EventController {
     }
 
     @PostMapping("/{id}/agenda/activity")
-    public ResponseEntity<ActivityDto> addActivity(@PathVariable long id, @RequestBody ActivityDto activity) {
+    public ResponseEntity<ActivityDto> addActivity(@PathVariable long id, @Valid @RequestBody ActivityDto activity) {
         boolean success = eventService.addActivity(id, activity);
         return success
                 ? ResponseEntity.ok(activity)
@@ -197,7 +198,7 @@ public class EventController {
     }
 
     @PutMapping("/{id}/agenda/activity/{activityId}")
-    public ResponseEntity<ActivityDto> updateActivity(@PathVariable long id, @PathVariable long activityId, @RequestBody ActivityDto activity) {
+    public ResponseEntity<ActivityDto> updateActivity(@PathVariable long id, @PathVariable long activityId, @Valid @RequestBody ActivityDto activity) {
         boolean success = eventService.updateActivity(id, activityId, activity);
         return success
                 ? ResponseEntity.ok(activity)
@@ -231,8 +232,8 @@ public class EventController {
     @PostMapping("/{id}/budgets")
     public void addBudgetToEvent(
             @PathVariable Long id,
-            @RequestBody Budget budget) {
-        eventService.addBudgetToEvent(id, budget);
+            @RequestBody Long budgetId) {
+        eventService.addBudgetToEvent(id, budgetId);
     }
 
     @PostMapping("/{id}/attend")

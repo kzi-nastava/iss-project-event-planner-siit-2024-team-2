@@ -2,8 +2,7 @@ package com.example.eventplanner.dto.order.review;
 
 import com.example.eventplanner.model.utils.ReviewType;
 import com.example.eventplanner.validators.ValidRating;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,13 +13,13 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReviewNoIdDto {
-    @ValidRating
+    @ValidRating(message = "Grade must be between 1 and 5, with a step of 0.5")
     private double grade;
-    @NotEmpty
-    @Size(min = 1, max = 1000)
+    @NotBlank(message = "Comment is required")
+    @Size(min = 1, max = 1000, message = "Comment must be between 1 and 1000 characters")
     private String comment;
-    @NotEmpty
+    @Min(value = 1, message = "Entity is required")
     private long entityId;
-    @NotEmpty
+    @NotNull(message = "Review type is required")
     private ReviewType reviewType;
 }

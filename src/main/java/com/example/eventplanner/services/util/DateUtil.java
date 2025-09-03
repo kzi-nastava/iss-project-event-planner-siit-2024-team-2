@@ -1,9 +1,6 @@
 package com.example.eventplanner.services.util;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
@@ -24,11 +21,22 @@ public class DateUtil {
     }
 
     public static String formatDate(long date) {
-        ZoneId zoneId = ZoneId.of("Europe/Belgrade");
-        ZonedDateTime eventDate = Instant.ofEpochMilli(date).atZone(zoneId);
+        ZonedDateTime eventDate = Instant.ofEpochMilli(date).atZone(ZoneOffset.UTC);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEEE, dd. MMMM yyyy", Locale.ENGLISH);
 
         return formatter.format(eventDate);
+    }
+
+    public static String formatTime(long date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm", Locale.ENGLISH);
+        ZonedDateTime time = Instant.ofEpochMilli(date).atZone(ZoneOffset.UTC);
+        return formatter.format(time);
+    }
+    public static String formatTimePeriod(long startDate, long endDate) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm", Locale.ENGLISH);
+        ZonedDateTime start = Instant.ofEpochMilli(startDate).atZone(ZoneOffset.UTC);
+        ZonedDateTime end = Instant.ofEpochMilli(endDate).atZone(ZoneOffset.UTC);
+        return formatter.format(start) + " - " + formatter.format(end);
     }
 }

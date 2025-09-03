@@ -5,9 +5,12 @@ import com.example.eventplanner.controllers.utils.AuthUtil;
 import com.example.eventplanner.dto.event.event.EventDto;
 import com.example.eventplanner.dto.user.user.*;
 import com.example.eventplanner.services.user.UserService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -16,20 +19,21 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users")
+@Validated
 public class UserController {
     private final UserService userService;
     private final AuthUtil authUtil;
 
     @GetMapping()
-    public ResponseEntity<List<RegisterUserDto>> getAllUsers() {
+    public ResponseEntity<List<BaseUserDto>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RegisterUserDto> getUserById(@PathVariable long id) {
-        RegisterUserDto registerUserDto = userService.getUserById(id);
-        return registerUserDto != null ?
-                ResponseEntity.ok(registerUserDto) :
+    public ResponseEntity<BaseUserDto> getUserById(@PathVariable long id) {
+        BaseUserDto userDto = userService.getUserById(id);
+        return userDto != null ?
+                ResponseEntity.ok(userDto) :
                 ResponseEntity.notFound().build();
     }
 
@@ -42,14 +46,14 @@ public class UserController {
     }
 
     @PostMapping()
-    public ResponseEntity<Boolean> registerUser (@RequestBody RegisterUserDto registerUserDto) {
+    public ResponseEntity<Boolean> registerUser (@Valid @RequestBody RegisterUserDto registerUserDto) {
         return userService.registerUser(registerUserDto)
                 ? ResponseEntity.ok(true)
                 : ResponseEntity.badRequest().build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UserInfoDto> updateUserInfo(@PathVariable long id, @RequestBody UserInfoDto userInfoDto) {
+    public ResponseEntity<UserInfoDto> updateUserInfo(@PathVariable long id, @Valid @RequestBody UserInfoDto userInfoDto) {
         authUtil.checkUserAccess(id);
         UserInfoDto userInfoDto1 = userService.updateUserInfo(userInfoDto, id);
         return userInfoDto1 != null
@@ -58,7 +62,7 @@ public class UserController {
     }
 
     @PutMapping("/company/{id}")
-    public ResponseEntity<CompanyInfoDto> updateCompanyInfo(@PathVariable long id, @RequestBody CompanyInfoDto companyInfoDto) {
+    public ResponseEntity<CompanyInfoDto> updateCompanyInfo(@PathVariable long id, @Valid @RequestBody CompanyInfoDto companyInfoDto) {
         CompanyInfoDto companyInfoDto1 = userService.updateCompanyInfo(companyInfoDto, id);
         return companyInfoDto1 != null
                 ? ResponseEntity.ok(companyInfoDto1)

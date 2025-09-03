@@ -3,6 +3,7 @@ package com.example.eventplanner.services.serviceproduct;
 import com.example.eventplanner.exception.BadRequestException;
 import com.example.eventplanner.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,7 +22,8 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class ImageService {
-    private static final String UPLOADS_DIR = "uploads";
+    @Value("${uploads.dir}")
+    private String UPLOADS_DIR;
     public MediaType getMediaType(String path) {
         String decodedPath = new String(Base64.getDecoder().decode(path));
         String extension = path.substring(decodedPath.lastIndexOf(".") + 1);

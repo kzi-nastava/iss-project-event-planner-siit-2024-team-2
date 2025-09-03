@@ -3,9 +3,11 @@ package com.example.eventplanner.controllers.order;
 import com.example.eventplanner.dto.order.purchase.PurchaseDto;
 import com.example.eventplanner.dto.order.purchase.PurchaseNoIdDto;
 import com.example.eventplanner.services.order.PurchaseService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -13,6 +15,7 @@ import java.util.Collection;
 @RestController
 @RequestMapping("/api/purchases")
 @RequiredArgsConstructor()
+@Validated
 public class PurchaseController {
     private final PurchaseService purchaseService;
 
@@ -31,13 +34,13 @@ public class PurchaseController {
     }
 
     @PostMapping
-    public ResponseEntity<PurchaseDto> createPurchase(@RequestBody PurchaseNoIdDto dto) {
+    public ResponseEntity<PurchaseDto> createPurchase(@Valid @RequestBody PurchaseNoIdDto dto) {
         PurchaseDto result = purchaseService.create(dto);
         return new ResponseEntity<>(result, HttpStatus.CREATED);
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<PurchaseDto> updatePurchase(@PathVariable("id") Long id, @RequestBody PurchaseNoIdDto dto) {
+    public ResponseEntity<PurchaseDto> updatePurchase(@PathVariable("id") Long id, @Valid @RequestBody PurchaseNoIdDto dto) {
         PurchaseDto result = purchaseService.update(dto, id);
         return result != null ?
                 new ResponseEntity<>(result, HttpStatus.OK) :

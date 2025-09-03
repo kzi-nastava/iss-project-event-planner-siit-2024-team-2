@@ -1,20 +1,29 @@
 package com.example.eventplanner.services.serviceproduct;
 
+import com.example.eventplanner.controllers.utils.AuthUtil;
 import com.example.eventplanner.dto.serviceproduct.service.CreateServiceDto;
 import com.example.eventplanner.dto.serviceproduct.service.ServiceCardDto;
 import com.example.eventplanner.dto.serviceproduct.service.ServiceDto;
 import com.example.eventplanner.dto.serviceproduct.service.ServiceMapper;
+import com.example.eventplanner.dto.util.DateRangeDto;
+import com.example.eventplanner.exception.ForbiddenException;
+import com.example.eventplanner.exception.NotFoundException;
+import com.example.eventplanner.exception.UnauthorizedException;
+import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.event.EventType;
 import com.example.eventplanner.model.serviceproduct.Service;
 import com.example.eventplanner.model.serviceproduct.ServiceProductCategory;
 import com.example.eventplanner.model.user.ServiceProductProvider;
+import com.example.eventplanner.repositories.event.EventRepository;
 import com.example.eventplanner.repositories.event.EventTypeRepository;
 import com.example.eventplanner.repositories.serviceproduct.ServiceProductCategoryRepository;
 import com.example.eventplanner.repositories.serviceproduct.ServiceRepository;
 import com.example.eventplanner.repositories.user.ServiceProductProviderRepository;
+import com.example.eventplanner.services.order.BookingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,6 +37,9 @@ public class ServiceService {
 	private final EventTypeRepository eventTypeRepository;
 	private final ServiceProductCategoryRepository serviceProductCategoryRepository;
 	private final ServiceProductProviderRepository sppRepository;
+	private final BookingService bookingService;
+	private final EventRepository eventRepository;
+	private final AuthUtil authUtil;
 
 
 	public Collection<ServiceDto> getAll() {
@@ -105,5 +117,17 @@ public class ServiceService {
 		PageRequest pageRequest = PageRequest.of(page, size != null ? size : 10);
 		return serviceRepository.findAllFiltered(name, minPrice, maxPrice, available, categories, availableEventTypeIds, pageRequest)
 				.map(ServiceMapper::toDto);
+	}
+
+	@Transactional
+	public List<DateRangeDto> getAvailableDates(Long serviceId, Long eventId) {
+		Long userId = authUtil.getAuthenticatedUserId();
+		Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Event not found"));
+		if (event.getEventOrganizer().getId() != userId)
+			throw new ForbiddenException("User is not authorized to access this event");
+
+		Service service = serviceRepository.findById(serviceId).orElseThrow(() -> new NotFoundException("Service not found"));
+		bookingService.checkServiceAcceptingBookings(service);
+		return bookingService.getAvailableDates(service, event);
 	}
 }
