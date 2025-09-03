@@ -3,6 +3,7 @@ package com.example.eventplanner.controllers.user;
 import com.example.eventplanner.dto.user.userreport.UserReportDto;
 import com.example.eventplanner.dto.user.userreport.UserReportNoIdDto;
 import com.example.eventplanner.services.user.UserReportService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -17,6 +19,7 @@ import java.util.Collection;
 @RestController
 @RequestMapping("/api/user-reports")
 @RequiredArgsConstructor()
+@Validated
 public class UserReportController {
     private final UserReportService userReportService;
 
@@ -44,7 +47,7 @@ public class UserReportController {
     }
 
     @PostMapping
-    public ResponseEntity<UserReportDto> createUserReport(@RequestBody UserReportNoIdDto dto) {
+    public ResponseEntity<UserReportDto> createUserReport(@Valid @RequestBody UserReportNoIdDto dto) {
         UserReportDto result = userReportService.create(dto);
         return result != null ?
                 new ResponseEntity<>(result, HttpStatus.CREATED) :

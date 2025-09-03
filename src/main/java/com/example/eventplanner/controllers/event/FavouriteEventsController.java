@@ -2,14 +2,17 @@ package com.example.eventplanner.controllers.event;
 
 import com.example.eventplanner.dto.event.event.FavouriteEventsDto;
 import com.example.eventplanner.services.event.FavouriteEventsService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/favourite-events")
 @RequiredArgsConstructor()
+@Validated
 public class FavouriteEventsController {
     private final FavouriteEventsService favouriteEventsService;
 

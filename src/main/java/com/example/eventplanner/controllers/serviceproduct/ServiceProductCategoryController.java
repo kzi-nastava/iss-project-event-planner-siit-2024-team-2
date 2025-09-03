@@ -4,9 +4,11 @@ import com.example.eventplanner.dto.serviceproduct.serviceproductcategory.Servic
 import com.example.eventplanner.dto.serviceproduct.serviceproductcategory.ServiceProductCategoryNoIdDto;
 import com.example.eventplanner.model.serviceproduct.ServiceProductCategory;
 import com.example.eventplanner.services.serviceproduct.ServiceProductCategoryService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -14,6 +16,7 @@ import java.util.Collection;
 @RestController
 @RequestMapping("/api/sp-categories")
 @RequiredArgsConstructor()
+@Validated
 public class ServiceProductCategoryController {
     private final ServiceProductCategoryService serviceProductCategoryService;
 
@@ -39,13 +42,13 @@ public class ServiceProductCategoryController {
     }
 
     @PostMapping()
-    public ResponseEntity<ServiceProductCategoryDto> createServiceProductCategory(@RequestBody ServiceProductCategoryNoIdDto dto) {
+    public ResponseEntity<ServiceProductCategoryDto> createServiceProductCategory(@Valid @RequestBody ServiceProductCategoryNoIdDto dto) {
         return new ResponseEntity<>(serviceProductCategoryService.create(dto), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ServiceProductCategoryDto> updateServiceProductCategory(@PathVariable long id,
-                                                                               @RequestBody ServiceProductCategoryNoIdDto dto) {
+                                                                               @Valid @RequestBody ServiceProductCategoryNoIdDto dto) {
         ServiceProductCategoryDto updatedDto = serviceProductCategoryService.update(id, dto);
         return updatedDto != null ?
                 new ResponseEntity<>(updatedDto, HttpStatus.OK) :

@@ -6,9 +6,11 @@ import com.example.eventplanner.dto.serviceproduct.product.ProductDetailsDto;
 import com.example.eventplanner.dto.serviceproduct.product.ProductDto;
 import com.example.eventplanner.model.user.ServiceProductProvider;
 import com.example.eventplanner.services.serviceproduct.ProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import java.util.Collection;
 import java.util.Collections;
@@ -17,6 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/products")
 @RequiredArgsConstructor
+@Validated
 public class ProductController {
     private final ProductService productService;
     private final AuthUtil authUtil;
@@ -44,12 +47,12 @@ public class ProductController {
     }
 
     @PostMapping()
-    public ResponseEntity<ProductDto> createProduct(@RequestBody CreateProductDto productDto) {
+    public ResponseEntity<ProductDto> createProduct(@Valid @RequestBody CreateProductDto productDto) {
         return new ResponseEntity<>(productService.create(productDto), HttpStatus.CREATED);
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<ProductDto> updateProduct(@RequestBody CreateProductDto productDto, @PathVariable("id") Long id) {
+    public ResponseEntity<ProductDto> updateProduct(@Valid @PathVariable("id") Long id, @Valid @RequestBody CreateProductDto productDto) {
         ProductDto updatedProductDto = productService.update(id, productDto);
         return updatedProductDto != null ?
                 ResponseEntity.ok(updatedProductDto) :

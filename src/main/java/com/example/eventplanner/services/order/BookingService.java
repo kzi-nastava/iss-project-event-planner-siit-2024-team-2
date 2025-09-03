@@ -271,7 +271,6 @@ public class BookingService {
     @Scheduled(fixedDelay = 1000 * 60 * 5, initialDelay = 1000 * 30) // Every 5 minutes, 30 seconds after startup
     public void sendReminderNotifications() {
         List<BookingReminderDto> bookings = bookingRepository.findBookingsStartingInOneHour();
-        System.out.println(bookings.size());
         if (bookings.isEmpty())
             return;
         for (BookingReminderDto booking : bookings) {
