@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 
 @Getter
@@ -15,8 +16,7 @@ import org.hibernate.validator.constraints.Range;
 public class ResetPasswordDto {
     private String oldPassword;
     @NotNull(message = "New password is required")
-    @Range(min = 6, max = 32, message = "New password must be at between 6 and 32 characters")
+    @Length(min = 6, max = 32, message = "New password must be at between 6 and 32 characters")
     private String newPassword;
-    @Min(value = 1, message = "User is required")
     private long userId;
 }

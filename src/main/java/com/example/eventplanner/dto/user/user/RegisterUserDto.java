@@ -22,7 +22,7 @@ public class RegisterUserDto {
     @Email(message = "Email is invalid")
     private String email;
     @NotBlank(message = "Password is required")
-    @Range(min = 6, max = 32, message = "Password must be at between 6 and 32 characters")
+    @Length(min = 6, max = 32, message = "Password must be at between 6 and 32 characters")
     private String password;
     @NotBlank(message = "First name is required")
     @Length(min = 1, max = 100, message = "First name must be between 1 and 100 characters")
