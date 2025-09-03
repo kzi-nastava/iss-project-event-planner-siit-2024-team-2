@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Booking Confirmed</title>
+    </head>
+    <body style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px;">
+        <div style="max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px;">
+            <h2>Booking confirmed</h2>
+            <p>Booking request for the service <strong>{{serviceName}}</strong> has been confirmed for the event <strong>{{eventName}}</strong>.</p>
+            <p>You can view the booking details below:</p>
+
+            <hr style="margin: 30px 0;"/>
+            <h3>Booking details:</h3>
+            <div style="margin-top: 20px; font-size: 0.8rem;">
+                <p><b>Event:</b> {{eventName}}</p>
+                <p><b>Service:</b> {{serviceName}}</p>
+                <p><b>Date:</b> {{bookingDate}}</p>
+                <p><b>Service Time Period:</b> {{bookingTimePeriod}}</p>
+                <p><b>Price:</b> {{price}}</p>
+                <p><b>Service Provider:</b> {{sppName}}</p>
+                <p><b>Service Provider Email:</b> {{sppEmail}}</p>
+                <p><b>Event Organizer:</b> {{organizerName}}</p>
+                <p><b>Event Organizer Email:</b> {{organizerEmail}}</p>
+                <p><b>Location: </b><a href="{{mapUrl}}" target="_blank">{{mapUrl}}</a></p>
+                <p><b>Event Description:</b> {{eventDescription}}</p>
+            </div>
+        </div>
+    </body>
+</html>
