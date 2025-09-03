@@ -3,9 +3,6 @@ package com.example.eventplanner.services.communication;
 import com.example.eventplanner.dto.communication.chat.ChatDto;
 import com.example.eventplanner.dto.communication.chat.ChatMapper;
 import com.example.eventplanner.dto.communication.chat.ChatNoIdDto;
-import com.example.eventplanner.dto.communication.chatmessage.ChatMessageDto;
-import com.example.eventplanner.dto.communication.chatmessage.ChatMessageMapper;
-import com.example.eventplanner.dto.communication.chatmessage.ChatMessageNoIdDto;
 import com.example.eventplanner.model.communication.Chat;
 import com.example.eventplanner.model.communication.ChatMessage;
 import com.example.eventplanner.model.user.BaseUser;
@@ -82,6 +79,7 @@ public class ChatService {
     public ChatDto sendMessage(long chatId, ChatMessage message) {
         Chat chat = chatRepository.findById(chatId).orElseThrow();
         chat.getMessages().add(message);
+        chat.setSentAt(message.getSentAt());
         if  (chat.getUser1().getId() == message.getToUser().getId()) {
             chat.setStatus(ChatStatus.UNSEEN1);
         }
