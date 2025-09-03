@@ -4,6 +4,7 @@ package com.example.eventplanner.config;
 import com.example.eventplanner.config.jwt.JwtRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -23,6 +24,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.util.List;
 
@@ -36,6 +38,8 @@ public class WebSecurityConfiguration {
     private JwtRequestFilter jwtRequestFilter;
     @Value("${frontend.url}")
     private String frontendUrl;
+    @Value("${log.endpoints.enabled:false}")
+    private boolean logEndpointsEnabled;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -147,7 +151,7 @@ public class WebSecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/api/budgets").hasRole("EVENT_ORGANIZER")
                         .requestMatchers(HttpMethod.GET, "/api/budgets/{id}").hasRole("EVENT_ORGANIZER")
 
-                        // Budgets / purchases
+                        // Bookings / purchases
                         .requestMatchers(HttpMethod.POST, "/api/bookings/{id}/accept").hasRole("SERVICE_PRODUCT_PROVIDER")
                         .requestMatchers(HttpMethod.DELETE, "/api/bookings/{id}").hasRole("SERVICE_PRODUCT_PROVIDER")
                         .requestMatchers(HttpMethod.GET, "/api/bookings/mine").hasRole("SERVICE_PRODUCT_PROVIDER")
@@ -155,7 +159,7 @@ public class WebSecurityConfiguration {
                         .requestMatchers("/api/purchases", "/api/purchases/{id}").hasRole("ADMIN")
 
                         // Everything else requires authentication
-                        .anyRequest().permitAll())
+                        .anyRequest().authenticated())
                 .sessionManagement(session -> {
                     session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
                 })
@@ -188,6 +192,19 @@ public class WebSecurityConfiguration {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();// PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
+
+    @Bean
+    public ApplicationRunner logEndpoints(RequestMappingHandlerMapping mapping) {
+        if (!logEndpointsEnabled)
+            return args -> {};
+        return args -> {
+            System.out.println("==== Registered Endpoints ====");
+            mapping.getHandlerMethods().forEach((key, value) -> {
+                System.out.println(key + " => " + value.getBeanType().getSimpleName() + "#" + value.getMethod().getName());
+            });
+            System.out.println("==============================");
+        };
     }
 
 }
