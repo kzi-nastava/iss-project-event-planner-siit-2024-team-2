@@ -1,21 +1,30 @@
 package com.example.eventplanner.services.order;
 
+import com.example.eventplanner.controllers.utils.AuthUtil;
 import com.example.eventplanner.dto.order.booking.BookingDto;
 import com.example.eventplanner.dto.order.booking.BookingMapper;
 import com.example.eventplanner.dto.order.booking.BookingNoIdDto;
+import com.example.eventplanner.dto.order.booking.PendingBookingDto;
 import com.example.eventplanner.dto.util.DateRangeDto;
 import com.example.eventplanner.exception.ConflictException;
 import com.example.eventplanner.exception.ForbiddenException;
 import com.example.eventplanner.exception.NotFoundException;
+import com.example.eventplanner.exception.UnauthorizedException;
 import com.example.eventplanner.model.event.Event;
 import com.example.eventplanner.model.order.Booking;
 import com.example.eventplanner.model.serviceproduct.Service;
+import com.example.eventplanner.model.user.BaseUser;
+import com.example.eventplanner.model.user.EventOrganizer;
+import com.example.eventplanner.model.utils.BookingStatus;
 import com.example.eventplanner.repositories.event.EventRepository;
 import com.example.eventplanner.repositories.order.BookingRepository;
 import com.example.eventplanner.repositories.serviceproduct.ServiceRepository;
+import com.example.eventplanner.repositories.user.EventOrganizerRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 
 import java.util.*;
@@ -31,6 +40,8 @@ public class BookingService {
 
     static final long HOUR_MS = 60 * 60 * 1000;
     static final long DAY_MS = 24 * HOUR_MS;
+    private final AuthUtil authUtil;
+    private final EventOrganizerRepository eventOrganizerRepository;
 
     public List<BookingDto> getAll() {
         return bookingRepository.findAll()
@@ -65,8 +76,12 @@ public class BookingService {
     }
 
     public boolean delete(long id) {
-        if (!bookingRepository.existsById(id))
-            return false;
+        BaseUser user = authUtil.getAuthenticatedUser();
+        if (user == null)
+            throw new UnauthorizedException("User not found");
+        Booking booking = bookingRepository.findById(id).orElseThrow(() -> new NotFoundException("Booking not found"));
+        if (booking.getService().getServiceProductProvider().getId() != user.getId())
+            throw new ForbiddenException("User is not authorized to delete this booking");
         bookingRepository.deleteById(id);
         return true;
     }
@@ -118,11 +133,12 @@ public class BookingService {
     private List<DateRangeDto> getBookedDates(Service service, Long startDate, Long endDate) {
         List<DateRangeDto> bookedDates = bookingRepository.findByServiceId(service.getId())
                         .stream()
+                        .filter(b -> b.getStatus() == BookingStatus.ACCEPTED)
                         .map(b -> new DateRangeDto(
                                 b.getDate().getTime(),
                                 b.getDate().getTime() + (long)(HOUR_MS * b.getDuration())))
                         .sorted(Comparator.comparing(DateRangeDto::getStart))
-                        .filter(b -> b.getEnd() >= startDate && b.getStart() <= endDate)
+                        .filter(bd -> bd.getEnd() >= startDate && bd.getStart() <= endDate)
                         .toList();
         float duration = service.getDuration() > 0
                 ? service.getDuration()
@@ -186,5 +202,27 @@ public class BookingService {
             throw new ForbiddenException("Service is not available");
         if (service.getServiceProductProvider() == null)
             throw new ForbiddenException("Service provider is deleted");
+    }
+
+    public BookingDto accept(Long id) {
+        BaseUser user = authUtil.getAuthenticatedUser();
+        if (user == null)
+            throw new UnauthorizedException("User not found");
+        Booking booking = bookingRepository.findById(id).orElseThrow(() -> new NotFoundException("Booking not found"));
+        if (booking.getService().getServiceProductProvider().getId() != user.getId())
+            throw new ForbiddenException("User is not authorized to accept this booking");
+        booking.setStatus(BookingStatus.ACCEPTED);
+        return BookingMapper.toDto(bookingRepository.save(booking));
+    }
+
+    public Page<PendingBookingDto> getMyBookings(Pageable pageable) {
+        BaseUser user = authUtil.getAuthenticatedUser();
+        if (user == null)
+            throw new UnauthorizedException("User not found");
+        return bookingRepository.findAllByServiceProviderIdPending(user.getId(), pageable)
+                .map(b -> {
+                    EventOrganizer organizer = eventOrganizerRepository.findByBookingId(b.getId());
+                    return BookingMapper.toPendingDto(b, organizer);
+                });
     }
 }

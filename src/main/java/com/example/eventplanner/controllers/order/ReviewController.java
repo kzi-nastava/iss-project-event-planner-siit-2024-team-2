@@ -70,8 +70,8 @@ public class ReviewController {
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @PostMapping(value = "/approve")
-    public ResponseEntity<ReviewStatusDto> approveReview(@RequestBody Long id) {
+    @PostMapping(value = "/{id}/approve")
+    public ResponseEntity<ReviewStatusDto> approveReview(@PathVariable("id") Long id) {
          ReviewStatusDto result = reviewService.approve(id);
          return result != null ?
                  new ResponseEntity<>(result, HttpStatus.OK) :

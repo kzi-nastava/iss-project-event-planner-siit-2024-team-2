@@ -59,8 +59,8 @@ public class UserReportController {
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
-    @PostMapping("/approve")
-    public ResponseEntity<UserReportDto> approveUserReport(@RequestBody Long id) {
+    @PostMapping("/{id}/approve")
+    public ResponseEntity<UserReportDto> approveUserReport(@PathVariable("id") Long id) {
         UserReportDto result = userReportService.approve(id);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

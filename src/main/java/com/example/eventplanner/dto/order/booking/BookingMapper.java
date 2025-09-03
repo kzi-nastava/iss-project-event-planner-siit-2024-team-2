@@ -3,7 +3,10 @@ package com.example.eventplanner.dto.order.booking;
 import com.example.eventplanner.dto.serviceproduct.service.ServiceMapper;
 import com.example.eventplanner.model.order.Booking;
 import com.example.eventplanner.model.serviceproduct.Service;
+import com.example.eventplanner.model.user.EventOrganizer;
+import com.example.eventplanner.model.utils.BookingStatus;
 
+import java.time.Instant;
 import java.util.Date;
 
 public class BookingMapper {
@@ -18,7 +21,9 @@ public class BookingMapper {
                 ServiceMapper.toDto(booking.getService()),
                 booking.getPrice(),
                 booking.getDate().getTime(),
-                booking.getDuration()
+                booking.getDuration(),
+                booking.getStatus(),
+                booking.getCreatedAt()
         );
     }
 
@@ -30,6 +35,24 @@ public class BookingMapper {
                 service,
                 dto.getPrice(),
                 dto.getDate(),
-                dto.getDuration());
+                dto.getDuration(),
+                service.isAutomaticReserved() ? BookingStatus.ACCEPTED : BookingStatus.PENDING,
+                Instant.now());
+    }
+
+    public static PendingBookingDto toPendingDto(Booking booking, EventOrganizer eventOrganizer) {
+        if (booking == null)
+            return null;
+
+        return new PendingBookingDto(
+                booking.getId(),
+                ServiceMapper.toDto(booking.getService()),
+                booking.getPrice(),
+                booking.getDate().getTime(),
+                booking.getDuration(),
+                booking.getCreatedAt(),
+                eventOrganizer != null ? eventOrganizer.getFirstName() + " " + eventOrganizer.getLastName() : null,
+                eventOrganizer != null ? eventOrganizer.getEmail() : null
+        );
     }
 }
