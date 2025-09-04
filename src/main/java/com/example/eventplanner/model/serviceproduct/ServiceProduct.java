@@ -19,6 +19,7 @@ import java.util.List;
 @SQLRestriction("active = true")
 @jakarta.persistence.Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "dtype")
 public class ServiceProduct extends Entity {
     @ManyToOne
     private ServiceProductCategory category;
@@ -36,5 +37,11 @@ public class ServiceProduct extends Entity {
     private List<EventType> availableEventTypes;
     @ManyToOne
     private ServiceProductProvider serviceProductProvider;
-    private String dtype;
+    @Transient // not persisted as a normal column
+    public String getDtype() {
+        return this.getClass()
+                .getAnnotation(DiscriminatorValue.class)
+                .value();
+    }
+    //private String dtype;
 }

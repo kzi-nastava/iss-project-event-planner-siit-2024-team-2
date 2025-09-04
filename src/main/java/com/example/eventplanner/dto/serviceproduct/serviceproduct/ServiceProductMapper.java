@@ -97,8 +97,7 @@ public class ServiceProductMapper {
                 dto.getDescription(),
                 dto.getImages().stream().map(ImageService::decodePath).toList(),
                 availableEventTypes,
-                serviceProductProvider,
-                dto.getDtype());
+                serviceProductProvider);
     }
 
     public static PriceListDto toPriceListItemDto(ServiceProduct sp) {
