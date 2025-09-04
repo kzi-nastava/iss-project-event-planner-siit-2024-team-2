@@ -23,8 +23,10 @@ public interface EventRepository extends JpaRepository<Event, Long> {
               AND (:currentUserId IS NULL OR NOT EXISTS
                  (SELECT 1
                   FROM baseuser_baseuser uu
-                  WHERE uu.baseuser_id = :currentUserId
-                    AND uu.blockedusers_id = e.eventorganizer_id))
+                  WHERE (uu.baseuser_id = :currentUserId
+                        AND uu.blockedusers_id = e.eventorganizer_id))
+                     OR (uu.baseuser_id = e.eventorganizer_id
+                        AND uu.blockedusers_id = :currentUserId))
         )
         (
             SELECT * FROM filtered_event
@@ -49,12 +51,14 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     @Query(value = "SELECT e.id, e.active, e.name, e.description, e.type_id, e.maxattendances, e.latitude, e.longitude, e.open, e.date, e.eventorganizer_id " +
             "FROM Event e " +
-            "WHERE (:organizerId IS NULL OR e.eventorganizer_id = :organizerId) " +
+            "WHERE (:organizerId IS NULL OR e.eventorganizer_id = :organizerId)" +
             "AND (:currentUserId IS NULL OR NOT EXISTS " +
             "   (SELECT 1 " +
             "    FROM baseuser_baseuser uu " +
-            "    WHERE uu.baseuser_id = :currentUserId " +
-            "      AND uu.blockedusers_id = e.eventorganizer_id)) " +
+            "    WHERE (uu.baseuser_id = :currentUserId " +
+            "          AND uu.blockedusers_id = e.eventorganizer_id)) " +
+            "       OR (uu.baseuser_id = e.eventorganizer_id " +
+            "          AND uu.blockedusers_id = :currentUserId))" +
             "AND (:name = '' OR e.name ILIKE CONCAT('%', :name, '%')) " +
             "AND (e.active = true) " +
             "AND (:description = '' OR LOWER(e.description) LIKE LOWER(CONCAT('%', :description, '%'))) " +

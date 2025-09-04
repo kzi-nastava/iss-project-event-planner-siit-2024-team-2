@@ -87,9 +87,10 @@ public class EventService {
         }
         if (event.getEventOrganizer() != null && user != null) {
             long eventOrganizerId = event.getEventOrganizer().getId();
-            if (userService.hasBlocked(user.getId(), eventOrganizerId)) {
-                throw new UserBlockedException("You are have blocked this event organizer");
-            }
+            if (userService.hasBlocked(user.getId(), eventOrganizerId))
+                throw new UserBlockedException("You have blocked this event organizer");
+            if (userService.hasBlocked(eventOrganizerId, user.getId()))
+                throw new UserBlockedException("Event organizer has blocked you");
         }
         return EventMapper.toDto(event);
     }
