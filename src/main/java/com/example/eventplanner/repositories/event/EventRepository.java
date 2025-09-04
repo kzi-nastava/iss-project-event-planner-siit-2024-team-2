@@ -16,38 +16,47 @@ import java.util.Optional;
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long> {
     @Query(value = """
+        WITH filtered_event AS (
+            SELECT * FROM event e
+            WHERE e.open = true
+              AND e.active = true
+              AND (:currentUserId IS NULL OR NOT EXISTS
+                 (SELECT 1
+                  FROM baseuser_baseuser uu
+                  WHERE uu.baseuser_id = :currentUserId
+                    AND uu.blockedusers_id = e.eventorganizer_id))
+        )
         (
-            SELECT * FROM event
-            WHERE open = true
-              AND active = true
-              AND date >= :currentDate
+            SELECT * FROM filtered_event
+            WHERE date >= :currentDate
             ORDER BY date ASC
             LIMIT 5
         )
         UNION ALL
         (
-            SELECT * FROM event
-            WHERE open = true
-              AND active = true
-              AND date < :currentDate
+            SELECT * FROM filtered_event
+            WHERE date < :currentDate
             ORDER BY date DESC
             LIMIT (5 - (
-                SELECT COUNT(*) FROM event
-                WHERE open = true
-                  AND active = true
-                  AND date >= :currentDate
+                SELECT COUNT(*) FROM filtered_event
+                WHERE date >= :currentDate
             ))
         )
         ORDER BY date ASC
         LIMIT 5
     """, nativeQuery = true)
-    List<Event> findTop5(LocalDateTime currentDate);
+    List<Event> findTop5(LocalDateTime currentDate, @Param("currentUserId") Long currentUserId);
 
     @Query(value = "SELECT e.id, e.active, e.name, e.description, e.type_id, e.maxattendances, e.latitude, e.longitude, e.open, e.date, e.eventorganizer_id " +
             "FROM Event e " +
             "WHERE (:organizerId IS NULL OR e.eventorganizer_id = :organizerId) " +
+            "AND (:currentUserId IS NULL OR NOT EXISTS " +
+            "   (SELECT 1 " +
+            "    FROM baseuser_baseuser uu " +
+            "    WHERE uu.baseuser_id = :currentUserId " +
+            "      AND uu.blockedusers_id = e.eventorganizer_id)) " +
             "AND (:name = '' OR e.name ILIKE CONCAT('%', :name, '%')) " +
-            "AND (e.active = true)" +
+            "AND (e.active = true) " +
             "AND (:description = '' OR LOWER(e.description) LIKE LOWER(CONCAT('%', :description, '%'))) " +
             "AND (COALESCE(array_length(:types, 1), 0) = 0 OR e.type_id = ANY(:types)) " +
             "AND (:minMaxAttendances IS NULL OR e.maxAttendances >= :minMaxAttendances) " +
@@ -71,6 +80,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate,
             @Param("organizerId") Long organizerId,
+            @Param("currentUserId") Long currentUserId,
             Pageable pageable
     );
 

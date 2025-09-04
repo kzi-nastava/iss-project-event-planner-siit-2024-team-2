@@ -54,7 +54,8 @@ public class ServiceProductService {
     private final UserService userService;
 
     public Collection<ServiceProductSummaryDto> getTop5() {
-        return serviceProductRepository.findTop5()
+        Long currentUserId = authUtil.getAuthenticatedUserId();
+        return serviceProductRepository.findTop5(currentUserId)
                 .stream()
                 .map(ServiceProductMapper::toSummaryDto)
                 .toList();
@@ -69,8 +70,8 @@ public class ServiceProductService {
 
     public ServiceProductDto getById(long id) {
         ServiceProduct serviceProduct = serviceProductRepository.findById(id).orElseThrow(() -> new NotFoundException("Service product not found"));
-        long userId = authUtil.getAuthenticatedUserId();
-        if (serviceProduct.getServiceProductProvider() != null) {
+        Long userId = authUtil.getAuthenticatedUserId();
+        if (serviceProduct.getServiceProductProvider() != null && userId != null) {
             long serviceProductProviderId = serviceProduct.getServiceProductProvider().getId();
             if (userService.hasBlocked(userId, serviceProductProviderId)) {
                 throw new UserBlockedException("You are have blocked this service product provider");
@@ -103,10 +104,11 @@ public class ServiceProductService {
             spType = Product.class;
         else
             spType = null;
+        Long currentUserId = authUtil.getAuthenticatedUserId();
         Page<ServiceProduct> serviceProducts =
                 serviceProductRepository.findAllFiltered(spType, name, description, categoryIds, available,
                         minPrice, maxPrice, availableEventTypeIds, serviceProductProviderId,
-                        minDuration, maxDuration, automaticReserved, pageRequest);
+                        minDuration, maxDuration, automaticReserved, currentUserId, pageRequest);
         if (clazz == ServiceProductDto.class)
             return serviceProducts.map(ServiceProductMapper::toDto).map(clazz::cast);
         else

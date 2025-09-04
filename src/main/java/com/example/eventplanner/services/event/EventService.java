@@ -85,7 +85,7 @@ public class EventService {
                                     && invitation.getEmail().equals(user.getEmail())))
                 throw new ForbiddenException("Forbidden");
         }
-        if (event.getEventOrganizer() != null) {
+        if (event.getEventOrganizer() != null && user != null) {
             long eventOrganizerId = event.getEventOrganizer().getId();
             if (userService.hasBlocked(user.getId(), eventOrganizerId)) {
                 throw new UserBlockedException("You are have blocked this event organizer");
@@ -154,7 +154,8 @@ public class EventService {
     }
 
     public Collection<EventSummaryDto> getTop5() {
-        return eventRepository.findTop5(LocalDateTime.now())
+        Long currentUserId = authUtil.getAuthenticatedUserId();
+        return eventRepository.findTop5(LocalDateTime.now(), currentUserId)
                 .stream()
                 .map(EventMapper::toSummaryDto)
                 .toList();
@@ -188,12 +189,12 @@ public class EventService {
         Long[] eventTypeIdsArray = types == null ?
                 new Long[0] :
                 types.toArray(new Long[0]);
-        Page<Event> events;
-        events = eventRepository.findAllFiltered(
+        Long currentUserId = authUtil.getAuthenticatedUserId();
+        Page<Event> events = eventRepository.findAllFiltered(
                 name, description, eventTypeIdsArray, minMaxAttendances, maxMaxAttendances, open,
                 latitudesArray, longitudesArray,
                 maxDistance,
-                startDateTime, endDateTime, organizerId, pageRequest);
+                startDateTime, endDateTime, organizerId, currentUserId, pageRequest);
         if (clazz == EventDto.class)
             return events.map(EventMapper::toDto).map(clazz::cast);
         else
