@@ -75,6 +75,7 @@ public class ServiceMapper {
         service.setDescription(dto.getDescription());
         service.setImages(dto.getImages());
 
+        service.setDtype("Service");
         service.setSpecifies(dto.getSpecifies());
         service.setDuration(dto.getDuration());
         service.setMinEngagementDuration(dto.getMinEngagementDuration());
