@@ -98,9 +98,9 @@ public class ProductService {
                 .toList();
     }
 
-    public List<ProductDto> filter(Long categoryId, List<Long> eventTypeIds, Float minPrice, Float maxPrice, Boolean available) {
+    public List<ProductDto> filter(Long sppId, Long categoryId, List<Long> eventTypeIds, Float minPrice, Float maxPrice, Boolean available) {
         //TODO optimize this
-        return productRepository.findAll().stream()
+        return productRepository.findByServiceProductProviderId(sppId).stream()
                 .filter(product -> categoryId == null || categoryId == product.getCategory().getId())
                 .filter(product -> eventTypeIds == null || eventTypeIds.isEmpty() || product.getAvailableEventTypes().stream().map(EventType::getId).anyMatch(eventTypeIds::contains))
                 .filter(product -> available == null || available == product.isAvailable())

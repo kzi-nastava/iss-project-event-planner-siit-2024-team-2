@@ -1,14 +1,20 @@
 package com.example.eventplanner.controllers.serviceproduct;
 
+import com.example.eventplanner.controllers.utils.AuthUtil;
 import com.example.eventplanner.dto.serviceproduct.service.CreateServiceDto;
 import com.example.eventplanner.dto.serviceproduct.service.ServiceCardDto;
 import com.example.eventplanner.dto.serviceproduct.service.ServiceDto;
+import com.example.eventplanner.dto.serviceproduct.serviceproduct.ServiceProductSummaryDto;
 import com.example.eventplanner.dto.util.DateRangeDto;
+import com.example.eventplanner.model.user.ServiceProductProvider;
+import com.example.eventplanner.model.utils.ServiceProductDType;
 import com.example.eventplanner.services.order.BookingService;
+import com.example.eventplanner.services.serviceproduct.ServiceProductService;
 import com.example.eventplanner.services.serviceproduct.ServiceService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -23,7 +29,8 @@ import java.util.List;
 @Validated
 public class ServiceController {
     private final ServiceService serviceService;
-    private final BookingService bookingService;
+    private final ServiceProductService serviceProductService;
+    private final AuthUtil authUtil;
 
     @GetMapping("/all")
     public ResponseEntity<Page<ServiceDto>> getAll(@RequestParam(defaultValue = "0") int page,
@@ -38,8 +45,31 @@ public class ServiceController {
     }
 
     @GetMapping()
-    public ResponseEntity<Collection<ServiceCardDto>> getAllBySPP_Id(@RequestParam(defaultValue = "0") Long sppId ) {
-        return ResponseEntity.ok(serviceService.getAllBySPP_Id(sppId));
+    public ResponseEntity<Page<ServiceProductSummaryDto>> getMyServiceCards(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false) Integer size,
+            @RequestParam(defaultValue = "") String name,
+            @RequestParam(required = false) List<Long> categoryIds,
+            @RequestParam(required = false) Boolean available,
+            @RequestParam(required = false) Integer minPrice,
+            @RequestParam(required = false) Integer maxPrice,
+            @RequestParam(required = false) List<Long> availableEventTypeIds) {
+        long serviceProductProviderId = authUtil.getAuthenticatedUserId();
+        Page<ServiceProductSummaryDto> result = serviceProductService.getAllFiltered(
+                ServiceProductSummaryDto.class, ServiceProductDType.SERVICE,
+                page, size, null, name, "", categoryIds, available,
+                minPrice, maxPrice, availableEventTypeIds, serviceProductProviderId,
+                null, null, null);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping("/mine")
+    public ResponseEntity<Collection<ServiceCardDto>> getAllBySPP_Id() {
+        ServiceProductProvider provider = authUtil.getAuthenticatedServiceProductProvider();
+        if (provider == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        return ResponseEntity.ok(serviceService.getAllBySPP_Id(provider.getId()));
     }
 
     @GetMapping(value = "/{id}")
