@@ -96,7 +96,11 @@ public class ServiceProductService {
             Boolean available, Integer minPrice, Integer maxPrice,
             List<Long> availableEventTypeIds, Long serviceProductProviderId,
             Float minDuration, Float maxDuration, Boolean automaticReserved) {
-        PageRequest pageRequest = PageRequest.of(page, size != null ? size : 10, sort);
+        PageRequest pageRequest;
+        if (sort == null) {
+            pageRequest = PageRequest.of(page, size != null ? size : 10);
+        }
+        else pageRequest = PageRequest.of(page, size != null ? size : 10, sort);
         Class<?> spType;
         if (type == ServiceProductDType.SERVICE)
             spType = com.example.eventplanner.model.serviceproduct.Service.class;

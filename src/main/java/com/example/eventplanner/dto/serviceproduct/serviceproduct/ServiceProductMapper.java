@@ -36,25 +36,6 @@ public class ServiceProductMapper {
         );
     }
 
-    public static ServiceProductNoIdDto toDtoNoId(ServiceProduct serviceProduct) {
-        if (serviceProduct == null)
-            return null;
-
-        return new ServiceProductNoIdDto(
-                serviceProduct.getCategory().getId(),
-                serviceProduct.isAvailable(),
-                serviceProduct.isVisible(),
-                serviceProduct.getPrice(),
-                serviceProduct.getDiscount(),
-                serviceProduct.getName(),
-                serviceProduct.getDescription(),
-                serviceProduct.getImages().stream().map(ImageService::encodePath).toList(),
-                serviceProduct.getAvailableEventTypes().stream().map(EventType::getId).toList(),
-                serviceProduct.getServiceProductProvider().getId(),
-                serviceProduct.getDtype()
-        );
-    }
-
     public static ServiceProductSummaryDto toSummaryDto(ServiceProduct serviceProduct) {
         if (serviceProduct == null)
             return null;
@@ -97,8 +78,7 @@ public class ServiceProductMapper {
                 dto.getDescription(),
                 dto.getImages().stream().map(ImageService::decodePath).toList(),
                 availableEventTypes,
-                serviceProductProvider,
-                dto.getDtype());
+                serviceProductProvider);
     }
 
     public static PriceListDto toPriceListItemDto(ServiceProduct sp) {

@@ -81,7 +81,8 @@ public class ProductController {
                                                                  @RequestParam(value = "minPrice", required = false) Float minPrice,
                                                                  @RequestParam(value = "maxPrice", required = false) Float maxPrice,
                                                                  @RequestParam(value = "available", required = false) Boolean available) {
-        List<ProductDto> productDtos = productService.filter(category, eventTypes, minPrice, maxPrice, available);
+        Long sppId = authUtil.getAuthenticatedUserId();
+        List<ProductDto> productDtos = productService.filter(sppId, category, eventTypes, minPrice, maxPrice, available);
         return ResponseEntity.ok(productDtos);
     }
 }

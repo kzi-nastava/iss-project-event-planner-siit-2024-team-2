@@ -70,6 +70,8 @@ public class WebSecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/api/events").hasRole("EVENT_ORGANIZER")
                         .requestMatchers(HttpMethod.PUT, "/api/events/{id}").hasRole("EVENT_ORGANIZER")
                         .requestMatchers(HttpMethod.DELETE, "/api/events/{id}").hasRole("EVENT_ORGANIZER")
+                        .requestMatchers(HttpMethod.GET, "/api/events/attendances").permitAll()
+
 
                         // Event types
                         .requestMatchers(HttpMethod.POST, "/api/event-types").hasRole("EVENT_ORGANIZER")
