@@ -14,6 +14,7 @@ import com.example.eventplanner.dto.order.review.ReviewSummaryDto;
 import com.example.eventplanner.exception.ForbiddenException;
 import com.example.eventplanner.exception.NotFoundException;
 import com.example.eventplanner.exception.UnauthorizedException;
+import com.example.eventplanner.exception.UserBlockedException;
 import com.example.eventplanner.model.Entity;
 import com.example.eventplanner.model.event.*;
 import com.example.eventplanner.model.user.BaseUser;
@@ -51,15 +52,12 @@ public class EventService {
 
     private final EventRepository eventRepository;
     private final EventTypeRepository eventTypeRepository;
-    private final PurchaseService purchaseService;
-    private final BookingService bookingService;
     private final UserRepository userRepository;
     private final InvitationService invitationService;
     private final UserService userService;
     private final NotificationService notificationService;
     private final AuthUtil authUtil;
     private final EventReviewRepository eventReviewRepository;
-    private final ServiceProductCategoryRepository serviceProductCategoryRepository;
     private final BudgetRepository budgetRepository;
 
     public List<EventDto> getAll() {
@@ -73,8 +71,8 @@ public class EventService {
         Event event = eventRepository.findById(id).orElse(null);
         if (event == null)
             throw new NotFoundException("Event not found");
+        BaseUser user = authUtil.getAuthenticatedUser();
         if (!event.isOpen()) {
-            BaseUser user = authUtil.getAuthenticatedUser();
             if (user == null)
                 throw new UnauthorizedException("Unauthorized");
             if (user.getUserRole() == UserRole.EVENT_ORGANIZER &&
@@ -86,6 +84,12 @@ public class EventService {
                             .noneMatch(invitation -> invitation.isAccepted()
                                     && invitation.getEmail().equals(user.getEmail())))
                 throw new ForbiddenException("Forbidden");
+        }
+        if (event.getEventOrganizer() != null) {
+            long eventOrganizerId = event.getEventOrganizer().getId();
+            if (userService.hasBlocked(user.getId(), eventOrganizerId)) {
+                throw new UserBlockedException("You are have blocked this event organizer");
+            }
         }
         return EventMapper.toDto(event);
     }

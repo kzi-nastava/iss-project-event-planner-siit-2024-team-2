@@ -13,7 +13,9 @@ import com.example.eventplanner.dto.serviceproduct.serviceproductcategory.Servic
 import com.example.eventplanner.dto.serviceproduct.serviceproductcategory.ServiceProductCategoryMapper;
 import com.example.eventplanner.dto.order.review.ReviewDto;
 import com.example.eventplanner.dto.order.review.ReviewMapper;
+import com.example.eventplanner.exception.ForbiddenException;
 import com.example.eventplanner.exception.NotFoundException;
+import com.example.eventplanner.exception.UserBlockedException;
 import com.example.eventplanner.model.event.EventType;
 import com.example.eventplanner.model.serviceproduct.Product;
 import com.example.eventplanner.model.serviceproduct.ServiceProduct;
@@ -66,9 +68,16 @@ public class ServiceProductService {
     }
 
     public ServiceProductDto getById(long id) {
-        return serviceProductRepository.findById(id)
-                .map(ServiceProductMapper::toDto)
-                .orElse(null);
+        ServiceProduct serviceProduct = serviceProductRepository.findById(id).orElseThrow(() -> new NotFoundException("Service product not found"));
+        long userId = authUtil.getAuthenticatedUserId();
+        if (serviceProduct.getServiceProductProvider() != null) {
+            long serviceProductProviderId = serviceProduct.getServiceProductProvider().getId();
+            if (userService.hasBlocked(userId, serviceProductProviderId)) {
+                throw new UserBlockedException("You are have blocked this service product provider");
+            }
+        }
+
+        return ServiceProductMapper.toDto(serviceProduct);
     }
 
     @Transactional
