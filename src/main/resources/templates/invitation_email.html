@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Event Invitation</title>
+    </head>
+    <body style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px;">
+        <div style="max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px;">
+            <h2>Event invitation</h2>
+            <p>{{creatorName}} has invited you to join the event <strong>{{eventName}}</strong>.</p>
+            <p>Click the button below to accept the invitation:</p>
+            <p>
+                <a href="{{inviteLink}}" style="padding: 10px 20px; background: #7C96FF; color: white; text-decoration: none; border-radius: 4px;">
+                    Accept Invitation
+                </a>
+            </p>
+            <p>If the button doesn't work, copy the following link into your browser:</p>
+            <p><a href="{{inviteLink}}">{{inviteLink}}</a></p>
+            <p style="display:{{unregisteredHintDisplay}};">Since you're not yet registered with Event Planner, a limited account will be created for you which you can upgrade later.</p>
+            <hr style="margin: 30px 0;"/>
+            <h3>Event details:</h3>
+            <div style="margin-top: 20px; font-size: 0.8rem;">
+                <p><b>Event:</b> {{eventName}}</p>
+                <p><b>Event Organizer:</b> {{creatorName}}</p>
+                <p><b>Organizer Email:</b> {{creatorEmail}}</p>
+                <p><b>Date:</b> {{eventDate}}</p>
+                <p><b>Type:</b> {{eventType}}</p>
+                <p><b>Location: </b><a href="{{mapUrl}}" target="_blank">{{mapUrl}}</a></p>
+                <p><b>Description:</b> {{eventDescription}}</p>
+            </div>
+        </div>
+    </body>
+</html>

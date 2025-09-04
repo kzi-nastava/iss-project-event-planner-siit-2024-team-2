@@ -1,0 +1,4 @@
+package com.example.eventplanner.dto.user.user;
+
+public class RegisterEventOrganizerDto extends RegisterUserDto{
+}
