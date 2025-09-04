@@ -63,4 +63,15 @@ public interface UserRepository extends JpaRepository<BaseUser, Long> {
         @Param("companyname") String companyName,
         @Param("companydescription") String companyDescription
     );
+
+    @Query(value = """
+        SELECT CASE WHEN EXISTS (
+            FROM BaseUser u
+            JOIN u.blockedUsers b
+            WHERE u.id = :id
+              AND b.id = :blockedUserId
+        ) THEN TRUE ELSE FALSE END
+        """)
+        
+    boolean hasBlocked(long id, long blockedUserId);
 }

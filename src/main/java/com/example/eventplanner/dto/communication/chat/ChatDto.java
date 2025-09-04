@@ -22,4 +22,6 @@ public class ChatDto {
     List<ChatMessageDto> messages;
     ChatStatus status;
     Instant sentAt;
+    boolean user1BlockedUser2;
+    boolean user2BlockedUser1;
 }

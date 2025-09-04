@@ -75,6 +75,13 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(UserBlockedException.class)
+    public ResponseEntity<ErrorResponse> handleUserBlockedException(UserBlockedException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                new ErrorResponse("UserBlocked", e.getMessage())
+        );
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception e) { // Hide stack trace
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(

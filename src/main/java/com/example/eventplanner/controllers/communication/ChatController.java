@@ -32,7 +32,11 @@ public class ChatController {
             @RequestParam(required = false) Integer size) {
         Long userId = authUtil.getAuthenticatedUserId();
         if (userId == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "sentAt"));
+        Pageable pageable;
+        if (size == null || size >= 0)
+            pageable = PageRequest.of(page, size != null ? size : 10, Sort.by(Sort.Direction.DESC, "sentAt"));
+        else
+            pageable = Pageable.unpaged();
         Page<ChatDto> result = chatService.getAllByUser(userId, pageable);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
