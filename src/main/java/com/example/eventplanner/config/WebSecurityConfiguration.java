@@ -141,7 +141,7 @@ public class WebSecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/api/reviews/pending").hasRole("ADMIN")
 
                         // Everything else requires authentication
-                        .anyRequest().permitAll())
+                        .anyRequest().authenticated())
                 .sessionManagement(session -> {
                     session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
                 })
