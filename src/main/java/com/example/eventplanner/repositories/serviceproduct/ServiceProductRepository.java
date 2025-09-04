@@ -22,16 +22,28 @@ public interface ServiceProductRepository extends JpaRepository<ServiceProduct, 
     FROM serviceproduct sp
     LEFT JOIN review r
       ON sp.id = r.serviceproduct_id AND r.reviewstatus = 1
-    WHERE sp.visible = true AND sp.active = true
+    WHERE sp.visible = true
+      AND sp.active = true
+      AND (:currentUserId IS NULL OR NOT EXISTS (
+        SELECT 1
+        FROM baseuser_baseuser uu
+        WHERE uu.baseuser_id = :currentUserId
+        AND uu.blockedusers_id = sp.serviceproductprovider_id))
     GROUP BY sp.id
     ORDER BY COALESCE(AVG(r.grade), 0) DESC
     LIMIT 5
     """, nativeQuery = true)
-    List<ServiceProduct> findTop5();
+    List<ServiceProduct> findTop5(@Param("currentUserId") Long currentUserId);
 
     @Query("SELECT sp FROM ServiceProduct sp " +
             "WHERE (:name LIKE '' OR LOWER(sp.name) LIKE LOWER(CONCAT('%', :name, '%'))) " +
             "AND (:description LIKE '' OR LOWER(sp.description) LIKE LOWER(CONCAT('%', :description, '%'))) " +
+            "AND (:currentUserId IS NULL OR NOT EXISTS ( " +
+            "   SELECT 1" +
+            "   FROM BaseUser u " +
+            "   JOIN u.blockedUsers b " +
+            "   WHERE u.id = :currentUserId " +
+            "       AND b.id = sp.serviceProductProvider.id)) " +
             "AND (:categoryIds IS NULL OR sp.category.id in :categoryIds) " +
             "AND (:available IS NULL OR sp.available = :available) " +
             "AND (sp.visible = true) " +
@@ -61,6 +73,7 @@ public interface ServiceProductRepository extends JpaRepository<ServiceProduct, 
             @Param("minDuration") Float minDuration,
             @Param("maxDuration") Float maxDuration,
             @Param("automaticReserved") Boolean automaticReserved,
+            @Param("currentUserId") Long currentUserId,
             Pageable pageable
     );
 

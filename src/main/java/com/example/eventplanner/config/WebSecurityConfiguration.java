@@ -4,7 +4,6 @@ package com.example.eventplanner.config;
 import com.example.eventplanner.config.jwt.JwtRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -24,7 +23,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.util.List;
 
@@ -38,8 +36,6 @@ public class WebSecurityConfiguration {
     private JwtRequestFilter jwtRequestFilter;
     @Value("${frontend.url}")
     private String frontendUrl;
-    @Value("${log.endpoints.enabled:false}")
-    private boolean logEndpointsEnabled;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -48,7 +44,7 @@ public class WebSecurityConfiguration {
                 .csrf(csrf -> csrf.disable()) // Disable CSRF for simplicity (not recommended for production)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/events/summaries", "/api/events/top5").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/events", "/api/events/summaries", "/api/events/top5").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/events/{id}"
                                 , "/api/events/{id}/agenda"
                                 , "/api/events/max-attendances-range"
@@ -71,7 +67,6 @@ public class WebSecurityConfiguration {
 
                         // Protected endpoints (JWT required)
                         // Events
-                        .requestMatchers(HttpMethod.GET, "/api/events").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/events").hasRole("EVENT_ORGANIZER")
                         .requestMatchers(HttpMethod.PUT, "/api/events/{id}").hasRole("EVENT_ORGANIZER")
                         .requestMatchers(HttpMethod.DELETE, "/api/events/{id}").hasRole("EVENT_ORGANIZER")
@@ -123,43 +118,28 @@ public class WebSecurityConfiguration {
                         // UserReports
                         .requestMatchers(HttpMethod.POST, "/api/user-reports").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/user-reports").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/api/user-reports/{id}/approve").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/user-reports/approve").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/user-reports/{id}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/user-reports/{id}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/user-reports/{id}").hasRole("ADMIN")
 
                         // Users
                         .requestMatchers(HttpMethod.POST, "/api/users/{email}/suspend").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/users/{id}/block").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/users/{id}/block").authenticated()
 
-                        // Reviews
+                        // ServiceProductReviews
                         .requestMatchers(HttpMethod.POST, "/api/reviews").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/api/reviews/{id}/approve").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/reviews/{id}").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/reviews/{id}/status",
-                                                        "/api/reviews/{id}/comment",
-                                                        "/api/reviews/{id}").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/reviews",
-                                                        "/api/reviews/{id}",
-                                                        "/api/reviews/pending").hasRole("ADMIN")
-
-                        // Budgets
-                        .requestMatchers(HttpMethod.POST, "/api/budgets").hasRole("EVENT_ORGANIZER")
-                        .requestMatchers(HttpMethod.POST, "/api/budgets/{id}/bookings").hasRole("EVENT_ORGANIZER")
-                        .requestMatchers(HttpMethod.POST, "/api/budgets/{id}/purchases").hasRole("EVENT_ORGANIZER")
-                        .requestMatchers(HttpMethod.PUT, "/api/budgets/{id}").hasRole("EVENT_ORGANIZER")
-                        .requestMatchers(HttpMethod.DELETE, "/api/budgets/{id}").hasRole("EVENT_ORGANIZER")
-                        .requestMatchers(HttpMethod.GET, "/api/budgets").hasRole("EVENT_ORGANIZER")
-                        .requestMatchers(HttpMethod.GET, "/api/budgets/{id}").hasRole("EVENT_ORGANIZER")
-
-                        // Bookings / purchases
-                        .requestMatchers(HttpMethod.POST, "/api/bookings/{id}/accept").hasRole("SERVICE_PRODUCT_PROVIDER")
-                        .requestMatchers(HttpMethod.DELETE, "/api/bookings/{id}").hasRole("SERVICE_PRODUCT_PROVIDER")
-                        .requestMatchers(HttpMethod.GET, "/api/bookings/mine").hasRole("SERVICE_PRODUCT_PROVIDER")
-                        .requestMatchers("/api/bookings", "/api/bookings/{id}").hasRole("ADMIN")
-                        .requestMatchers("/api/purchases", "/api/purchases/{id}").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/reviews/{id}/status").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/reviews/{id}/comment").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/reviews/{id}").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/reviews").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/reviews/{id}").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/reviews/pending").hasRole("ADMIN")
 
                         // Everything else requires authentication
-                        .anyRequest().authenticated())
+                        .anyRequest().permitAll())
                 .sessionManagement(session -> {
                     session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
                 })
@@ -192,19 +172,6 @@ public class WebSecurityConfiguration {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();// PasswordEncoderFactories.createDelegatingPasswordEncoder();
-    }
-
-    @Bean
-    public ApplicationRunner logEndpoints(RequestMappingHandlerMapping mapping) {
-        if (!logEndpointsEnabled)
-            return args -> {};
-        return args -> {
-            System.out.println("==== Registered Endpoints ====");
-            mapping.getHandlerMethods().forEach((key, value) -> {
-                System.out.println(key + " => " + value.getBeanType().getSimpleName() + "#" + value.getMethod().getName());
-            });
-            System.out.println("==============================");
-        };
     }
 
 }
