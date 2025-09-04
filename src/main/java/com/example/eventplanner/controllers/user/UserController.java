@@ -120,4 +120,11 @@ public class UserController {
         userService.blockUser(user, id);
         return ResponseEntity.noContent().build();
     }
+
+    @DeleteMapping("/{id}/block")
+    public ResponseEntity<Void> unblockUser(@PathVariable long id) {
+        BaseUser user = authUtil.getAuthenticatedUser();
+        userService.unblockUser(user, id);
+        return ResponseEntity.noContent().build();
+    }
 }

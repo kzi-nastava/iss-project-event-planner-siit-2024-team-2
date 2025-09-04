@@ -9,6 +9,7 @@ import com.example.eventplanner.model.user.BaseUser;
 import com.example.eventplanner.model.utils.ChatStatus;
 import com.example.eventplanner.repositories.communication.ChatRepository;
 import com.example.eventplanner.repositories.user.UserRepository;
+import com.example.eventplanner.services.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
@@ -26,6 +27,7 @@ import java.util.Optional;
 public class ChatService {
     private final ChatRepository chatRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
 
     public ChatDto getById(long id) {
         return chatRepository.findById(id)
@@ -71,8 +73,17 @@ public class ChatService {
     }
 
     public Page<ChatDto> getAllByUser(Long userId, Pageable pageable) {
-        return chatRepository.findAllMine(userId, pageable)
-                .map(ChatMapper::toDto);
+        Page<Chat> chats = chatRepository.findAllMine(userId, pageable);
+        return chats.map(chat -> {
+            ChatDto dto;
+            boolean user1BlockedUser2 = userService.hasBlocked(chat.getUser1().getId(), chat.getUser2().getId());
+            boolean user2BlockedUser1 = userService.hasBlocked(chat.getUser2().getId(), chat.getUser1().getId());
+            if (user1BlockedUser2 || user2BlockedUser1)
+                dto = ChatMapper.toBlockedDto(chat, user1BlockedUser2, user2BlockedUser1);
+            else
+                dto = ChatMapper.toDto(chat);
+            return dto;
+        });
     }
 
     @Transactional

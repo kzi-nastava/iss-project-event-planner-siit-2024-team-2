@@ -236,7 +236,15 @@ public class UserService implements UserDetailsService {
         BaseUser userToBlock = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found"));
         if (userToBlock.getId() == currentUser.getId())
             throw new ForbiddenException("You cannot block yourself");
+        if (currentUser.getBlockedUsers().contains(userToBlock))
+            return;
         currentUser.getBlockedUsers().add(userToBlock);
+        userRepository.save(currentUser);
+    }
+
+    public void unblockUser(BaseUser currentUser, long id) {
+        BaseUser userToUnblock = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found"));
+        currentUser.getBlockedUsers().remove(userToUnblock);
         userRepository.save(currentUser);
     }
 

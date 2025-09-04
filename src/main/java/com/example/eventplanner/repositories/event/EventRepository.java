@@ -24,9 +24,9 @@ public interface EventRepository extends JpaRepository<Event, Long> {
                  (SELECT 1
                   FROM baseuser_baseuser uu
                   WHERE (uu.baseuser_id = :currentUserId
-                        AND uu.blockedusers_id = e.eventorganizer_id))
+                        AND uu.blockedusers_id = e.eventorganizer_id)
                      OR (uu.baseuser_id = e.eventorganizer_id
-                        AND uu.blockedusers_id = :currentUserId))
+                        AND uu.blockedusers_id = :currentUserId)))
         )
         (
             SELECT * FROM filtered_event
@@ -39,7 +39,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             SELECT * FROM filtered_event
             WHERE date < :currentDate
             ORDER BY date DESC
-            LIMIT (5 - (
+            LIMIT GREATEST(0, 5 - (
                 SELECT COUNT(*) FROM filtered_event
                 WHERE date >= :currentDate
             ))
@@ -56,9 +56,9 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "   (SELECT 1 " +
             "    FROM baseuser_baseuser uu " +
             "    WHERE (uu.baseuser_id = :currentUserId " +
-            "          AND uu.blockedusers_id = e.eventorganizer_id)) " +
+            "          AND uu.blockedusers_id = e.eventorganizer_id) " +
             "       OR (uu.baseuser_id = e.eventorganizer_id " +
-            "          AND uu.blockedusers_id = :currentUserId))" +
+            "          AND uu.blockedusers_id = :currentUserId)))" +
             "AND (:name = '' OR e.name ILIKE CONCAT('%', :name, '%')) " +
             "AND (e.active = true) " +
             "AND (:description = '' OR LOWER(e.description) LIKE LOWER(CONCAT('%', :description, '%'))) " +
