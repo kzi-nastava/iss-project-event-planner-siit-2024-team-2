@@ -74,7 +74,7 @@ public class ServiceProductService {
         if (serviceProduct.getServiceProductProvider() != null && userId != null) {
             long serviceProductProviderId = serviceProduct.getServiceProductProvider().getId();
             if (userService.hasBlocked(userId, serviceProductProviderId)) {
-                throw new UserBlockedException("You are have blocked this service product provider");
+                throw new UserBlockedException("You have blocked this service product provider");
             }
         }
 
