@@ -1,5 +1,6 @@
 package com.example.eventplanner.model.serviceproduct;
 
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,6 +14,7 @@ import org.hibernate.annotations.SQLRestriction;
 @AllArgsConstructor
 @SQLRestriction("active = true")
 @Entity
+@DiscriminatorValue("Service")
 public class Service extends ServiceProduct {
     private String specifies;
     private float duration;

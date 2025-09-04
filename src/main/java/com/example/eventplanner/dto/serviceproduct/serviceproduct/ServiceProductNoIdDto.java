@@ -36,5 +36,5 @@ public class ServiceProductNoIdDto {
     private List<Long> availableEventTypeIds;
     @Min(value = 1, message = "Service product provider is required")
     private long serviceProductProviderId;
-    private String dtype;
+    //private String dtype;
 }
