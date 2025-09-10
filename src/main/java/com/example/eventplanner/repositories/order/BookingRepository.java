@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.Instant;
 import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
@@ -37,11 +38,16 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
         JOIN budget_booking bb ON b.id = bb.bookings_id
         JOIN event_budget eb ON bb.budget_id = eb.budgets_id
         JOIN event e ON e.id = eb.event_id
-        WHERE b.date BETWEEN NOW() AND (NOW() + INTERVAL '65 MINUTES')
+        WHERE b.date BETWEEN :now AND :in65Minutes
             AND b.sentReminder = false
             AND b.status = 0
+            AND b.active = true
+            AND e.active = true
+            AND s.active = true
     """, nativeQuery = true)
-    List<BookingReminderDto> findBookingsStartingInOneHour();
+    List<BookingReminderDto> findBookingsStartingInOneHour(
+            @Param("now") Instant now,
+            @Param("in65Minutes") Instant in65Minutes);
 
     @Modifying
     @Query("UPDATE Booking b SET b.sentReminder = true WHERE b.id IN :bookingIds")

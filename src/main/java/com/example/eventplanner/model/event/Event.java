@@ -36,6 +36,9 @@ public class Event extends Entity {
     @OneToMany(cascade = {CascadeType.ALL})
     private List<Activity> activities;
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinTable(name = "event_budget",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "budgets_id"))
     private List<Budget> budgets;
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Invitation> invitations = new ArrayList<>();
