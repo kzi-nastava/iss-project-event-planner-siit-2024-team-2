@@ -44,8 +44,8 @@ public class BookingService {
     private final EventRepository eventRepository;
     private final ServiceRepository serviceRepository;
 
-    static final long HOUR_MS = 60 * 60 * 1000;
-    static final long DAY_MS = 24 * HOUR_MS;
+    public static final long HOUR_MS = 60 * 60 * 1000;
+    public static final long DAY_MS = 24 * HOUR_MS;
     private final AuthUtil authUtil;
     private final EventOrganizerRepository eventOrganizerRepository;
     private final EmailService emailService;
@@ -135,7 +135,7 @@ public class BookingService {
         Long startDate = new Date().getTime() + service.getReservationDaysDeadline() * DAY_MS;
         Long endDate = event.getDate().getTime() + DAY_MS;
         List<DateRangeDto> bookedDates = getBookedDates(service, startDate, endDate);
-        return convertToAvailable(startDate, endDate, bookedDates);
+        return convertToAvailable(startDate, endDate, bookedDates, service.getDuration() * HOUR_MS);
     }
 
     private List<DateRangeDto> getBookedDates(Service service, Long startDate, Long endDate) {
@@ -182,14 +182,14 @@ public class BookingService {
      * - all booking intervals intersect the [startDate, endDate] interval
      * - booking intervals don't overlap
      */
-    private List<DateRangeDto> convertToAvailable(Long startDate, Long endDate, List<DateRangeDto> bookedDates) {
+    private List<DateRangeDto> convertToAvailable(Long startDate, Long endDate, List<DateRangeDto> bookedDates, double durationMs) {
         List<DateRangeDto> available = new ArrayList<>();
         if (bookedDates.isEmpty()) {
             available.add(new DateRangeDto(startDate, endDate));
             return available;
         }
 
-        if (bookedDates.get(0).getStart() > startDate)
+        if (bookedDates.get(0).getStart() - startDate >= durationMs)
             available.add(new DateRangeDto(startDate, bookedDates.get(0).getStart()));
 
         for (int i = 1; i < bookedDates.size(); i++) {
@@ -199,7 +199,7 @@ public class BookingService {
                 available.add(new DateRangeDto(gapStart, gapEnd));
         }
 
-        if (bookedDates.get(bookedDates.size() - 1).getEnd() < endDate)
+        if (endDate - bookedDates.get(bookedDates.size() - 1).getEnd() >= durationMs)
             available.add(new DateRangeDto(bookedDates.get(bookedDates.size() - 1).getEnd(), endDate));
 
         return available;
