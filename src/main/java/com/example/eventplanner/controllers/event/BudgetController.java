@@ -47,14 +47,22 @@ public class BudgetController {
 
     @PostMapping("/{id}/bookings")
     public ResponseEntity<Void> addNewBooking(@PathVariable("id") Long id, @Valid @RequestBody BookingNoIdDto bookingDto) {
-        budgetService.addBookingToBudget(id, bookingDto);
-        return ResponseEntity.ok().build();
+        try {
+            budgetService.addBookingToBudget(id, bookingDto);
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
     @PostMapping("/{id}/purchases")
     public ResponseEntity<Void> addNewPurchase(@PathVariable("id") Long id, @Valid @RequestBody PurchaseNoIdDto purchaseDto) {
-        budgetService.addPurchaseToBudget(id, purchaseDto);
-        return ResponseEntity.ok().build();
+        try {
+            budgetService.addPurchaseToBudget(id, purchaseDto);
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
     }
 
     @DeleteMapping("/{id}")
