@@ -412,7 +412,7 @@ class BookingServiceTest {
 
     @Test
     void sendReminderNotifications_ShouldNothingHappen_WhenNoBookings() {
-        when(bookingRepository.findBookingsStartingInOneHour()).thenReturn(Collections.emptyList());
+        when(bookingRepository.findBookingsStartingInOneHour(any(), any())).thenReturn(Collections.emptyList());
         bookingService.sendReminderNotifications();
         verify(notificationService, never()).sendNotification(any());
         verify(bookingRepository, never()).updateSentReminders(anyList());
@@ -428,7 +428,7 @@ class BookingServiceTest {
                 new Date()
         );
 
-        when(bookingRepository.findBookingsStartingInOneHour()).thenReturn(List.of(reminderDto));
+        when(bookingRepository.findBookingsStartingInOneHour(any(), any())).thenReturn(List.of(reminderDto));
         doNothing().when(notificationService).sendNotification(any());
 
         bookingService.sendReminderNotifications();

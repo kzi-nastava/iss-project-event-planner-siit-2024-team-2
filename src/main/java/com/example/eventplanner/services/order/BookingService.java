@@ -33,6 +33,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @org.springframework.stereotype.Service
@@ -270,7 +272,10 @@ public class BookingService {
     @Transactional
     @Scheduled(fixedDelay = 1000 * 60 * 5, initialDelay = 1000 * 30) // Every 5 minutes, 30 seconds after startup
     public void sendReminderNotifications() {
-        List<BookingReminderDto> bookings = bookingRepository.findBookingsStartingInOneHour();
+        List<BookingReminderDto> bookings = bookingRepository.findBookingsStartingInOneHour(
+                Instant.now(),
+                Instant.now().plus(65, ChronoUnit.MINUTES)
+        );
         if (bookings.isEmpty())
             return;
         for (BookingReminderDto booking : bookings) {

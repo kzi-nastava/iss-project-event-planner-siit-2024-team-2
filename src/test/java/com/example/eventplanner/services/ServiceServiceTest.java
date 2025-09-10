@@ -142,8 +142,4 @@ class ServiceServiceTest {
 
         assertThrows(NotFoundException.class, () -> serviceService.getAvailableDates(serviceId, eventId));
     }
-
-    private static DateRangeDto toDateRangeDto(Instant start, long durationHours) {
-        return new DateRangeDto(start.toEpochMilli(), start.toEpochMilli() + durationHours * BookingService.HOUR_MS);
-    }
 }
