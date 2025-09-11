@@ -87,11 +87,15 @@ class BudgetServiceTest {
         when(budgetRepository.findById(budgetId)).thenReturn(Optional.of(budget));
         when(budgetRepository.save(any(Budget.class))).thenReturn(budget);
 
+        budget.setBookings(new ArrayList<>());
+        budget.setPurchases(new ArrayList<>());
+
         BookingNoIdDto bookingDto = new BookingNoIdDto();
         bookingDto.setPrice(50.0);
         Booking booking = new Booking();
         booking.setId(10L);
         booking.setPrice(50.0);
+        booking.setDate(Instant.now());
         when(bookingService.book(bookingDto, event)).thenReturn(booking);
 
         budgetService.addBookingToBudget(budgetId, bookingDto);
