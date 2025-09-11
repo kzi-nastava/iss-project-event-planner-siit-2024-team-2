@@ -102,7 +102,7 @@ class BudgetControllerTest {
     }
 
     @Test
-    void createBooking_ShouldReturnBadRequest() throws Exception {
+    void createBudget_shouldReturnBadRequest() throws Exception {
         when(budgetService.create(any())).thenReturn(null);
         BudgetNoIdDto dto = new BudgetNoIdDto();    // required fields missed
 
@@ -155,7 +155,7 @@ class BudgetControllerTest {
     void addNewBooking_shouldFail_whenExceedsBudget() throws Exception {
         BookingNoIdDto bookingDto = new BookingNoIdDto();
         bookingDto.setServiceId(1L);
-        bookingDto.setPrice(200); // exceeds budget
+        bookingDto.setPrice(200);
         bookingDto.setDuration(5);
         bookingDto.setDate(Instant.now());
 
@@ -209,6 +209,20 @@ class BudgetControllerTest {
                         .content(objectMapper.writeValueAsString(purchaseDto)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value("ValidationError"));
+    }
+
+    @Test
+    void addPurchaseToBudget_nonexistentBudgetId_shouldReturn404() throws Exception {
+        Long nonexistentBudgetId = 999L;
+
+        PurchaseNoIdDto dto = new PurchaseNoIdDto();
+        dto.setProductId(1L);
+        dto.setPrice(50.0);
+
+        mockMvc.perform(post("/api/budgets/{id}/purchases", nonexistentBudgetId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isNotFound());
     }
 
     @Test

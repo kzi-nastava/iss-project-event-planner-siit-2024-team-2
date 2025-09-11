@@ -2,9 +2,9 @@ package com.example.eventplanner.controllers.event;
 
 import com.example.eventplanner.dto.event.budget.BudgetDto;
 import com.example.eventplanner.dto.event.budget.BudgetNoIdDto;
-import com.example.eventplanner.dto.order.booking.BookingDto;
 import com.example.eventplanner.dto.order.booking.BookingNoIdDto;
 import com.example.eventplanner.dto.order.purchase.PurchaseNoIdDto;
+import com.example.eventplanner.exception.NotFoundException;
 import com.example.eventplanner.services.event.BudgetService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -62,6 +62,8 @@ public class BudgetController {
             return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // ❌ Wrong — still 200
         }
     }
 
