@@ -1,4 +1,4 @@
-package com.example.eventplanner.controllers;
+package com.example.eventplanner.services;
 
 import com.example.eventplanner.controllers.utils.AuthUtil;
 import com.example.eventplanner.dto.order.purchase.PurchaseNoIdDto;
@@ -39,7 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Transactional
-class BudgetControllerIntegrationTest {
+class BudgetServiceIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
