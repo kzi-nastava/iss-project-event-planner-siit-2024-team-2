@@ -11,6 +11,7 @@ import com.example.eventplanner.model.event.EventType;
 import com.example.eventplanner.model.user.EventOrganizer;
 import com.example.eventplanner.repositories.event.EventRepository;
 import com.example.eventplanner.repositories.event.EventTypeRepository;
+import com.example.eventplanner.repositories.order.EventReviewRepository;
 import com.example.eventplanner.repositories.user.UserRepository;
 import com.example.eventplanner.services.event.EventService;
 import com.example.eventplanner.services.event.InvitationService;
@@ -35,6 +36,9 @@ class EventServiceTest {
 
     @Mock
     private EventTypeRepository eventTypeRepository;
+
+    @Mock
+    private EventReviewRepository eventReviewRepository;
 
     @Mock
     private UserRepository userRepository;
@@ -141,6 +145,7 @@ class EventServiceTest {
     @Test
     void delete_ShouldReturnTrue_WhenExists() {
         when(eventRepository.findById(10L)).thenReturn(Optional.of(event));
+        doNothing().when(eventReviewRepository).deleteByEvent(10L);
         when(authUtil.getAuthenticatedUser()).thenReturn(organizer);
 
         boolean result = eventService.delete(10L);

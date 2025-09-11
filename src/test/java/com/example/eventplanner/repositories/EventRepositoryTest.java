@@ -1,8 +1,13 @@
 package com.example.eventplanner.repositories;
 
 import com.example.eventplanner.model.event.Activity;
+import com.example.eventplanner.model.event.Budget;
 import com.example.eventplanner.model.event.Event;
+import com.example.eventplanner.model.order.Booking;
+import com.example.eventplanner.repositories.event.BudgetRepository;
 import com.example.eventplanner.repositories.event.EventRepository;
+import com.example.eventplanner.repositories.order.BookingRepository;
+import com.example.eventplanner.services.order.BookingService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +18,7 @@ import java.time.*;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 @DataJpaTest
@@ -20,12 +26,27 @@ public class EventRepositoryTest {
 
     @Autowired
     private EventRepository eventRepository;
+    @Autowired
+    private BookingRepository bookingRepository;
+    @Autowired
+    private BudgetRepository budgetRepository;
 
     private Event event;
+    private Booking booking;
+    private Budget budget;
 
     @BeforeEach
     void setUp() {
         eventRepository.deleteAll();
+        bookingRepository.deleteAll();
+        budgetRepository.deleteAll();
+
+        booking = new Booking();
+        bookingRepository.save(booking);
+
+        budget = new Budget();
+        budget.setBookings(List.of(booking));
+        budgetRepository.save(budget);
 
         event = new Event();
         event.setName("Test Event 123");
@@ -37,6 +58,7 @@ public class EventRepositoryTest {
         a1.setActivityEnd(toMillis("11:00"));
 
         event.setActivities(List.of(a1));
+        event.setBudgets(List.of(budget));
         event = eventRepository.save(event);
     }
 
@@ -150,6 +172,20 @@ public class EventRepositoryTest {
         boolean overlaps = isOverlapping(newActivity, all);
 
         assertThat(overlaps).isTrue();
+    }
+
+    @Test
+    void findByBudgetId_ShouldReturnEvent() {
+        Optional<Event> result = eventRepository.findByBudgetId(budget.getId());
+        assertTrue(result.isPresent());
+        assertEquals(event.getId(), result.get().getId());
+    }
+
+    @Test
+    void findByBookingId_ShouldReturnEvent() {
+        Event result = eventRepository.findByBookingId(booking.getId());
+        assertNotNull(result);
+        assertEquals(event.getId(), result.getId());
     }
 
     private boolean isOverlapping(Activity newActivity, List<Activity> existing) {
