@@ -126,9 +126,7 @@ class BudgetControllerTest {
 
     @Test
     void getBudgetByNonexistentId_shouldReturnNotFound() throws Exception {
-        when(budgetService.getById(budgetId)).thenReturn(null);
-
-        mockMvc.perform(get("/api/budgets/{id}", budgetId))
+        mockMvc.perform(get("/api/budgets/99"))
                 .andExpect(status().isNotFound());
     }
 
@@ -152,23 +150,6 @@ class BudgetControllerTest {
     }
 
     @Test
-    void addNewBooking_shouldFail_whenExceedsBudget() throws Exception {
-        BookingNoIdDto bookingDto = new BookingNoIdDto();
-        bookingDto.setServiceId(1L);
-        bookingDto.setPrice(200);
-        bookingDto.setDuration(5);
-        bookingDto.setDate(Instant.now());
-
-        doThrow(new IllegalArgumentException("Not enough money"))
-                .when(budgetService).addBookingToBudget(eq(budgetId), any(BookingNoIdDto.class));
-
-        mockMvc.perform(post("/api/budgets/{id}/bookings", budgetId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(bookingDto)))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
     void addNewBooking_shouldSucceed_whenWithinBudget() throws Exception {
         BookingNoIdDto bookingDto = new BookingNoIdDto();
         bookingDto.setServiceId(1L);
@@ -176,7 +157,7 @@ class BudgetControllerTest {
         bookingDto.setDuration(5);
         bookingDto.setDate(Instant.now());
 
-        doNothing().when(budgetService).addBookingToBudget(budgetId, bookingDto);
+        when(budgetService.addBookingToBudget(eq(budgetId), any(BookingNoIdDto.class))).thenReturn(budget);
 
         mockMvc.perform(post("/api/budgets/{id}/bookings", budgetId)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -185,24 +166,8 @@ class BudgetControllerTest {
     }
 
     @Test
-    void addNewPurchase_shouldSucceed_whenWithinBudget() throws Exception {
-        PurchaseNoIdDto purchaseDto = new PurchaseNoIdDto();
-        purchaseDto.setProductId(1L);
-        purchaseDto.setPrice(50);
-
-        doNothing().when(budgetService).addPurchaseToBudget(budgetId, purchaseDto);
-
-        mockMvc.perform(post("/api/budgets/{id}/purchases", budgetId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(purchaseDto)))
-                .andExpect(status().isOk());
-    }
-
-    @Test
     void addNewPurchase_shouldFail_whenInvalidPurchase() throws Exception {
         PurchaseNoIdDto purchaseDto = new PurchaseNoIdDto();
-
-        doNothing().when(budgetService).addPurchaseToBudget(budgetId, purchaseDto);
 
         mockMvc.perform(post("/api/budgets/{id}/purchases", budgetId)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -212,7 +177,21 @@ class BudgetControllerTest {
     }
 
     @Test
-    void addPurchaseToBudget_nonexistentBudgetId_shouldReturn404() throws Exception {
+    void addNewPurchase_shouldSucceed_whenWithinBudget() throws Exception {
+        PurchaseNoIdDto purchaseDto = new PurchaseNoIdDto();
+        purchaseDto.setProductId(1L);
+        purchaseDto.setPrice(50);
+
+        when(budgetService.addPurchaseToBudget(eq(budgetId), any(PurchaseNoIdDto.class))).thenReturn(budget);
+
+        mockMvc.perform(post("/api/budgets/{id}/purchases", budgetId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(purchaseDto)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void addNewPurchase_shouldReturnNotFound_whenNonexistentBudgetId() throws Exception {
         Long nonexistentBudgetId = 999L;
 
         PurchaseNoIdDto dto = new PurchaseNoIdDto();

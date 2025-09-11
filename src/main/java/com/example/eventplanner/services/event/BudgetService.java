@@ -66,7 +66,7 @@ public class BudgetService {
     }
 
     @Transactional
-    public void addBookingToBudget(Long budgetId, BookingNoIdDto bookingDto) {
+    public BudgetDto addBookingToBudget(Long budgetId, BookingNoIdDto bookingDto) {
         Long userId = authUtil.getAuthenticatedUserId();
         Budget budget = budgetRepository.findById(budgetId).orElseThrow(() -> new NotFoundException("Budget not found"));
         Event event = eventRepository.findByBudgetId(budgetId).orElseThrow(() -> new NotFoundException("Event not found"));
@@ -82,12 +82,12 @@ public class BudgetService {
         budget.getBookings().add(booking);
         budget.setCurrentSpent(budget.getCurrentSpent() + booking.getPrice());
         budgetRepository.save(budget);
-
         bookingService.sendBookingEmails(booking, event);
+        return  BudgetMapper.toDto(budget);
     }
 
     @Transactional
-    public void addPurchaseToBudget(Long budgetId, PurchaseNoIdDto purchaseDto) {
+    public BudgetDto addPurchaseToBudget(Long budgetId, PurchaseNoIdDto purchaseDto) {
         Long userId = authUtil.getAuthenticatedUserId();
         Budget budget = budgetRepository.findById(budgetId).orElseThrow(() -> new NotFoundException("Budget not found"));
         Event event = eventRepository.findByBudgetId(budgetId).orElseThrow(() -> new NotFoundException("Event not found"));
@@ -106,6 +106,7 @@ public class BudgetService {
         budget.getPurchases().add(purchase);
         budget.setCurrentSpent(budget.getCurrentSpent() + purchase.getPrice());
         budgetRepository.save(budget);
+        return  BudgetMapper.toDto(budget);
     }
 
     public boolean delete(long id) {
