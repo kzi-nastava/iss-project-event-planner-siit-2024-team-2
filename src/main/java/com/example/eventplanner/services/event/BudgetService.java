@@ -66,12 +66,15 @@ public class BudgetService {
     }
 
     @Transactional
-    public void addBookingToBudget(Long budgetId, BookingNoIdDto bookingDto) {
+    public BudgetDto addBookingToBudget(Long budgetId, BookingNoIdDto bookingDto) {
         Long userId = authUtil.getAuthenticatedUserId();
         Budget budget = budgetRepository.findById(budgetId).orElseThrow(() -> new NotFoundException("Budget not found"));
         Event event = eventRepository.findByBudgetId(budgetId).orElseThrow(() -> new NotFoundException("Event not found"));
         if (event.getEventOrganizer().getId() != userId)
             throw new ForbiddenException("User is not authorized to access this event");
+        if (budget.getCurrentSpent() + bookingDto.getPrice() > budget.getPlannedSpending())
+            throw new IllegalArgumentException("Not enough money in the budget for this booking");
+
         // create new booking
         Booking booking = bookingService.book(bookingDto, event);
 
@@ -79,12 +82,12 @@ public class BudgetService {
         budget.getBookings().add(booking);
         budget.setCurrentSpent(budget.getCurrentSpent() + booking.getPrice());
         budgetRepository.save(budget);
-
         bookingService.sendBookingEmails(booking, event);
+        return  BudgetMapper.toDto(budget);
     }
 
     @Transactional
-    public void addPurchaseToBudget(Long budgetId, PurchaseNoIdDto purchaseDto) {
+    public BudgetDto addPurchaseToBudget(Long budgetId, PurchaseNoIdDto purchaseDto) {
         Long userId = authUtil.getAuthenticatedUserId();
         Budget budget = budgetRepository.findById(budgetId).orElseThrow(() -> new NotFoundException("Budget not found"));
         Event event = eventRepository.findByBudgetId(budgetId).orElseThrow(() -> new NotFoundException("Event not found"));
@@ -93,6 +96,9 @@ public class BudgetService {
         // create new purchase
         Product product = productRepository.findById(purchaseDto.getProductId()).orElseThrow(() -> new NotFoundException("Product not found"));
         purchaseDto.setPrice(Math.max(product.getPrice() - product.getDiscount(), 0));
+
+        if (budget.getCurrentSpent() + purchaseDto.getPrice() > budget.getPlannedSpending())
+            throw new IllegalArgumentException("Not enough money in the budget for this purchase");
         Purchase purchase = PurchaseMapper.toEntity(purchaseDto, product);
         purchaseRepository.save(purchase);
 
@@ -100,6 +106,7 @@ public class BudgetService {
         budget.getPurchases().add(purchase);
         budget.setCurrentSpent(budget.getCurrentSpent() + purchase.getPrice());
         budgetRepository.save(budget);
+        return  BudgetMapper.toDto(budget);
     }
 
     public boolean delete(long id) {
