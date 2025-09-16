@@ -130,7 +130,7 @@ public class InvitationService {
                 false,
                 false,
                 newUser.getId()
-        ));
+        ), newUser.isMutedNotifications());
         return acceptAndSave(invitation, newUser);
     }
 

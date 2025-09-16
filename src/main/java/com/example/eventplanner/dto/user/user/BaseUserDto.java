@@ -20,4 +20,5 @@ public class BaseUserDto {
     private String phoneNumber;
     private String image = null;
     private String imageEncodedName = null;
+    private boolean mutedNotifications = false;
 }

@@ -251,5 +251,11 @@ public class UserService implements UserDetailsService {
     public boolean hasBlocked(long id, long blockedUserId) {
         return userRepository.hasBlocked(id, blockedUserId);
     }
+
+    public void setMuteNotifications(long id, boolean state) {
+        BaseUser user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found"));
+        user.setMutedNotifications(state);
+        userRepository.save(user);
+    }
 }
 
