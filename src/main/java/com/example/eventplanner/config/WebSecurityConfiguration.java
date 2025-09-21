@@ -74,9 +74,9 @@ public class WebSecurityConfiguration {
 
 
                         // Event types
-                        .requestMatchers(HttpMethod.POST, "/api/event-types").hasRole("EVENT_ORGANIZER")
-                        .requestMatchers(HttpMethod.PUT, "/api/event-types/{id}").hasRole("EVENT_ORGANIZER")
-                        .requestMatchers(HttpMethod.DELETE, "/api/event-types/{id}").hasRole("EVENT_ORGANIZER")
+                        .requestMatchers(HttpMethod.POST, "/api/event-types").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/event-types/{id}").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/event-types/{id}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/event-types/paginated").hasRole("ADMIN")
 
                         // Event agenda
