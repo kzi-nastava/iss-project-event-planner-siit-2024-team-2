@@ -128,9 +128,13 @@ public class EventService {
         eventTypeRepository.findById(dto.getEventTypeId()).ifPresent(event::setType);
         if (admin) // Only admin can change event organizer
             userRepository.findById(dto.getEventOrganizerId()).ifPresent(eo -> event.setEventOrganizer((EventOrganizer) eo));
+        if (event.getInvitations() == null)
+            event.setInvitations(new ArrayList<>());
         Map<String, Invitation> existingInvitations = event.getInvitations()
                 .stream()
                 .collect(Collectors.toMap(Invitation::getEmail, invitation -> invitation));
+        if (dto.getInvitationEmails() == null)
+            dto.setInvitationEmails(new ArrayList<>());
         List<Invitation> newInvitations = dto.getInvitationEmails()
                 .stream()
                 .filter(email -> !existingInvitations.containsKey(email))
@@ -324,7 +328,7 @@ public class EventService {
                         title,
                         message,
                         attendee.getId()
-                )));
+                ), attendee.isMutedNotifications()));
     }
 
     @NotNull

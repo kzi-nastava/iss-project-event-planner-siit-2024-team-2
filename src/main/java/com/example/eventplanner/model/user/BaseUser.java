@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.time.Instant;
@@ -32,6 +33,8 @@ public class BaseUser extends Entity {
     private String image;
     @ManyToMany
     private List<BaseUser> blockedUsers;
+    @ColumnDefault("false")
+    private boolean mutedNotifications;
     @Transient
     private String jwt;
     @ManyToMany

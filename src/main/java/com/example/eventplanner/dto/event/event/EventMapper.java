@@ -56,7 +56,9 @@ public class EventMapper {
                 event.getDate(),
                 event.getActivities().stream().map(Activity::getId).toList(),
                 event.getBudgets().stream().map(Budget::getId).toList(),
-                event.getInvitations().stream().map(Invitation::getEmail).toList()
+                event.getInvitations() != null
+                        ? event.getInvitations().stream().map(Invitation::getEmail).toList()
+                        : new ArrayList<>()
         );
     }
 

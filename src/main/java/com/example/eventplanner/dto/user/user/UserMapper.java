@@ -77,7 +77,8 @@ public class UserMapper {
                 user.getAddress(),
                 user.getPhoneNumber(),
                 user.getImage(),
-                ImageService.encodePath(user.getImage())
+                ImageService.encodePath(user.getImage()),
+                user.isMutedNotifications()
         );
     }
 

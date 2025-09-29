@@ -127,4 +127,18 @@ public class UserController {
         userService.unblockUser(user, id);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/{id}/mute-notifications")
+    public ResponseEntity<Void> muteNotifications(@PathVariable long id) {
+        authUtil.checkUserAccess(id);
+        userService.setMuteNotifications(id, true);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{id}/mute-notifications")
+    public ResponseEntity<Void> unmuteNotifications(@PathVariable long id) {
+        BaseUser user = authUtil.getAuthenticatedUser();
+        userService.setMuteNotifications(id, false);
+        return ResponseEntity.noContent().build();
+    }
 }

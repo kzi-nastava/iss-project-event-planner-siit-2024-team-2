@@ -74,9 +74,9 @@ public class WebSecurityConfiguration {
 
 
                         // Event types
-                        .requestMatchers(HttpMethod.POST, "/api/event-types").hasRole("EVENT_ORGANIZER")
-                        .requestMatchers(HttpMethod.PUT, "/api/event-types/{id}").hasRole("EVENT_ORGANIZER")
-                        .requestMatchers(HttpMethod.DELETE, "/api/event-types/{id}").hasRole("EVENT_ORGANIZER")
+                        .requestMatchers(HttpMethod.POST, "/api/event-types").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/event-types/{id}").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/event-types/{id}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/event-types/paginated").hasRole("ADMIN")
 
                         // Event agenda
@@ -129,6 +129,8 @@ public class WebSecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/api/users/{email}/suspend").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/users/{id}/block").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/api/users/{id}/block").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/users/{id}/mute-notifications").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/users/{id}/mute-notifications").authenticated()
 
                         // ServiceProductReviews
                         .requestMatchers(HttpMethod.POST, "/api/reviews").authenticated()

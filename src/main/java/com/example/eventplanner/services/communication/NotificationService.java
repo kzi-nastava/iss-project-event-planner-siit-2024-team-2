@@ -102,6 +102,14 @@ public class NotificationService {
 
     @Async
     public void sendNotification(NotificationNoIdDto dto) {
+        BaseUser user = userRepository.findById(dto.getUserId()).orElse(null);
+        if (user == null)
+            return;
+        sendNotification(dto, user.isMutedNotifications());
+    }
+
+    @Async
+    public void sendNotification(NotificationNoIdDto dto, boolean mutedNotifications) {
         create(dto);
         MessageDto messageDto = MessageDto.builder()
                 .message(dto.getMessage())
@@ -109,6 +117,7 @@ public class NotificationService {
                 .topic("notifications")
                 .toId(String.valueOf(dto.getUserId()))
                 .build();
-        webSocketService.trySend(messageDto);
+        if (!mutedNotifications)
+            webSocketService.trySend(messageDto);
     }
 }
