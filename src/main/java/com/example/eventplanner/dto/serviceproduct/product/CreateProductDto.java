@@ -32,6 +32,5 @@ public class CreateProductDto {
     private boolean visible;
     @Min(value = 1, message = "Service product provider is required")
     private long serviceProductProviderId;
-    @NotEmpty(message = "At least one image is required")
     private List<String> images;
 }
