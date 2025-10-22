@@ -25,6 +25,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @org.springframework.stereotype.Service
 @Getter
@@ -38,6 +41,8 @@ public class InvitationService {
     private final AuthUtil authUtil;
     private final EventAttendanceService eventAttendanceService;
     private final NotificationService notificationService;
+
+    ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     @Value("${frontend.url}")
     private String frontendUrl;
@@ -121,16 +126,18 @@ public class InvitationService {
             return new InvitationResult(invitation, InvitationErrorType.EVENT_FULL);
         invitation.setQuickRegistration(true);
         BaseUser newUser = userService.quickRegister(invitation.getEmail());
-        notificationService.sendNotification(new NotificationNoIdDto(
-                "Welcome!",
-                "Welcome to Event Planner! After using an invite link, an account has been created for you. " +
-                        "You can now access the event you have been invited to and explore other events on the home page. " +
-                        "When you are ready, you can upgrade your account to an Event Organizer or Service Product Provider by " +
-                        "using the upgrade button at the top right of the page.",
-                false,
-                false,
-                newUser.getId()
-        ), newUser.isMutedNotifications());
+        scheduler.schedule(() -> {
+            notificationService.sendNotification(new NotificationNoIdDto(
+                    "Welcome!",
+                    "Welcome to Event Planner! After using an invite link, an account has been created for you. " +
+                            "You can now access the event you have been invited to and explore other events on the home page. " +
+                            "When you are ready, you can upgrade your account to an Event Organizer or Service Product Provider by " +
+                            "using the upgrade button at the top right of the page.",
+                    false,
+                    false,
+                    newUser.getId()
+            ), newUser.isMutedNotifications());
+        }, 5, TimeUnit.SECONDS);
         return acceptAndSave(invitation, newUser);
     }
 
