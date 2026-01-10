@@ -6,6 +6,7 @@ import com.example.eventplanner.model.serviceproduct.Service;
 import org.springframework.core.io.ClassPathResource;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
@@ -16,8 +17,8 @@ public class EmailFormatUtil {
 
         ClassPathResource resource = new ClassPathResource("templates/invitation_email.html");
         String html;
-        try {
-            html = Files.readString(resource.getFile().toPath(), StandardCharsets.UTF_8);
+        try (InputStream inputStream = resource.getInputStream()) {
+            html = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
         } catch (IOException e) {
             return inviteLink;
         }
@@ -40,8 +41,8 @@ public class EmailFormatUtil {
     public static String formatEOBookingRequestEmail(EventSummaryDto eventSummary, Booking booking) {
         ClassPathResource resource = new ClassPathResource("templates/eo_booking_request_email.html");
         String html;
-        try {
-            html = Files.readString(resource.getFile().toPath(), StandardCharsets.UTF_8);
+        try (InputStream inputStream = resource.getInputStream()) {
+            html = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
         } catch (IOException e) {
             return "";
         }
@@ -73,8 +74,8 @@ public class EmailFormatUtil {
     public static String formatBookingConfirmationEmail(EventSummaryDto eventSummary, Booking booking) {
         ClassPathResource resource = new ClassPathResource("templates/booking_confirmation_email.html");
         String html;
-        try {
-            html = Files.readString(resource.getFile().toPath(), StandardCharsets.UTF_8);
+        try (InputStream inputStream = resource.getInputStream()) {
+            html = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
         } catch (IOException e) {
             return "";
         }
